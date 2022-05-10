@@ -1,0 +1,37 @@
+spring:
+  main:
+    banner-mode: off
+
+  jpa:
+    open-in-view: false
+    generate-ddl: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/debtmanager"
+    username: "user"
+    password: "password"
+
+  sql:
+    init:
+      mode: always
+
+server:
+  servlet:
+    context-path: "/api"
+
+logging:
+  level:
+    ru.smaginv.debtmanager: debug
+  charset:
+    console: UTF-8
+  pattern:
+    console: "%d{HH:mm:ss} %clr(%5p) %-65.65(%clr(%logger{50}){cyan}) : %msg%n"
