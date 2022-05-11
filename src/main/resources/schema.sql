@@ -15,7 +15,7 @@ CREATE TABLE person
     first_name   VARCHAR NOT NULL,
     last_name    VARCHAR,
     phone_number VARCHAR NOT NULL UNIQUE,
-    email        VARCHAR UNIQUE,
+    email        VARCHAR NOT NULL UNIQUE,
     comment      VARCHAR
 );
 CREATE INDEX person_last_name_idx ON person (last_name);

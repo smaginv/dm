@@ -11,6 +11,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
 
+@NamedEntityGraph(
+        name = "person-accounts",
+        attributeNodes = {
+                @NamedAttributeNode("accounts")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor

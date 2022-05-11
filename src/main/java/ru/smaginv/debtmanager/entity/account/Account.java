@@ -17,6 +17,12 @@ import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.List;
 
+@NamedEntityGraph(
+        name = "account-operations",
+        attributeNodes = {
+                @NamedAttributeNode("operations")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
