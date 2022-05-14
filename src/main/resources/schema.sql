@@ -1,22 +1,23 @@
 DROP TABLE IF EXISTS operation;
 DROP TABLE IF EXISTS account;
+DROP TABLE IF EXISTS contact;
 DROP TABLE IF EXISTS person;
 
 DROP SEQUENCE IF EXISTS operation_seq;
 DROP SEQUENCE IF EXISTS account_seq;
+DROP SEQUENCE IF EXISTS contact_seq;
 DROP SEQUENCE IF EXISTS person_seq;
 
 DROP TYPE IF EXISTS operation_type;
 DROP TYPE IF EXISTS account_type;
+DROP TYPE IF EXISTS contact_type;
 
 CREATE TABLE person
 (
-    person_id    BIGINT PRIMARY KEY,
-    first_name   VARCHAR NOT NULL,
-    last_name    VARCHAR,
-    phone_number VARCHAR NOT NULL UNIQUE,
-    email        VARCHAR NOT NULL UNIQUE,
-    comment      VARCHAR
+    person_id  BIGINT PRIMARY KEY,
+    first_name VARCHAR NOT NULL,
+    last_name  VARCHAR,
+    comment    VARCHAR
 );
 CREATE INDEX person_last_name_idx ON person (last_name);
 CREATE SEQUENCE person_seq INCREMENT 10 START 20;
@@ -24,13 +25,27 @@ ALTER SEQUENCE person_seq OWNED BY person.person_id;
 ALTER TABLE person
     ALTER COLUMN person_id SET DEFAULT nextval('person_seq');
 
+CREATE TYPE contact_type AS ENUM ('PHONE', 'EMAIL');
+
+CREATE TABLE contact
+(
+    contact_id BIGINT PRIMARY KEY,
+    person_id  BIGINT REFERENCES person (person_id) ON DELETE CASCADE,
+    type       contact_type NOT NULL,
+    value      varchar
+);
+CREATE SEQUENCE contact_seq INCREMENT 10 START 20;
+ALTER SEQUENCE contact_seq OWNED BY contact.contact_id;
+ALTER TABLE contact
+    ALTER COLUMN contact_id SET DEFAULT nextval('contact_seq');
+
 CREATE TYPE account_type AS ENUM ('DEBIT', 'CREDIT');
 
 CREATE TABLE account
 (
     account_id  BIGINT PRIMARY KEY,
     person_id   BIGINT REFERENCES person (person_id) ON DELETE CASCADE,
-    type        account_type,
+    type        account_type   NOT NULL,
     amount      NUMERIC(12, 2) NOT NULL DEFAULT 0.00,
     currency    VARCHAR        NOT NULL,
     rate        REAL           NOT NULL DEFAULT 0.0,
@@ -50,7 +65,7 @@ CREATE TABLE operation
 (
     operation_id BIGINT PRIMARY KEY,
     account_id   BIGINT REFERENCES account (account_id) ON DELETE CASCADE,
-    type         operation_type,
+    type         operation_type NOT NULL,
     oper_date    TIMESTAMP      NOT NULL,
     amount       NUMERIC(12, 2) NOT NULL,
     description  VARCHAR

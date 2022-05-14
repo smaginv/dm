@@ -3,26 +3,23 @@ package ru.smaginv.debtmanager.repository.person;
 import ru.smaginv.debtmanager.entity.person.Person;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PersonRepository {
 
-    Person get(Long personId);
+    Optional<Person> get(Long personId);
 
-    Person getWithAccounts(Long personId);
-
-    Person getByPhoneNumber(String phoneNumber);
-
-    Person getWithAccountsByPhoneNumber(String phoneNumber);
+    Optional<Person> getByPhoneNumber(String phoneNumber);
 
     List<Person> getByPhoneNumbers(String... phoneNumbers);
 
-    Person getByEmail(String email);
-
-    Person getWithAccountsByEmail(String email);
+    Optional<Person> getByEmail(String email);
 
     List<Person> getByEmails(String... emails);
 
     List<Person> getAll();
+
+    List<Person> find(Person person, List<String> contacts);
 
     Person save(Person person);
 

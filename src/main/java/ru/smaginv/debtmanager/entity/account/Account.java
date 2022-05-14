@@ -17,21 +17,21 @@ import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.List;
 
-@NamedEntityGraph(
-        name = "account-operations",
-        attributeNodes = {
-                @NamedAttributeNode("operations")
-        }
-)
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(exclude = {"closedDate", "comment", "person"})
+@ToString(exclude = {"closedDate", "comment"})
 @Entity
 @Table(name = "account")
 @TypeDef(
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
+)
+@NamedEntityGraph(
+        name = "account-operations",
+        attributeNodes = {
+                @NamedAttributeNode("operations")
+        }
 )
 public class Account {
 
@@ -85,9 +85,7 @@ public class Account {
     @Column(name = "is_active")
     private Boolean isActive;
 
-    @ManyToOne(
-            fetch = FetchType.LAZY
-    )
+    @ManyToOne(fetch = FetchType.LAZY)
     private Person person;
 
     @OneToMany(

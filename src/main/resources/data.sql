@@ -1,9 +1,21 @@
-INSERT INTO person (person_id, first_name, last_name, phone_number, email, comment)
-VALUES (1, 'Ann', 'Jefferson', '79181234567', 'ann@mail.ru', 'first person'),
-       (2, 'Tom', 'Ballson', '79181234568', 'tom@mail.ru', 'two person'),
-       (3, 'Helen', 'Karlson', '79181234569', 'helen@mail.ru', 'three person'),
-       (4, 'Joan', 'Nikels', '79181234578', 'joan@mail.ru', 'four person'),
-       (5, 'Bob', 'Timerson', '79181234579', 'bob@mail.ru', 'five person');
+INSERT INTO person (person_id, first_name, last_name, comment)
+VALUES (1, 'Ann', 'Jefferson', 'first person'),
+       (2, 'Tom', 'Ballson', 'two person'),
+       (3, 'Helen', 'Karlson', 'three person'),
+       (4, 'Joan', 'Nikels', 'four person'),
+       (5, 'Bob', 'Timerson', 'five person');
+
+INSERT INTO contact(contact_id, person_id, type, value)
+VALUES (1, 1, 'PHONE', '79181234567'),
+       (2, 1, 'EMAIL', 'ann@mail.ru'),
+       (3, 2, 'PHONE', '79181234568'),
+       (4, 2, 'EMAIL', 'tom@mail.ru'),
+       (5, 3, 'PHONE', '79181234569'),
+       (6, 3, 'EMAIL', 'helen@mail.ru'),
+       (7, 4, 'PHONE', '79181234578'),
+       (8, 4, 'EMAIL', 'joan@mail.ru'),
+       (9, 5, 'PHONE', '79181234579'),
+       (10, 5, 'EMAIL', 'bob@mail.ru');
 
 INSERT INTO account (account_id, person_id, type, amount, currency, rate, open_date, closed_date, comment, is_active)
 VALUES (1, 1, 'DEBIT', 100.00, 'RUB', 0.0, '2022-05-01 10:23:54', null, 'debit account for Ann', true),
