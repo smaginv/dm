@@ -5,10 +5,12 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import ru.smaginv.debtmanager.entity.HasId;
 import ru.smaginv.debtmanager.entity.person.Person;
 import ru.smaginv.debtmanager.util.entity.PostgreSQLEnumType;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -19,7 +21,7 @@ import javax.persistence.*;
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
 )
-public class Contact {
+public class Contact implements HasId {
 
     @Id
     @GeneratedValue(
@@ -45,4 +47,9 @@ public class Contact {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Person person;
+
+    @Override
+    public boolean isNew() {
+        return Objects.isNull(id);
+    }
 }

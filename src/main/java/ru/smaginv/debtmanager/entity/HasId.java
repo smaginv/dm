@@ -1,8 +1,8 @@
 package ru.smaginv.debtmanager.entity;
 
-public interface HasId<T> {
+public interface HasId {
 
-    T getId();
+    Long getId();
 
     boolean isNew();
 }

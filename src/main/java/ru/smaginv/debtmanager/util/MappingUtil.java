@@ -1,10 +1,10 @@
 package ru.smaginv.debtmanager.util;
 
-import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
+import ru.smaginv.debtmanager.web.dto.HasIdDto;
 
 public class MappingUtil {
 
-    public static Long map(PersonIdDto personIdDto) {
-        return Long.valueOf(personIdDto.getId().trim());
+    public static Long map(HasIdDto entity) {
+        return Long.valueOf(entity.getId().trim());
     }
 }

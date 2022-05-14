@@ -8,14 +8,15 @@ import org.springframework.data.repository.query.Param;
 import ru.smaginv.debtmanager.entity.account.Account;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AccountRepositoryJpa extends JpaRepository<Account, Long> {
 
     @Query("SELECT a FROM Account a WHERE a.id = :accountId AND a.person.id = :personId")
-    Account get(@Param("accountId") Long accountId, @Param("personId") Long personId);
+    Optional<Account> get(@Param("accountId") Long accountId, @Param("personId") Long personId);
 
     @EntityGraph(value = "account-operations")
-    default Account getWithOperations(@Param("accountId") Long accountId, @Param("personId") Long personId) {
+    default Optional<Account> getWithOperations(@Param("accountId") Long accountId, @Param("personId") Long personId) {
         return get(accountId, personId);
     }
 

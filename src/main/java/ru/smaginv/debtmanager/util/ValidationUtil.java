@@ -1,6 +1,6 @@
 package ru.smaginv.debtmanager.util;
 
-import ru.smaginv.debtmanager.entity.HasId;
+import ru.smaginv.debtmanager.web.dto.HasIdDto;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -12,13 +12,13 @@ public class ValidationUtil {
         }
     }
 
-    public static void checkNotFoundWithId(boolean found, Long id) {
+    public static void checkNotFoundWithId(boolean found, HasIdDto entity) {
         if (!found) {
-            throw new EntityNotFoundException("not found with id: " + id);
+            throw new EntityNotFoundException("not found with id: " + entity.getId());
         }
     }
 
-    public static <T> void checkIsNew(HasId<T> entity) {
+    public static void checkIsNew(HasIdDto entity) {
         if (!entity.isNew()) {
             throw new IllegalArgumentException(entity + " must be new (id=null)");
         }

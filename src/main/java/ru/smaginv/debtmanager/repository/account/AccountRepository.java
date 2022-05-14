@@ -3,12 +3,13 @@ package ru.smaginv.debtmanager.repository.account;
 import ru.smaginv.debtmanager.entity.account.Account;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AccountRepository {
 
-    Account get(Long accountId, Long personId);
+    Optional<Account> get(Long accountId, Long personId);
 
-    Account getWithOperations(Long accountId, Long personId);
+    Optional<Account> getWithOperations(Long accountId, Long personId);
 
     List<Account> getAll();
 

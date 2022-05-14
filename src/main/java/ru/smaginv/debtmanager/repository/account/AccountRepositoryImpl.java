@@ -7,7 +7,7 @@ import ru.smaginv.debtmanager.entity.person.Person;
 import ru.smaginv.debtmanager.repository.person.PersonRepositoryJpa;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class AccountRepositoryImpl implements AccountRepository {
@@ -22,12 +22,12 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Account get(Long accountId, Long personId) {
+    public Optional<Account> get(Long accountId, Long personId) {
         return accountRepository.get(accountId, personId);
     }
 
     @Override
-    public Account getWithOperations(Long accountId, Long personId) {
+    public Optional<Account> getWithOperations(Long accountId, Long personId) {
         return accountRepository.getWithOperations(accountId, personId);
     }
 
@@ -78,8 +78,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public Account save(Account account, Long personId) {
-        Long accountId = account.getId();
-        if (Objects.nonNull(accountId) && Objects.isNull(get(accountId, personId)))
+        if (!account.isNew() && get(account.getId(), personId).isEmpty())
             return null;
         Person person = personRepository.getById(personId);
         account.setPerson(person);

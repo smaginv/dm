@@ -3,7 +3,7 @@ package ru.smaginv.debtmanager.web.dto.person;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.smaginv.debtmanager.entity.HasId;
+import ru.smaginv.debtmanager.web.dto.HasIdDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -12,7 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-public class PersonDto implements HasId<String> {
+public class PersonDto implements HasIdDto {
 
     private String id;
 

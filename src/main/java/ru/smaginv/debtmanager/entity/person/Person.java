@@ -15,7 +15,7 @@ import java.util.Objects;
 @ToString(exclude = {"comment"})
 @Entity
 @Table(name = "person")
-public class Person implements HasId<Long> {
+public class Person implements HasId {
 
     @Id
     @GeneratedValue(

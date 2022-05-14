@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import ru.smaginv.debtmanager.entity.HasId;
 import ru.smaginv.debtmanager.entity.operation.Operation;
 import ru.smaginv.debtmanager.entity.person.Person;
 import ru.smaginv.debtmanager.util.entity.PostgreSQLEnumType;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -33,7 +35,7 @@ import java.util.List;
                 @NamedAttributeNode("operations")
         }
 )
-public class Account {
+public class Account implements HasId {
 
     @Id
     @GeneratedValue(
@@ -95,4 +97,9 @@ public class Account {
             orphanRemoval = true
     )
     private List<Operation> operations;
+
+    @Override
+    public boolean isNew() {
+        return Objects.isNull(id);
+    }
 }

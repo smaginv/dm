@@ -8,7 +8,7 @@ import ru.smaginv.debtmanager.repository.account.AccountRepositoryJpa;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class OperationRepositoryImpl implements OperationRepository {
@@ -24,7 +24,7 @@ public class OperationRepositoryImpl implements OperationRepository {
     }
 
     @Override
-    public Operation get(Long operationId, Long accountId) {
+    public Optional<Operation> get(Long operationId, Long accountId) {
         return operationRepository.get(operationId, accountId);
     }
 
@@ -90,8 +90,7 @@ public class OperationRepositoryImpl implements OperationRepository {
 
     @Override
     public Operation save(Operation operation, Long accountId) {
-        Long operationId = operation.getId();
-        if (Objects.nonNull(operationId) && Objects.isNull(get(operationId, accountId)))
+        if (!operation.isNew() && get(operation.getId(), accountId).isEmpty())
             return null;
         Account account = accountRepository.getById(accountId);
         operation.setAccount(account);

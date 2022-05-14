@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import ru.smaginv.debtmanager.entity.HasId;
 import ru.smaginv.debtmanager.entity.account.Account;
 import ru.smaginv.debtmanager.util.entity.PostgreSQLEnumType;
 
@@ -16,6 +17,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -27,7 +29,7 @@ import java.time.LocalDateTime;
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
 )
-public class Operation {
+public class Operation implements HasId {
 
     @Id
     @GeneratedValue(
@@ -66,4 +68,9 @@ public class Operation {
             fetch = FetchType.LAZY
     )
     private Account account;
+
+    @Override
+    public boolean isNew() {
+        return Objects.isNull(id);
+    }
 }

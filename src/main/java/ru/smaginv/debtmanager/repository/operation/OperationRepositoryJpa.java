@@ -8,11 +8,12 @@ import ru.smaginv.debtmanager.entity.operation.Operation;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface OperationRepositoryJpa extends JpaRepository<Operation, Long> {
 
     @Query("SELECT o FROM Operation o WHERE o.id = :operationId AND o.account.id = :accountId")
-    Operation get(@Param("operationId") Long operationId, @Param("accountId") Long accountId);
+    Optional<Operation> get(@Param("operationId") Long operationId, @Param("accountId") Long accountId);
 
     @Query("SELECT o FROM Operation o WHERE o.account.id = :accountId")
     List<Operation> getAllByAccount(@Param("accountId") Long accountId);

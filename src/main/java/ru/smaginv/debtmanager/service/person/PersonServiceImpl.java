@@ -7,7 +7,9 @@ import ru.smaginv.debtmanager.entity.account.Account;
 import ru.smaginv.debtmanager.entity.person.Person;
 import ru.smaginv.debtmanager.repository.account.AccountRepository;
 import ru.smaginv.debtmanager.repository.person.PersonRepository;
+import ru.smaginv.debtmanager.service.contact.ContactService;
 import ru.smaginv.debtmanager.util.MappingUtil;
+import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonInfoDto;
@@ -25,13 +27,15 @@ public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
     private final AccountRepository accountRepository;
+    private final ContactService contactService;
     private final PersonMapper personMapper;
 
     @Autowired
     public PersonServiceImpl(PersonRepository personRepository, AccountRepository accountRepository,
-                             PersonMapper personMapper) {
+                             ContactService contactService, PersonMapper personMapper) {
         this.personRepository = personRepository;
         this.accountRepository = accountRepository;
+        this.contactService = contactService;
         this.personMapper = personMapper;
     }
 
@@ -40,7 +44,9 @@ public class PersonServiceImpl implements PersonService {
         Person person = get(MappingUtil.map(personIdDto));
         PersonInfoDto personInfoDto = personMapper.mapInfoDto(person);
         List<Account> accounts = accountRepository.getAllByPerson(person.getId());
+        List<ContactDto> contacts = contactService.getAllByPerson(personIdDto);
         personInfoDto.setAccounts(accounts);
+        personInfoDto.setContacts(contacts);
         return personInfoDto;
     }
 
@@ -91,7 +97,7 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     @Override
     public PersonDto update(PersonDto personDto) {
-        Person person = get(Long.valueOf(personDto.getId()));
+        Person person = get(MappingUtil.map(personDto));
         personMapper.updatePerson(personDto, person);
         return personMapper.mapDto(personRepository.save(person));
     }
@@ -107,7 +113,7 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public void delete(PersonIdDto personIdDto) {
         Long personId = MappingUtil.map(personIdDto);
-        checkNotFoundWithId(personRepository.delete(personId) != 0, personId);
+        checkNotFoundWithId(personRepository.delete(personId) != 0, personIdDto);
     }
 
     @Override

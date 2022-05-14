@@ -4,10 +4,11 @@ import ru.smaginv.debtmanager.entity.operation.Operation;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface OperationRepository {
 
-    Operation get(Long operationId, Long accountId);
+    Optional<Operation> get(Long operationId, Long accountId);
 
     List<Operation> getAllByAccount(Long accountId);
 
