@@ -3,12 +3,13 @@ package ru.smaginv.debtmanager.web.mapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.smaginv.debtmanager.entity.contact.Contact;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ContactMapper {
 
     @Mapping(source = "type", target = "contactType")
@@ -20,5 +21,5 @@ public interface ContactMapper {
     List<ContactDto> mapDtos(List<Contact> contacts);
 
     @Mapping(source = "type", target = "contactType")
-    void updateContact(ContactDto contactDto, @MappingTarget Contact contact);
+    void update(ContactDto contactDto, @MappingTarget Contact contact);
 }

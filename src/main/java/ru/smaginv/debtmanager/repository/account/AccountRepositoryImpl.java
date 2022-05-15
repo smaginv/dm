@@ -27,18 +27,8 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Optional<Account> getWithOperations(Long accountId, Long personId) {
-        return accountRepository.getWithOperations(accountId, personId);
-    }
-
-    @Override
     public List<Account> getAll() {
         return accountRepository.getAll();
-    }
-
-    @Override
-    public List<Account> getAllWithOperations() {
-        return accountRepository.getAllWithOperations();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package ru.smaginv.debtmanager.web.dto.person;
+package ru.smaginv.debtmanager.web.dto.operation;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,20 +12,24 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-public class PersonDto implements HasIdDto {
+public class OperationDto implements HasIdDto {
 
     private String id;
 
     @NotBlank
-    @Size(min = 2, max = 32)
-    private String firstName;
+    @Size(max = 4)
+    private String type;
 
     @NotBlank
-    @Size(min = 2, max = 32)
-    private String lastName;
+    @Size(max = 64)
+    private String operDate;
 
+    @NotBlank
+    private String amount;
+
+    @NotBlank
     @Size(max = 512)
-    private String comment;
+    private String description;
 
     @Override
     public boolean isNew() {

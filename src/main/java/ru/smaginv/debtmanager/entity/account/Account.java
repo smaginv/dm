@@ -7,16 +7,16 @@ import lombok.ToString;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import ru.smaginv.debtmanager.entity.HasId;
-import ru.smaginv.debtmanager.entity.operation.Operation;
 import ru.smaginv.debtmanager.entity.person.Person;
 import ru.smaginv.debtmanager.util.entity.PostgreSQLEnumType;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
-import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -28,12 +28,6 @@ import java.util.Objects;
 @TypeDef(
         name = "pgsql_enum",
         typeClass = PostgreSQLEnumType.class
-)
-@NamedEntityGraph(
-        name = "account-operations",
-        attributeNodes = {
-                @NamedAttributeNode("operations")
-        }
 )
 public class Account implements HasId {
 
@@ -56,7 +50,6 @@ public class Account implements HasId {
     @Column(name = "type")
     private AccountType accountType;
 
-    @NotNull
     @Digits(integer = 10, fraction = 2)
     @DecimalMin(value = "1.0")
     @Column(name = "amount")
@@ -65,38 +58,26 @@ public class Account implements HasId {
     @Column(name = "currency")
     private Currency currencyCode;
 
-    @NotNull
     @Digits(integer = 2, fraction = 2)
     @DecimalMin(value = "0.0")
     @DecimalMax(value = "99.9")
     @Column(name = "rate")
     private Float rate;
 
-    @NotNull
     @Column(name = "open_date")
     private LocalDateTime openDate;
 
     @Column(name = "closed_date")
     private LocalDateTime closedDate;
 
-    @Size(max = 512)
     @Column(name = "comment")
     private String comment;
 
-    @NotNull
     @Column(name = "is_active")
     private Boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Person person;
-
-    @OneToMany(
-            mappedBy = "account",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Operation> operations;
 
     @Override
     public boolean isNew() {

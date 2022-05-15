@@ -13,7 +13,6 @@ import ru.smaginv.debtmanager.util.entity.PostgreSQLEnumType;
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -50,11 +49,9 @@ public class Operation implements HasId {
     @Column(name = "type")
     private OperationType operationType;
 
-    @NotNull
     @Column(name = "oper_date")
     private LocalDateTime operDate;
 
-    @NotNull
     @Digits(integer = 10, fraction = 2)
     @DecimalMin(value = "1.0")
     @Column(name = "amount")
@@ -64,9 +61,7 @@ public class Operation implements HasId {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne(
-            fetch = FetchType.LAZY
-    )
+    @ManyToOne(fetch = FetchType.LAZY)
     private Account account;
 
     @Override

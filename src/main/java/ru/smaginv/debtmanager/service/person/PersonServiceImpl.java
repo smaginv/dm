@@ -8,7 +8,6 @@ import ru.smaginv.debtmanager.entity.person.Person;
 import ru.smaginv.debtmanager.repository.account.AccountRepository;
 import ru.smaginv.debtmanager.repository.person.PersonRepository;
 import ru.smaginv.debtmanager.service.contact.ContactService;
-import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
@@ -18,6 +17,7 @@ import ru.smaginv.debtmanager.web.mapping.PersonMapper;
 
 import java.util.List;
 
+import static ru.smaginv.debtmanager.util.MappingUtil.mapId;
 import static ru.smaginv.debtmanager.util.ValidationUtil.*;
 import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptional;
 
@@ -41,7 +41,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public PersonInfoDto get(PersonIdDto personIdDto) {
-        Person person = get(MappingUtil.map(personIdDto));
+        Person person = get(mapId(personIdDto));
         PersonInfoDto personInfoDto = personMapper.mapInfoDto(person);
         List<Account> accounts = accountRepository.getAllByPerson(person.getId());
         List<ContactDto> contacts = contactService.getAllByPerson(personIdDto);
@@ -97,8 +97,8 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     @Override
     public PersonDto update(PersonDto personDto) {
-        Person person = get(MappingUtil.map(personDto));
-        personMapper.updatePerson(personDto, person);
+        Person person = get(mapId(personDto));
+        personMapper.update(personDto, person);
         return personMapper.mapDto(personRepository.save(person));
     }
 
@@ -112,7 +112,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public void delete(PersonIdDto personIdDto) {
-        Long personId = MappingUtil.map(personIdDto);
+        Long personId = mapId(personIdDto);
         checkNotFoundWithId(personRepository.delete(personId) != 0, personIdDto);
     }
 

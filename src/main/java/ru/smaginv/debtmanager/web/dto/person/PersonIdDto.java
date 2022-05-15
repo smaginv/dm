@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
 
-import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Getter
@@ -13,7 +12,6 @@ import java.util.Objects;
 @ToString
 public class PersonIdDto implements HasIdDto {
 
-    @NotBlank
     private String id;
 
     @Override

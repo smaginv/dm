@@ -6,6 +6,7 @@ import lombok.ToString;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 @Getter
@@ -16,9 +17,11 @@ public class ContactDto implements HasIdDto {
     private String id;
 
     @NotBlank
+    @Size(max = 5)
     private String type;
 
     @NotBlank
+    @Size(max = 128)
     private String value;
 
     @Override

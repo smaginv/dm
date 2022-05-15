@@ -1,4 +1,4 @@
-package ru.smaginv.debtmanager.web.dto.contact;
+package ru.smaginv.debtmanager.web.dto.account;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-public class ContactIdDto implements HasIdDto {
+public class AccountIdDto implements HasIdDto {
 
     private String id;
 

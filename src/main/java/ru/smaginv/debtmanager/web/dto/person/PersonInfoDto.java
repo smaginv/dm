@@ -7,6 +7,8 @@ import ru.smaginv.debtmanager.entity.account.Account;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,10 +19,15 @@ public class PersonInfoDto implements HasIdDto {
 
     private String id;
 
+    @NotBlank
+    @Size(min = 2, max = 32)
     private String firstName;
 
+    @NotBlank
+    @Size(min = 2, max = 32)
     private String lastName;
 
+    @Size(max = 512)
     private String comment;
 
     private List<Account> accounts;

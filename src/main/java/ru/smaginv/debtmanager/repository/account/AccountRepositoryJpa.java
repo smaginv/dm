@@ -1,6 +1,5 @@
 package ru.smaginv.debtmanager.repository.account;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,18 +14,8 @@ public interface AccountRepositoryJpa extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a WHERE a.id = :accountId AND a.person.id = :personId")
     Optional<Account> get(@Param("accountId") Long accountId, @Param("personId") Long personId);
 
-    @EntityGraph(value = "account-operations")
-    default Optional<Account> getWithOperations(@Param("accountId") Long accountId, @Param("personId") Long personId) {
-        return get(accountId, personId);
-    }
-
     @Query("SELECT a FROM Account a ORDER BY a.id")
     List<Account> getAll();
-
-    @EntityGraph(value = "account-operations")
-    default List<Account> getAllWithOperations() {
-        return getAll();
-    }
 
     @Query("SELECT a FROM Account a WHERE a.person.id = :personId")
     List<Account> getAllByPerson(@Param("personId") Long personId);

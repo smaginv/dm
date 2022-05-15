@@ -9,11 +9,7 @@ public interface AccountRepository {
 
     Optional<Account> get(Long accountId, Long personId);
 
-    Optional<Account> getWithOperations(Long accountId, Long personId);
-
     List<Account> getAll();
-
-    List<Account> getAllWithOperations();
 
     List<Account> getAllByPerson(Long personId);
 
