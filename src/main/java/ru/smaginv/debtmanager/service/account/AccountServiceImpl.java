@@ -6,17 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.account.Account;
 import ru.smaginv.debtmanager.repository.account.AccountRepository;
 import ru.smaginv.debtmanager.service.operation.OperationService;
+import ru.smaginv.debtmanager.util.MappingUtil;
+import ru.smaginv.debtmanager.util.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.account.AccountDto;
-import ru.smaginv.debtmanager.web.dto.account.AccountIdDto;
 import ru.smaginv.debtmanager.web.dto.account.AccountInfoDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
 import ru.smaginv.debtmanager.web.mapping.AccountMapper;
 
 import java.util.List;
 
-import static ru.smaginv.debtmanager.util.MappingUtil.mapId;
-import static ru.smaginv.debtmanager.util.ValidationUtil.*;
 import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptional;
 
 @Service
@@ -26,25 +24,30 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
     private final OperationService operationService;
+    private final ValidationUtil validationUtil;
+    private final MappingUtil mappingUtil;
 
     @Autowired
     public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper,
-                              OperationService operationService) {
+                              OperationService operationService, ValidationUtil validationUtil,
+                              MappingUtil mappingUtil) {
         this.accountRepository = accountRepository;
         this.accountMapper = accountMapper;
         this.operationService = operationService;
+        this.validationUtil = validationUtil;
+        this.mappingUtil = mappingUtil;
     }
 
     @Override
-    public AccountDto get(AccountIdDto accountIdDto, PersonIdDto personIdDto) {
-        Account account = get(mapId(accountIdDto), mapId(personIdDto));
+    public AccountDto get(Long accountId, Long personId) {
+        Account account = getAccount(accountId, personId);
         return accountMapper.mapDto(account);
     }
 
     @Override
-    public AccountInfoDto getWithOperations(AccountIdDto accountIdDto, PersonIdDto personIdDto) {
-        Account account = get(mapId(accountIdDto), mapId(personIdDto));
-        List<OperationDto> operations = operationService.getAllByAccount(accountIdDto);
+    public AccountInfoDto getWithOperations(Long accountId, Long personId) {
+        Account account = getAccount(accountId, personId);
+        List<OperationDto> operations = operationService.getAllByAccount(accountId);
         AccountInfoDto accountInfoDto = accountMapper.mapInfoDto(account);
         accountInfoDto.setOperations(operations);
         return accountInfoDto;
@@ -56,8 +59,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountDto> getAllByPerson(PersonIdDto personIdDto) {
-        List<Account> accounts = accountRepository.getAllByPerson(mapId(personIdDto));
+    public List<AccountDto> getAllByPerson(Long personId) {
+        List<Account> accounts = accountRepository.getAllByPerson(personId);
         return accountMapper.mapDtos(accounts);
     }
 
@@ -67,8 +70,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountDto> getAllActiveByPerson(PersonIdDto personIdDto) {
-        List<Account> accounts = accountRepository.getAllActiveByPerson(mapId(personIdDto));
+    public List<AccountDto> getAllActiveByPerson(Long personId) {
+        List<Account> accounts = accountRepository.getAllActiveByPerson(personId);
         return accountMapper.mapDtos(accounts);
     }
 
@@ -78,8 +81,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountDto> getAllInactiveByPerson(PersonIdDto personIdDto) {
-        List<Account> accounts = accountRepository.getAllInactiveByPerson(mapId(personIdDto));
+    public List<AccountDto> getAllInactiveByPerson(Long personId) {
+        List<Account> accounts = accountRepository.getAllInactiveByPerson(personId);
         return accountMapper.mapDtos(accounts);
     }
 
@@ -95,45 +98,45 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public AccountDto update(AccountDto accountDto, PersonIdDto personIdDto) {
-        Account account = get(mapId(accountDto), mapId(personIdDto));
+    public AccountDto update(AccountDto accountDto, Long personId) {
+        Account account = getAccount(mappingUtil.mapId(accountDto), personId);
         accountMapper.update(accountDto, account);
-        return accountMapper.mapDto(accountRepository.save(account, mapId(personIdDto)));
+        return accountMapper.mapDto(accountRepository.save(account, personId));
     }
 
     @Transactional
     @Override
-    public AccountDto save(AccountDto accountDto, PersonIdDto personIdDto) {
-        checkIsNew(accountDto);
-        Account account = accountRepository.save(accountMapper.map(accountDto), mapId(personIdDto));
+    public AccountDto create(AccountDto accountDto, Long personId) {
+        validationUtil.checkIsNew(accountDto);
+        Account account = accountRepository.save(accountMapper.map(accountDto), personId);
         return accountMapper.mapDto(account);
     }
 
     @Override
-    public void delete(AccountIdDto accountIdDto, PersonIdDto personIdDto) {
-        int result = accountRepository.delete(mapId(accountIdDto), mapId(personIdDto));
-        checkNotFoundWithId(result != 0, accountIdDto);
+    public void delete(Long accountId, Long personId) {
+        int result = accountRepository.delete(accountId, personId);
+        validationUtil.checkNotFoundWithId(result != 0, accountId);
     }
 
     @Override
-    public void deleteAllByPerson(PersonIdDto personIdDto) {
-        int result = accountRepository.deleteAllByPerson(mapId(personIdDto));
-        checkNotFound(result != 0);
+    public void deleteAllByPerson(Long personId) {
+        int result = accountRepository.deleteAllByPerson(personId);
+        validationUtil.checkNotFound(result != 0);
     }
 
     @Override
-    public void deleteAllInactiveByPerson(PersonIdDto personIdDto) {
-        int result = accountRepository.deleteAllInactiveByPerson(mapId(personIdDto));
-        checkNotFound(result != 0);
+    public void deleteAllInactiveByPerson(Long personId) {
+        int result = accountRepository.deleteAllInactiveByPerson(personId);
+        validationUtil.checkNotFound(result != 0);
     }
 
     @Override
     public void deleteAllInactive() {
         int result = accountRepository.deleteAllInactive();
-        checkNotFound(result != 0);
+        validationUtil.checkNotFound(result != 0);
     }
 
-    private Account get(Long accountId, Long personId) {
+    private Account getAccount(Long accountId, Long personId) {
         return getEntityFromOptional(accountRepository.get(accountId, personId), accountId);
     }
 }

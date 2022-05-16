@@ -3,22 +3,21 @@ package ru.smaginv.debtmanager.service.person;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.smaginv.debtmanager.entity.account.Account;
 import ru.smaginv.debtmanager.entity.person.Person;
-import ru.smaginv.debtmanager.repository.account.AccountRepository;
 import ru.smaginv.debtmanager.repository.person.PersonRepository;
+import ru.smaginv.debtmanager.service.account.AccountService;
 import ru.smaginv.debtmanager.service.contact.ContactService;
+import ru.smaginv.debtmanager.util.MappingUtil;
+import ru.smaginv.debtmanager.util.ValidationUtil;
+import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonInfoDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonSearchDto;
 import ru.smaginv.debtmanager.web.mapping.PersonMapper;
 
 import java.util.List;
 
-import static ru.smaginv.debtmanager.util.MappingUtil.mapId;
-import static ru.smaginv.debtmanager.util.ValidationUtil.*;
 import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptional;
 
 @Service
@@ -26,25 +25,30 @@ import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptiona
 public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
     private final ContactService contactService;
     private final PersonMapper personMapper;
+    private final ValidationUtil validationUtil;
+    private final MappingUtil mappingUtil;
 
     @Autowired
-    public PersonServiceImpl(PersonRepository personRepository, AccountRepository accountRepository,
-                             ContactService contactService, PersonMapper personMapper) {
+    public PersonServiceImpl(PersonRepository personRepository, AccountService accountService,
+                             ContactService contactService, PersonMapper personMapper,
+                             ValidationUtil validationUtil, MappingUtil mappingUtil) {
         this.personRepository = personRepository;
-        this.accountRepository = accountRepository;
+        this.accountService = accountService;
         this.contactService = contactService;
         this.personMapper = personMapper;
+        this.validationUtil = validationUtil;
+        this.mappingUtil = mappingUtil;
     }
 
     @Override
-    public PersonInfoDto get(PersonIdDto personIdDto) {
-        Person person = get(mapId(personIdDto));
+    public PersonInfoDto get(Long personId) {
+        Person person = getPerson(personId);
         PersonInfoDto personInfoDto = personMapper.mapInfoDto(person);
-        List<Account> accounts = accountRepository.getAllByPerson(person.getId());
-        List<ContactDto> contacts = contactService.getAllByPerson(personIdDto);
+        List<AccountDto> accounts = accountService.getAllByPerson(personId);
+        List<ContactDto> contacts = contactService.getAllByPerson(personId);
         personInfoDto.setAccounts(accounts);
         personInfoDto.setContacts(contacts);
         return personInfoDto;
@@ -54,7 +58,7 @@ public class PersonServiceImpl implements PersonService {
     public PersonInfoDto getByPhoneNumber(String phoneNumber) {
         Person person = getEntityFromOptional(personRepository.getByPhoneNumber(phoneNumber));
         PersonInfoDto personInfoDto = personMapper.mapInfoDto(person);
-        List<Account> accounts = accountRepository.getAllByPerson(person.getId());
+        List<AccountDto> accounts = accountService.getAllByPerson(person.getId());
         personInfoDto.setAccounts(accounts);
         return personInfoDto;
     }
@@ -69,7 +73,7 @@ public class PersonServiceImpl implements PersonService {
     public PersonInfoDto getByEmail(String email) {
         Person person = getEntityFromOptional(personRepository.getByEmail(email));
         PersonInfoDto personInfoDto = personMapper.mapInfoDto(person);
-        List<Account> accounts = accountRepository.getAllByPerson(person.getId());
+        List<AccountDto> accounts = accountService.getAllByPerson(person.getId());
         personInfoDto.setAccounts(accounts);
         return personInfoDto;
     }
@@ -97,36 +101,35 @@ public class PersonServiceImpl implements PersonService {
     @Transactional
     @Override
     public PersonDto update(PersonDto personDto) {
-        Person person = get(mapId(personDto));
+        Person person = getPerson(mappingUtil.mapId(personDto));
         personMapper.update(personDto, person);
         return personMapper.mapDto(personRepository.save(person));
     }
 
     @Transactional
     @Override
-    public PersonDto save(PersonDto personDto) {
-        checkIsNew(personDto);
+    public PersonDto create(PersonDto personDto) {
+        validationUtil.checkIsNew(personDto);
         Person person = personRepository.save(personMapper.map(personDto));
         return personMapper.mapDto(person);
     }
 
     @Override
-    public void delete(PersonIdDto personIdDto) {
-        Long personId = mapId(personIdDto);
-        checkNotFoundWithId(personRepository.delete(personId) != 0, personIdDto);
+    public void delete(Long personId) {
+        validationUtil.checkNotFoundWithId(personRepository.delete(personId) != 0, personId);
     }
 
     @Override
     public void deleteByPhoneNumber(String phoneNumber) {
-        checkNotFound(personRepository.deleteByPhoneNumber(phoneNumber) != 0);
+        validationUtil.checkNotFound(personRepository.deleteByPhoneNumber(phoneNumber) != 0);
     }
 
     @Override
     public void deleteByEmail(String email) {
-        checkNotFound(personRepository.deleteByEmail(email) != 0);
+        validationUtil.checkNotFound(personRepository.deleteByEmail(email) != 0);
     }
 
-    private Person get(Long personId) {
+    private Person getPerson(Long personId) {
         return getEntityFromOptional(personRepository.get(personId), personId);
     }
 }

@@ -46,6 +46,7 @@ public class Contact implements HasId {
     private String value;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "person_id")
     private Person person;
 
     @Override

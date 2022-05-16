@@ -1,48 +1,46 @@
 package ru.smaginv.debtmanager.service.operation;
 
-import ru.smaginv.debtmanager.web.dto.account.AccountIdDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
-import ru.smaginv.debtmanager.web.dto.operation.OperationIdDto;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface OperationService {
 
-    OperationDto get(OperationIdDto operationIdDto, AccountIdDto accountIdDto);
+    OperationDto get(Long operationId, Long accountId);
 
-    List<OperationDto> getAllByAccount(AccountIdDto accountIdDto);
+    List<OperationDto> getAllByAccount(Long accountId);
 
     List<OperationDto> getAll();
 
     List<OperationDto> getAllLend();
 
-    List<OperationDto> getAllLendByAccount(AccountIdDto accountIdDto);
+    List<OperationDto> getAllLendByAccount(Long accountId);
 
     List<OperationDto> getAllLoan();
 
-    List<OperationDto> getAllLoanByAccount(AccountIdDto accountIdDto);
+    List<OperationDto> getAllLoanByAccount(Long accountId);
 
     List<OperationDto> getBetweenDates(LocalDate startDate, LocalDate endDate);
 
     List<OperationDto> getBetweenDatesByAccount(LocalDate startDate, LocalDate endDate,
-                                                AccountIdDto accountIdDto);
+                                                Long accountId);
 
     List<OperationDto> getAllLendBetweenDates(LocalDate startDate, LocalDate endDate);
 
     List<OperationDto> getAllLoanBetweenDates(LocalDate startDate, LocalDate endDate);
 
     List<OperationDto> getAllLendBetweenDatesByAccount(LocalDate startDate, LocalDate endDate,
-                                                       AccountIdDto accountIdDto);
+                                                       Long accountId);
 
     List<OperationDto> getAllLoanBetweenDatesByAccount(LocalDate startDate, LocalDate endDate,
-                                                       AccountIdDto accountIdDto);
+                                                       Long accountId);
 
-    OperationDto update(OperationDto operationDto, AccountIdDto accountIdDto);
+    OperationDto update(OperationDto operationDto, Long accountId);
 
-    OperationDto save(OperationDto operationDto, AccountIdDto accountIdDto);
+    OperationDto create(OperationDto operationDto, Long accountId);
 
-    void delete(OperationIdDto operationIdDto, AccountIdDto accountIdDto);
+    void delete(Long operationId, Long accountId);
 
-    void deleteAllByAccount(AccountIdDto accountIdDto);
+    void deleteAllByAccount(Long accountId);
 }

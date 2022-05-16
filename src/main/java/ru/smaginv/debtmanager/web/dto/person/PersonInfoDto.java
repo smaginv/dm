@@ -3,8 +3,8 @@ package ru.smaginv.debtmanager.web.dto.person;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.smaginv.debtmanager.entity.account.Account;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
+import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 
 import javax.validation.constraints.NotBlank;
@@ -30,7 +30,7 @@ public class PersonInfoDto implements HasIdDto {
     @Size(max = 512)
     private String comment;
 
-    private List<Account> accounts;
+    private List<AccountDto> accounts;
 
     private List<ContactDto> contacts;
 

@@ -1,7 +1,6 @@
 package ru.smaginv.debtmanager.service.person;
 
 import ru.smaginv.debtmanager.web.dto.person.PersonDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonInfoDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonSearchDto;
 
@@ -9,7 +8,7 @@ import java.util.List;
 
 public interface PersonService {
 
-    PersonInfoDto get(PersonIdDto personIdDto);
+    PersonInfoDto get(Long personId);
 
     PersonInfoDto getByPhoneNumber(String phoneNumber);
 
@@ -25,9 +24,9 @@ public interface PersonService {
 
     PersonDto update(PersonDto personDto);
 
-    PersonDto save(PersonDto personDto);
+    PersonDto create(PersonDto personDto);
 
-    void delete(PersonIdDto personIdDto);
+    void delete(Long personId);
 
     void deleteByPhoneNumber(String phoneNumber);
 

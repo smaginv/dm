@@ -77,6 +77,7 @@ public class Account implements HasId {
     private Boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "person_id")
     private Person person;
 
     @Override

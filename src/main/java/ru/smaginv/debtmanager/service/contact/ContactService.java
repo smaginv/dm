@@ -1,24 +1,22 @@
 package ru.smaginv.debtmanager.service.contact;
 
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
-import ru.smaginv.debtmanager.web.dto.contact.ContactIdDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
 
 import java.util.List;
 
 public interface ContactService {
 
-    ContactDto get(ContactIdDto contactIdDto, PersonIdDto personIdDto);
+    ContactDto get(Long contactId, Long personId);
 
-    List<ContactDto> getAllByPerson(PersonIdDto personIdDto);
+    List<ContactDto> getAllByPerson(Long personId);
 
     List<ContactDto> getAll();
 
-    ContactDto update(ContactDto contactDto, PersonIdDto personIdDto);
+    ContactDto update(ContactDto contactDto, Long personId);
 
-    ContactDto save(ContactDto contactDto, PersonIdDto personIdDto);
+    ContactDto create(ContactDto contactDto, Long personId);
 
-    void delete(ContactIdDto contactIdDto, PersonIdDto personIdDto);
+    void delete(Long contactId, Long personId);
 
-    void deleteAllByPerson(PersonIdDto personIdDto);
+    void deleteAllByPerson(Long personId);
 }

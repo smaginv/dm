@@ -10,7 +10,10 @@ import ru.smaginv.debtmanager.web.dto.person.PersonSearchDto;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(
+        componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+)
 public interface PersonMapper {
 
     Person map(PersonSearchDto personSearchDto);

@@ -9,7 +9,10 @@ import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+@Mapper(
+        componentModel = "spring",
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+)
 public interface ContactMapper {
 
     @Mapping(source = "type", target = "contactType")
