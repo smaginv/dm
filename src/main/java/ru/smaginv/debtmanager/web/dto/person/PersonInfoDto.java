@@ -1,5 +1,6 @@
 package ru.smaginv.debtmanager.web.dto.person;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,6 +16,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@JsonPropertyOrder({"id", "firstName", "lastName", "contacts", "accounts", "comment"})
 public class PersonInfoDto implements HasIdDto {
 
     private String id;

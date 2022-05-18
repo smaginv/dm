@@ -1,13 +1,14 @@
-package ru.smaginv.debtmanager.util;
+package ru.smaginv.debtmanager.util.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.smaginv.debtmanager.config.AppProperties;
 import ru.smaginv.debtmanager.entity.contact.ContactType;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
-import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
+import ru.smaginv.debtmanager.web.dto.contact.AbstractContactDto;
 
 import javax.persistence.EntityNotFoundException;
+import javax.validation.ValidationException;
 import java.util.List;
 
 @Component
@@ -36,20 +37,27 @@ public class ValidationUtil {
 
     public void checkIsNew(HasIdDto entity) {
         if (!entity.isNew()) {
-            throw new IllegalArgumentException(entity + " must be new (id=null)");
+            throw new IllegalArgumentException(entity + " must be new (id = null)");
         }
     }
 
-    public void checkContact(ContactDto contactDto) {
-        ContactType type = ContactType.getByValue(contactDto.getType());
-        if (type.equals(ContactType.PHONE))
-            checkContactValue(phonePatterns, contactDto.getValue());
-        else
-            checkContactValue(emailPatterns, contactDto.getValue());
+    public void assureIdConsistent(HasIdDto entity, String id) {
+        if (entity.isNew())
+            entity.setId(id);
+        else if (!entity.getId().equals(id))
+            throw new IllegalArgumentException(entity + " must be with id: " + id);
     }
 
-    public void checkContactValue(List<String> patterns, String value) {
+    public void validateContact(AbstractContactDto contactDto) {
+        ContactType type = ContactType.getByValue(contactDto.getType());
+        if (type.equals(ContactType.PHONE))
+            validateValue(phonePatterns, contactDto.getValue());
+        else
+            validateValue(emailPatterns, contactDto.getValue());
+    }
+
+    private void validateValue(List<String> patterns, String value) {
         if (patterns.stream().noneMatch(value::matches))
-            throw new IllegalArgumentException("not valid contact value");
+            throw new ValidationException("not valid contact value: " + value);
     }
 }

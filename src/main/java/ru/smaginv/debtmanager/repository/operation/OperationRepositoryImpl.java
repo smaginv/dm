@@ -14,7 +14,6 @@ import java.util.Optional;
 public class OperationRepositoryImpl implements OperationRepository {
 
     private final OperationRepositoryJpa operationRepository;
-
     private final AccountRepositoryJpa accountRepository;
 
     @Autowired

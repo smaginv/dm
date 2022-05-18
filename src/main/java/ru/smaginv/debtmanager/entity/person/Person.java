@@ -7,6 +7,7 @@ import lombok.ToString;
 import ru.smaginv.debtmanager.entity.HasId;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Getter
@@ -31,9 +32,11 @@ public class Person implements HasId {
     @Column(name = "person_id")
     private Long id;
 
+    @NotBlank
     @Column(name = "first_name")
     private String firstName;
 
+    @NotBlank
     @Column(name = "last_name")
     private String lastName;
 

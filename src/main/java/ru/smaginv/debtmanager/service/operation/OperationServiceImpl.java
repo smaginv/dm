@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.operation.Operation;
 import ru.smaginv.debtmanager.repository.operation.OperationRepository;
 import ru.smaginv.debtmanager.util.MappingUtil;
-import ru.smaginv.debtmanager.util.ValidationUtil;
+import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
 import ru.smaginv.debtmanager.web.mapping.OperationMapper;
 

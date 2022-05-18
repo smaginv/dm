@@ -4,5 +4,7 @@ public interface HasIdDto {
 
     String getId();
 
+    void setId(String id);
+
     boolean isNew();
 }

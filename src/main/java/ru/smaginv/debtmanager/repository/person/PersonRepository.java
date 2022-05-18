@@ -1,5 +1,6 @@
 package ru.smaginv.debtmanager.repository.person;
 
+import ru.smaginv.debtmanager.entity.contact.Contact;
 import ru.smaginv.debtmanager.entity.person.Person;
 
 import java.util.List;
@@ -9,23 +10,15 @@ public interface PersonRepository {
 
     Optional<Person> get(Long personId);
 
-    Optional<Person> getByPhoneNumber(String phoneNumber);
-
-    List<Person> getByPhoneNumbers(String... phoneNumbers);
-
-    Optional<Person> getByEmail(String email);
-
-    List<Person> getByEmails(String... emails);
+    Optional<Person> getByContact(Contact contact);
 
     List<Person> getAll();
 
-    List<Person> find(Person person, List<String> contacts);
+    List<Person> find(Person person, Contact contact);
 
     Person save(Person person);
 
     int delete(Long personId);
 
-    int deleteByPhoneNumber(String phoneNumber);
-
-    int deleteByEmail(String email);
+    int deleteByContact(Contact contact);
 }

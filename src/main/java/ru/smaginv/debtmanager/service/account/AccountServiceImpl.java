@@ -7,7 +7,7 @@ import ru.smaginv.debtmanager.entity.account.Account;
 import ru.smaginv.debtmanager.repository.account.AccountRepository;
 import ru.smaginv.debtmanager.service.operation.OperationService;
 import ru.smaginv.debtmanager.util.MappingUtil;
-import ru.smaginv.debtmanager.util.ValidationUtil;
+import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.account.AccountInfoDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;

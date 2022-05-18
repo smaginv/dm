@@ -22,6 +22,7 @@ public class AppConfig {
     public Jackson2ObjectMapperBuilderCustomizer builderCustomizer() {
         return builder -> builder
                 .serializationInclusion(JsonInclude.Include.NON_NULL)
+                .serializationInclusion(JsonInclude.Include.NON_EMPTY)
                 .visibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE)
                 .visibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE)
                 .visibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY)
