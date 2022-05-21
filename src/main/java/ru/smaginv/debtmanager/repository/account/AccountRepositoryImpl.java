@@ -52,7 +52,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public Account save(Long personId, Account account) {
-        Person person = personRepository.getById(personId);
+        Person person = personRepository.getReferenceById(personId);
         account.setPerson(person);
         return accountRepository.save(account);
     }

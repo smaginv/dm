@@ -22,8 +22,8 @@ public class ContactRepositoryImpl implements ContactRepository {
     }
 
     @Override
-    public Optional<Contact> get(Long contactId, Long personId) {
-        return contactRepository.get(contactId, personId);
+    public Optional<Contact> get(Long personId, Long contactId) {
+        return contactRepository.get(personId, contactId);
     }
 
     @Override
@@ -37,17 +37,15 @@ public class ContactRepositoryImpl implements ContactRepository {
     }
 
     @Override
-    public Contact save(Contact contact, Long personId) {
-        if (!contact.isNew() && get(contact.getId(), personId).isEmpty())
-            return null;
-        Person person = personRepository.getById(personId);
+    public Contact save(Long personId, Contact contact) {
+        Person person = personRepository.getReferenceById(personId);
         contact.setPerson(person);
         return contactRepository.save(contact);
     }
 
     @Override
-    public int delete(Long contactId, Long personId) {
-        return contactRepository.delete(contactId, personId);
+    public int delete(Long personId, Long contactId) {
+        return contactRepository.delete(personId, contactId);
     }
 
     @Override

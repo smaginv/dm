@@ -9,17 +9,17 @@ import java.util.List;
 
 public interface ContactService {
 
-    ContactDto get(Long contactId, Long personId);
+    ContactDto get(Long personId, Long contactId);
 
     List<ContactDto> getAllByPerson(Long personId);
 
     List<ContactDto> getAll();
 
-    ContactDto update(ContactDto contactDto, Long personId);
+    void update(Long personId, ContactDto contactDto);
 
-    ContactDto create(ContactDto contactDto, Long personId);
+    ContactDto create(Long personId, ContactDto contactDto);
 
-    void delete(Long contactId, Long personId);
+    void delete(Long personId, Long contactId);
 
     void deleteAllByPerson(Long personId);
 

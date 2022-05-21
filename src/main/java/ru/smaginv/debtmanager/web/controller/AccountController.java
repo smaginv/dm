@@ -77,7 +77,7 @@ public class AccountController {
             value = "/accounts/by-state"
     )
     public ResponseEntity<List<AccountDto>> getByState(@Valid @RequestBody AccountStateDto accountStateDto) {
-        log.info("activeDto: {}", accountStateDto);
+        log.info("get by state: {}", accountStateDto);
         return ResponseEntity.ok(accountService.getByState(accountStateDto));
     }
 
@@ -121,7 +121,7 @@ public class AccountController {
             consumes = MediaType.ALL_VALUE
     )
     public ResponseEntity<?> delete(@PathVariable Long personId, @PathVariable Long accountId) {
-        log.info("delete account with id: {}, for person with id: {}", personId, accountId);
+        log.info("delete account with id: {}, for person: {}", personId, accountId);
         accountService.delete(personId, accountId);
         return ResponseEntity.noContent().build();
     }
@@ -131,7 +131,7 @@ public class AccountController {
             consumes = MediaType.ALL_VALUE
     )
     private ResponseEntity<?> deleteAllInactiveByPerson(@PathVariable Long personId) {
-        log.info("delete all inactive accounts by person with id: {}", personId);
+        log.info("delete all inactive accounts by person: {}", personId);
         accountService.deleteAllInactiveByPerson(personId);
         return ResponseEntity.noContent().build();
     }

@@ -41,7 +41,6 @@ public class AccountDto implements HasIdDto {
     @NotBlank
     private String rate;
 
-    @NotBlank
     @Size(max = 64)
     private String openDate;
 

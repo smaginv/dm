@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ContactRepositoryJpa extends JpaRepository<Contact, Long> {
 
     @Query("SELECT c FROM Contact c WHERE c.id = :contactId AND c.person.id = :personId")
-    Optional<Contact> get(@Param("contactId") Long contactId, @Param("personId") Long personId);
+    Optional<Contact> get(@Param("personId") Long personId, @Param("contactId") Long contactId);
 
     @Query("SELECT c FROM Contact c WHERE c.person.id = :personId")
     List<Contact> getAllByPerson(@Param("personId") Long personId);
@@ -22,7 +22,7 @@ public interface ContactRepositoryJpa extends JpaRepository<Contact, Long> {
 
     @Modifying
     @Query("DELETE FROM Contact c WHERE c.id = :contactId AND c.person.id = :personId")
-    int delete(@Param("contactId") Long contactId, @Param("personId") Long personId);
+    int delete(@Param("personId") Long personId, @Param("contactId") Long contactId);
 
     @Modifying
     @Query("DELETE FROM Contact c WHERE c.person.id = :personId")

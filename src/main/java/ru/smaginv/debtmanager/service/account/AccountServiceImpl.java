@@ -89,7 +89,7 @@ public class AccountServiceImpl implements AccountService {
     public void update(Long personId, AccountDto accountDto) {
         Account account = getAccount(personId, mappingUtil.mapId(accountDto));
         accountMapper.update(accountDto, account);
-        accountMapper.mapDto(accountRepository.save(personId, account));
+        accountRepository.save(personId, account);
     }
 
     @Transactional

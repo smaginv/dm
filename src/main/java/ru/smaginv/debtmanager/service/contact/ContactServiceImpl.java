@@ -39,8 +39,8 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public ContactDto get(Long contactId, Long personId) {
-        Contact contact = getContact(contactId, personId);
+    public ContactDto get(Long personId, Long contactId) {
+        Contact contact = getContact(personId, contactId);
         return contactMapper.mapDto(contact);
     }
 
@@ -57,28 +57,30 @@ public class ContactServiceImpl implements ContactService {
 
     @Transactional
     @Override
-    public ContactDto update(ContactDto contactDto, Long personId) {
+    public void update(Long personId, ContactDto contactDto) {
         validationUtil.validateContact(contactDto);
-        Contact contact = getContact(mappingUtil.mapId(contactDto), personId);
+        Contact contact = getContact(personId, mappingUtil.mapId(contactDto));
         contactMapper.update(contactDto, contact);
-        return contactMapper.mapDto(contactRepository.save(contact, personId));
+        contactRepository.save(personId, contact);
     }
 
     @Transactional
     @Override
-    public ContactDto create(ContactDto contactDto, Long personId) {
+    public ContactDto create(Long personId, ContactDto contactDto) {
         validationUtil.checkIsNew(contactDto);
         validationUtil.validateContact(contactDto);
-        Contact contact = contactRepository.save(contactMapper.map(contactDto), personId);
+        Contact contact = contactRepository.save(personId, contactMapper.map(contactDto));
         return contactMapper.mapDto(contact);
     }
 
+    @Transactional
     @Override
-    public void delete(Long contactId, Long personId) {
-        int result = contactRepository.delete(contactId, personId);
+    public void delete(Long personId, Long contactId) {
+        int result = contactRepository.delete(personId, contactId);
         validationUtil.checkNotFoundWithId(result != 0, contactId);
     }
 
+    @Transactional
     @Override
     public void deleteAllByPerson(Long personId) {
         validationUtil.checkNotFound(contactRepository.deleteAllByPerson(personId) != 0);
@@ -103,7 +105,7 @@ public class ContactServiceImpl implements ContactService {
         return contactDto;
     }
 
-    private Contact getContact(Long contactId, Long personId) {
-        return getEntityFromOptional(contactRepository.get(contactId, personId), contactId);
+    private Contact getContact(Long personId, Long contactId) {
+        return getEntityFromOptional(contactRepository.get(personId, contactId), contactId);
     }
 }
