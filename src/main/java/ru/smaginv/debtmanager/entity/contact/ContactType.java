@@ -19,7 +19,8 @@ public enum ContactType {
 
     static {
         Map<String, ContactType> types = new HashMap<>();
-        Arrays.stream(ContactType.values()).forEach(type -> types.put(type.value, type));
+        Arrays.stream(ContactType.values())
+                .forEach(type -> types.put(type.value, type));
         CONTACT_TYPES = Map.copyOf(types);
     }
 

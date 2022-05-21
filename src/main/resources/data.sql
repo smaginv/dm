@@ -27,7 +27,10 @@ VALUES (1, 1, 'DEBIT', 100.00, 'RUB', 0.0, '2022-05-01 10:23:54', null, 'debit a
        (7, 4, 'DEBIT', 400.00, 'RUB', 0.0, '2022-05-08 17:35:36', null, 'debit account for Joan', true),
        (8, 4, 'CREDIT', 300.00, 'RUB', 0.0, '2022-05-09 18:47:36', null, 'credit account for Joan', true),
        (9, 5, 'DEBIT', 600.00, 'RUB', 0.0, '2022-05-10 08:32:36', null, 'debit account for Bob', true),
-       (10, 5, 'CREDIT', 300.00, 'RUB', 0.0, '2022-05-10 16:37:36', null, 'credit account for Bob', true);
+       (10, 5, 'CREDIT', 300.00, 'RUB', 0.0, '2022-05-10 16:37:36', null, 'credit account for Bob', true),
+       (11, 1, 'CREDIT', 333.00, 'RUB', 0.0, '2022-04-14 04:44:44', null, 'inactive credit account for Ann', false),
+       (12, 5, 'CREDIT', 444.00, 'RUB', 0.0, '2022-04-15 05:55:55', null, 'inactive credit account for Bob', false),
+       (13, 3, 'CREDIT', 555.00, 'RUB', 0.0, '2022-04-16 07:07:07', null, 'inactive credit account for Helen', false);
 
 INSERT INTO operation (operation_id, account_id, type, oper_date, amount, description)
 VALUES (1, 1, 'LEND', '2022-05-01 10:23:54', 100.00, 'lend to Ann'),

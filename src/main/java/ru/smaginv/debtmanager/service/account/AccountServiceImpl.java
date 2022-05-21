@@ -4,16 +4,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.account.Account;
+import ru.smaginv.debtmanager.entity.account.AccountType;
 import ru.smaginv.debtmanager.repository.account.AccountRepository;
 import ru.smaginv.debtmanager.service.operation.OperationService;
 import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.account.AccountInfoDto;
+import ru.smaginv.debtmanager.web.dto.account.AccountStateDto;
+import ru.smaginv.debtmanager.web.dto.account.AccountTypeDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
 import ru.smaginv.debtmanager.web.mapping.AccountMapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptional;
 
@@ -39,14 +44,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto get(Long accountId, Long personId) {
-        Account account = getAccount(accountId, personId);
+    public AccountDto get(Long personId, Long accountId) {
+        Account account = getAccount(personId, accountId);
         return accountMapper.mapDto(account);
     }
 
     @Override
-    public AccountInfoDto getWithOperations(Long accountId, Long personId) {
-        Account account = getAccount(accountId, personId);
+    public AccountInfoDto getWithOperations(Long personId, Long accountId) {
+        Account account = getAccount(personId, accountId);
         List<OperationDto> operations = operationService.getAllByAccount(accountId);
         AccountInfoDto accountInfoDto = accountMapper.mapInfoDto(account);
         accountInfoDto.setOperations(operations);
@@ -65,78 +70,62 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountDto> getAllActive() {
-        return accountMapper.mapDtos(accountRepository.getAllActive());
-    }
-
-    @Override
-    public List<AccountDto> getAllActiveByPerson(Long personId) {
-        List<Account> accounts = accountRepository.getAllActiveByPerson(personId);
+    public List<AccountDto> getByState(AccountStateDto accountStateDto) {
+        Long personId = accountStateDto.getPersonId();
+        boolean isActive = Boolean.parseBoolean(accountStateDto.getIsActive());
+        List<Account> accounts = accountRepository.getByState(personId, isActive);
         return accountMapper.mapDtos(accounts);
     }
 
     @Override
-    public List<AccountDto> getAllInactive() {
-        return accountMapper.mapDtos(accountRepository.getAllInactive());
-    }
-
-    @Override
-    public List<AccountDto> getAllInactiveByPerson(Long personId) {
-        List<Account> accounts = accountRepository.getAllInactiveByPerson(personId);
+    public List<AccountDto> getAllByType(AccountTypeDto accountTypeDto) {
+        AccountType accountType = AccountType.getByValue(accountTypeDto.getType());
+        List<Account> accounts = accountRepository.getAllByType(accountType);
         return accountMapper.mapDtos(accounts);
-    }
-
-    @Override
-    public List<AccountDto> getAllDebit() {
-        return accountMapper.mapDtos(accountRepository.getAllDebit());
-    }
-
-    @Override
-    public List<AccountDto> getAllCredit() {
-        return accountMapper.mapDtos(accountRepository.getAllCredit());
     }
 
     @Transactional
     @Override
-    public AccountDto update(AccountDto accountDto, Long personId) {
-        Account account = getAccount(mappingUtil.mapId(accountDto), personId);
+    public void update(Long personId, AccountDto accountDto) {
+        Account account = getAccount(personId, mappingUtil.mapId(accountDto));
         accountMapper.update(accountDto, account);
-        return accountMapper.mapDto(accountRepository.save(account, personId));
+        accountMapper.mapDto(accountRepository.save(personId, account));
     }
 
     @Transactional
     @Override
-    public AccountDto create(AccountDto accountDto, Long personId) {
-        validationUtil.checkIsNew(accountDto);
-        Account account = accountRepository.save(accountMapper.map(accountDto), personId);
+    public AccountDto create(Long personId, AccountDto accountDto) {
+        Account account = accountMapper.map(accountDto);
+        account.setOpenDate(LocalDateTime.now());
+        account.setIsActive(true);
+        if (Objects.nonNull(account.getClosedDate()))
+            account.setClosedDate(null);
+        account = accountRepository.save(personId, account);
         return accountMapper.mapDto(account);
     }
 
+    @Transactional
     @Override
-    public void delete(Long accountId, Long personId) {
-        int result = accountRepository.delete(accountId, personId);
+    public void delete(Long personId, Long accountId) {
+        int result = accountRepository.delete(personId, accountId);
         validationUtil.checkNotFoundWithId(result != 0, accountId);
     }
 
-    @Override
-    public void deleteAllByPerson(Long personId) {
-        int result = accountRepository.deleteAllByPerson(personId);
-        validationUtil.checkNotFound(result != 0);
-    }
-
+    @Transactional
     @Override
     public void deleteAllInactiveByPerson(Long personId) {
         int result = accountRepository.deleteAllInactiveByPerson(personId);
         validationUtil.checkNotFound(result != 0);
     }
 
+    @Transactional
     @Override
     public void deleteAllInactive() {
         int result = accountRepository.deleteAllInactive();
         validationUtil.checkNotFound(result != 0);
     }
 
-    private Account getAccount(Long accountId, Long personId) {
-        return getEntityFromOptional(accountRepository.get(accountId, personId), accountId);
+    private Account getAccount(Long personId, Long accountId) {
+        return getEntityFromOptional(accountRepository.get(personId, accountId), accountId);
     }
 }

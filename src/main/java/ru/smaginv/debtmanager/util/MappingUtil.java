@@ -20,11 +20,18 @@ public class MappingUtil {
         this.datePattern = appProperties.pattern().getDate();
     }
 
-    @Named("formatDate")
-    public String formatDate(LocalDateTime dateTime) {
+    @Named("formatDateToString")
+    public String formatDateToString(LocalDateTime dateTime) {
         if (Objects.isNull(dateTime))
             return null;
         return DateTimeFormatter.ofPattern(datePattern).format(dateTime);
+    }
+
+    @Named("parseStringToLocalDateTime")
+    public LocalDateTime parseStringToLocalDateTime(String dateTime) {
+        if (Objects.isNull(dateTime))
+            return null;
+        return LocalDateTime.parse(dateTime, DateTimeFormatter.ofPattern(datePattern));
     }
 
     public Long mapId(HasIdDto entity) {

@@ -11,9 +11,7 @@ import ru.smaginv.debtmanager.entity.person.Person;
 import ru.smaginv.debtmanager.util.entity.PostgreSQLEnumType;
 
 import javax.persistence.*;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Currency;
@@ -64,9 +62,11 @@ public class Account implements HasId {
     @Column(name = "rate")
     private Float rate;
 
+    @PastOrPresent
     @Column(name = "open_date")
     private LocalDateTime openDate;
 
+    @FutureOrPresent
     @Column(name = "closed_date")
     private LocalDateTime closedDate;
 

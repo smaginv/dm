@@ -2,38 +2,30 @@ package ru.smaginv.debtmanager.service.account;
 
 import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.account.AccountInfoDto;
+import ru.smaginv.debtmanager.web.dto.account.AccountStateDto;
+import ru.smaginv.debtmanager.web.dto.account.AccountTypeDto;
 
 import java.util.List;
 
 public interface AccountService {
 
-    AccountDto get(Long accountId, Long personId);
+    AccountDto get(Long personId, Long accountId);
 
-    AccountInfoDto getWithOperations(Long accountId, Long personId);
+    AccountInfoDto getWithOperations(Long personId, Long accountId);
 
     List<AccountDto> getAll();
 
     List<AccountDto> getAllByPerson(Long personId);
 
-    List<AccountDto> getAllActive();
+    List<AccountDto> getByState(AccountStateDto accountStateDto);
 
-    List<AccountDto> getAllActiveByPerson(Long personId);
+    List<AccountDto> getAllByType(AccountTypeDto accountTypeDto);
 
-    List<AccountDto> getAllInactive();
+    void update(Long personId, AccountDto accountDto);
 
-    List<AccountDto> getAllInactiveByPerson(Long personId);
+    AccountDto create(Long personId, AccountDto accountDto);
 
-    List<AccountDto> getAllDebit();
-
-    List<AccountDto> getAllCredit();
-
-    AccountDto update(AccountDto accountDto, Long personId);
-
-    AccountDto create(AccountDto accountDto, Long personId);
-
-    void delete(Long accountId, Long personId);
-
-    void deleteAllByPerson(Long personId);
+    void delete(Long personId, Long accountId);
 
     void deleteAllInactiveByPerson(Long personId);
 

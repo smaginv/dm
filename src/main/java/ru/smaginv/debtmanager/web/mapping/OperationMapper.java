@@ -21,7 +21,7 @@ public interface OperationMapper {
     Operation map(OperationDto operationDto);
 
     @Mapping(source = "operationType", target = "type")
-    @Mapping(source = "operDate", target = "operDate", qualifiedByName = "formatDate")
+    @Mapping(source = "operDate", target = "operDate", qualifiedByName = "formatDateToString")
     OperationDto mapDto(Operation operation);
 
     List<OperationDto> mapDtos(List<Operation> operations);

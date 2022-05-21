@@ -3,10 +3,12 @@ package ru.smaginv.debtmanager.repository.account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.smaginv.debtmanager.entity.account.Account;
+import ru.smaginv.debtmanager.entity.account.AccountType;
 import ru.smaginv.debtmanager.entity.person.Person;
 import ru.smaginv.debtmanager.repository.person.PersonRepositoryJpa;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -22,8 +24,8 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Optional<Account> get(Long accountId, Long personId) {
-        return accountRepository.get(accountId, personId);
+    public Optional<Account> get(Long personId, Long accountId) {
+        return accountRepository.get(personId, accountId);
     }
 
     @Override
@@ -37,52 +39,27 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public List<Account> getAllActive() {
-        return accountRepository.getAllActive();
+    public List<Account> getByState(Long personId, boolean isActive) {
+        if (Objects.isNull(personId))
+            return accountRepository.getByState(isActive);
+        return accountRepository.getByPersonAndState(personId, isActive);
     }
 
     @Override
-    public List<Account> getAllActiveByPerson(Long personId) {
-        return accountRepository.getAllActiveByPerson(personId);
+    public List<Account> getAllByType(AccountType accountType) {
+        return accountRepository.getAllByType(accountType);
     }
 
     @Override
-    public List<Account> getAllInactive() {
-        return accountRepository.getAllInactive();
-    }
-
-    @Override
-    public List<Account> getAllInactiveByPerson(Long personId) {
-        return accountRepository.getAllInactiveByPerson(personId);
-    }
-
-    @Override
-    public List<Account> getAllDebit() {
-        return accountRepository.getAllDebit();
-    }
-
-    @Override
-    public List<Account> getAllCredit() {
-        return accountRepository.getAllCredit();
-    }
-
-    @Override
-    public Account save(Account account, Long personId) {
-        if (!account.isNew() && get(account.getId(), personId).isEmpty())
-            return null;
+    public Account save(Long personId, Account account) {
         Person person = personRepository.getById(personId);
         account.setPerson(person);
         return accountRepository.save(account);
     }
 
     @Override
-    public int delete(Long accountId, Long personId) {
-        return accountRepository.delete(accountId, personId);
-    }
-
-    @Override
-    public int deleteAllByPerson(Long personId) {
-        return accountRepository.deleteAllByPerson(personId);
+    public int delete(Long personId, Long accountId) {
+        return accountRepository.delete(personId, accountId);
     }
 
     @Override

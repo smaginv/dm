@@ -35,32 +35,43 @@ public class PersonController {
         this.validationUtil = validationUtil;
     }
 
-    @GetMapping(value = "/person/{personId}", consumes = MediaType.ALL_VALUE)
+    @GetMapping(
+            value = "/person/{personId}",
+            consumes = MediaType.ALL_VALUE
+    )
     public ResponseEntity<PersonInfoDto> get(@PathVariable Long personId) {
         log.info("get person by id: {}", personId);
         return ResponseEntity.ok(personService.get(personId));
     }
 
-    @GetMapping(value = "/person/by-contact")
+    @GetMapping(
+            value = "/person/by-contact"
+    )
     public ResponseEntity<PersonInfoDto> getByContact(@Valid @RequestBody ContactSearchDto contactSearchDto) {
         validationUtil.validateContact(contactSearchDto);
         log.info("get person by contact {}", contactSearchDto);
         return ResponseEntity.ok(personService.getByContact(contactSearchDto));
     }
 
-    @GetMapping(consumes = MediaType.ALL_VALUE)
+    @GetMapping(
+            consumes = MediaType.ALL_VALUE
+    )
     public ResponseEntity<List<PersonDto>> getAll() {
         log.info("get all people");
         return ResponseEntity.ok(personService.getAll());
     }
 
-    @GetMapping(value = "/person/find")
+    @GetMapping(
+            value = "/person/find"
+    )
     public ResponseEntity<List<PersonDto>> find(@RequestBody PersonSearchDto personSearchDto) {
         log.info("find people by {}", personSearchDto);
         return ResponseEntity.ok(personService.find(personSearchDto));
     }
 
-    @PatchMapping(value = "/person/{personId}")
+    @PatchMapping(
+            value = "/person/{personId}"
+    )
     public ResponseEntity<?> update(@Valid @RequestBody PersonDto personDto, @PathVariable String personId) {
         validationUtil.assureIdConsistent(personDto, personId);
         log.info("update person: {}, with id: {}", personDto, personId);
@@ -68,7 +79,9 @@ public class PersonController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "/person")
+    @PostMapping(
+            value = "/person"
+    )
     public ResponseEntity<PersonDto> create(@Valid @RequestBody PersonDto personDto) {
         validationUtil.checkIsNew(personDto);
         log.info("create person: {}", personDto);
@@ -80,14 +93,19 @@ public class PersonController {
         return ResponseEntity.created(location).body(created);
     }
 
-    @DeleteMapping(value = "/person/{personId}", consumes = MediaType.ALL_VALUE)
+    @DeleteMapping(
+            value = "/person/{personId}",
+            consumes = MediaType.ALL_VALUE
+    )
     public ResponseEntity<?> delete(@PathVariable Long personId) {
         log.info("delete person by id: {}", personId);
         personService.delete(personId);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(value = "/person/by-contact")
+    @DeleteMapping(
+            value = "/person/by-contact"
+    )
     public ResponseEntity<?> deleteByContact(@Valid @RequestBody ContactSearchDto contactSearchDto) {
         validationUtil.validateContact(contactSearchDto);
         log.info("delete person by contact: {}", contactSearchDto);

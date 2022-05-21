@@ -1,5 +1,6 @@
 package ru.smaginv.debtmanager.web.dto.operation;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,6 +13,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@JsonPropertyOrder({"id", "type", "operDate", "amount", "description"})
 public class OperationDto implements HasIdDto {
 
     private String id;
