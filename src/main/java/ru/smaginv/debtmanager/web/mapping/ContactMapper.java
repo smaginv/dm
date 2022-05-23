@@ -16,9 +16,12 @@ import java.util.List;
 )
 public interface ContactMapper {
 
+    @Mapping(target = "person", ignore = true)
     @Mapping(source = "type", target = "contactType")
     Contact map(ContactDto contactDto);
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "person", ignore = true)
     @Mapping(source = "type", target = "contactType")
     Contact map(ContactSearchDto contactSearchDto);
 
@@ -27,6 +30,7 @@ public interface ContactMapper {
 
     List<ContactDto> mapDtos(List<Contact> contacts);
 
+    @Mapping(target = "person", ignore = true)
     @Mapping(source = "type", target = "contactType")
     void update(ContactDto contactDto, @MappingTarget Contact contact);
 }

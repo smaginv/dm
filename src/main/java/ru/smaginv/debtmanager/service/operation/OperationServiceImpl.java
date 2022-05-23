@@ -4,14 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.operation.Operation;
+import ru.smaginv.debtmanager.entity.operation.OperationType;
 import ru.smaginv.debtmanager.repository.operation.OperationRepository;
+import ru.smaginv.debtmanager.util.AppUtil;
 import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
+import ru.smaginv.debtmanager.web.dto.operation.OperationSearchDto;
+import ru.smaginv.debtmanager.web.dto.operation.OperationTypeDto;
 import ru.smaginv.debtmanager.web.mapping.OperationMapper;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptional;
 
@@ -34,8 +40,8 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public OperationDto get(Long operationId, Long accountId) {
-        Operation operation = getOperation(operationId, accountId);
+    public OperationDto get(Long accountId, Long operationId) {
+        Operation operation = getOperation(accountId, operationId);
         return operationMapper.mapDto(operation);
     }
 
@@ -51,92 +57,64 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public List<OperationDto> getAllLend() {
-        return operationMapper.mapDtos(operationRepository.getAllLend());
+    public List<OperationDto> getByType(OperationTypeDto operationTypeDto) {
+        OperationType operationType = OperationType.getByValue(operationTypeDto.getType());
+        Long accountId = operationTypeDto.getAccountId();
+        return operationMapper.mapDtos(operationRepository.getByType(accountId, operationType));
     }
 
     @Override
-    public List<OperationDto> getAllLendByAccount(Long accountId) {
-        List<Operation> operations = operationRepository.getAllLendByAccount(accountId);
-        return operationMapper.mapDtos(operations);
-    }
-
-    @Override
-    public List<OperationDto> getAllLoan() {
-        return operationMapper.mapDtos(operationRepository.getAllLoan());
-    }
-
-    @Override
-    public List<OperationDto> getAllLoanByAccount(Long accountId) {
-        List<Operation> operations = operationRepository.getAllLoanByAccount(accountId);
-        return operationMapper.mapDtos(operations);
-    }
-
-    @Override
-    public List<OperationDto> getBetweenDates(LocalDate startDate, LocalDate endDate) {
-        return operationMapper.mapDtos(operationRepository.getBetweenDates(startDate, endDate));
-    }
-
-    @Override
-    public List<OperationDto> getBetweenDatesByAccount(LocalDate startDate, LocalDate endDate,
-                                                       Long accountId) {
-        List<Operation> operations = operationRepository.getBetweenDatesByAccount(startDate, endDate, accountId);
-        return operationMapper.mapDtos(operations);
-    }
-
-    @Override
-    public List<OperationDto> getAllLendBetweenDates(LocalDate startDate, LocalDate endDate) {
-        return operationMapper.mapDtos(operationRepository.getAllLendBetweenDates(startDate, endDate));
-    }
-
-    @Override
-    public List<OperationDto> getAllLoanBetweenDates(LocalDate startDate, LocalDate endDate) {
-        return operationMapper.mapDtos(operationRepository.getAllLoanBetweenDates(startDate, endDate));
-    }
-
-    @Override
-    public List<OperationDto> getAllLendBetweenDatesByAccount(LocalDate startDate, LocalDate endDate,
-                                                              Long accountId) {
-        List<Operation> operations = operationRepository.getAllLendBetweenDatesByAccount(startDate, endDate, accountId);
-        return operationMapper.mapDtos(operations);
-    }
-
-    @Override
-    public List<OperationDto> getAllLoanBetweenDatesByAccount(LocalDate startDate, LocalDate endDate,
-                                                              Long accountId) {
-        List<Operation> operations = operationRepository.getAllLoanBetweenDatesByAccount(startDate, endDate, accountId);
+    public List<OperationDto> find(OperationSearchDto operationSearchDto) {
+        Long accountId = operationSearchDto.getAccountId();
+        OperationType operationType = OperationType.getByValue(operationSearchDto.getType());
+        LocalDateTime startDateTime;
+        if (Objects.nonNull(operationSearchDto.getStartDate()))
+            startDateTime = operationSearchDto.getStartDate().atStartOfDay();
+        else
+            startDateTime = AppUtil.MIN_DATE;
+        LocalDateTime endDateTime;
+        if (Objects.nonNull(operationSearchDto.getEndDate()))
+            endDateTime = operationSearchDto.getEndDate().atTime(LocalTime.MAX);
+        else
+            endDateTime = LocalDateTime.now();
+        List<Operation> operations = operationRepository.find(accountId, operationType, startDateTime, endDateTime);
         return operationMapper.mapDtos(operations);
     }
 
     @Transactional
     @Override
-    public OperationDto update(OperationDto operationDto, Long accountId) {
-        Operation operation = getOperation(mappingUtil.mapId(operationDto), accountId);
+    public void update(Long accountId, OperationDto operationDto) {
+        Operation operation = getOperation(accountId, mappingUtil.mapId(operationDto));
+        if (!operation.getOperationType().name().equals(operationDto.getType()))
+            operationDto.setType(null);
         operationMapper.update(operationDto, operation);
-        return operationMapper.mapDto(operationRepository.save(operation, accountId));
+        operationRepository.save(accountId, operation);
     }
 
     @Transactional
     @Override
-    public OperationDto create(OperationDto operationDto, Long accountId) {
-        validationUtil.checkIsNew(operationDto);
+    public OperationDto create(Long accountId, OperationDto operationDto) {
         Operation operation = operationMapper.map(operationDto);
-        operation = operationRepository.save(operation, accountId);
+        if (Objects.isNull(operation.getOperDate()))
+            operation.setOperDate(LocalDateTime.now());
+        operation = operationRepository.save(accountId, operation);
         return operationMapper.mapDto(operation);
     }
 
+    @Transactional
     @Override
-    public void delete(Long operationId, Long accountId) {
-        int result = operationRepository.delete(operationId, accountId);
+    public void delete(Long accountId, Long operationId) {
+        int result = operationRepository.delete(accountId, operationId);
         validationUtil.checkNotFoundWithId(result != 0, operationId);
     }
 
+    @Transactional
     @Override
     public void deleteAllByAccount(Long accountId) {
         validationUtil.checkNotFound(operationRepository.deleteAllByAccount(accountId) != 0);
     }
 
-    private Operation getOperation(Long operationId, Long personId) {
-        return getEntityFromOptional(operationRepository.get(operationId, personId), operationId);
+    private Operation getOperation(Long accountId, Long operationId) {
+        return getEntityFromOptional(operationRepository.get(accountId, operationId), operationId);
     }
 }

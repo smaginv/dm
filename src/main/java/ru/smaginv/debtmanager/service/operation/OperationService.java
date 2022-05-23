@@ -1,46 +1,28 @@
 package ru.smaginv.debtmanager.service.operation;
 
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
+import ru.smaginv.debtmanager.web.dto.operation.OperationSearchDto;
+import ru.smaginv.debtmanager.web.dto.operation.OperationTypeDto;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface OperationService {
 
-    OperationDto get(Long operationId, Long accountId);
+    OperationDto get(Long accountId, Long operationId);
 
     List<OperationDto> getAllByAccount(Long accountId);
 
     List<OperationDto> getAll();
 
-    List<OperationDto> getAllLend();
+    List<OperationDto> getByType(OperationTypeDto operationTypeDto);
 
-    List<OperationDto> getAllLendByAccount(Long accountId);
+    List<OperationDto> find(OperationSearchDto operationSearchDto);
 
-    List<OperationDto> getAllLoan();
+    void update(Long accountId, OperationDto operationDto);
 
-    List<OperationDto> getAllLoanByAccount(Long accountId);
+    OperationDto create(Long accountId, OperationDto operationDto);
 
-    List<OperationDto> getBetweenDates(LocalDate startDate, LocalDate endDate);
-
-    List<OperationDto> getBetweenDatesByAccount(LocalDate startDate, LocalDate endDate,
-                                                Long accountId);
-
-    List<OperationDto> getAllLendBetweenDates(LocalDate startDate, LocalDate endDate);
-
-    List<OperationDto> getAllLoanBetweenDates(LocalDate startDate, LocalDate endDate);
-
-    List<OperationDto> getAllLendBetweenDatesByAccount(LocalDate startDate, LocalDate endDate,
-                                                       Long accountId);
-
-    List<OperationDto> getAllLoanBetweenDatesByAccount(LocalDate startDate, LocalDate endDate,
-                                                       Long accountId);
-
-    OperationDto update(OperationDto operationDto, Long accountId);
-
-    OperationDto create(OperationDto operationDto, Long accountId);
-
-    void delete(Long operationId, Long accountId);
+    void delete(Long accountId, Long operationId);
 
     void deleteAllByAccount(Long accountId);
 }

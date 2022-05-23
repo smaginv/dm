@@ -1,6 +1,7 @@
 package ru.smaginv.debtmanager.web.mapping;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.smaginv.debtmanager.entity.person.Person;
@@ -16,12 +17,15 @@ import java.util.List;
 )
 public interface PersonMapper {
 
+    @Mapping(target = "comment", ignore = true)
     Person map(PersonSearchDto personSearchDto);
 
     Person map(PersonDto personDto);
 
     PersonDto mapDto(Person person);
 
+    @Mapping(target = "accounts", ignore = true)
+    @Mapping(target = "contacts", ignore = true)
     PersonInfoDto mapInfoDto(Person person);
 
     List<PersonDto> mapDtos(List<Person> people);

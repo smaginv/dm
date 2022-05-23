@@ -12,7 +12,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Configuration
-public class AppProperties {
+public class PropertiesConfig {
 
     @Bean
     @ConfigurationProperties(prefix = "pattern")
@@ -30,5 +30,7 @@ public class AppProperties {
         private List<@NotBlank String> emails;
         @NotBlank
         private String date;
+        @NotBlank
+        private String dateTime;
     }
 }

@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.smaginv.debtmanager.entity.account.Account;
 import ru.smaginv.debtmanager.entity.operation.Operation;
+import ru.smaginv.debtmanager.entity.operation.OperationType;
 import ru.smaginv.debtmanager.repository.account.AccountRepositoryJpa;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -23,8 +25,8 @@ public class OperationRepositoryImpl implements OperationRepository {
     }
 
     @Override
-    public Optional<Operation> get(Long operationId, Long accountId) {
-        return operationRepository.get(operationId, accountId);
+    public Optional<Operation> get(Long accountId, Long operationId) {
+        return operationRepository.get(accountId, operationId);
     }
 
     @Override
@@ -38,67 +40,28 @@ public class OperationRepositoryImpl implements OperationRepository {
     }
 
     @Override
-    public List<Operation> getAllLend() {
-        return operationRepository.getAllLend();
+    public List<Operation> getByType(Long accountId, OperationType operationType) {
+        if (Objects.isNull(accountId))
+            return operationRepository.getByType(operationType);
+        return operationRepository.getByAccountAndType(accountId, operationType);
     }
 
     @Override
-    public List<Operation> getAllLendByAccount(Long accountId) {
-        return operationRepository.getAllLendByAccount(accountId);
+    public List<Operation> find(Long accountId, OperationType operationType,
+                                LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return operationRepository.find(accountId, operationType, startDateTime, endDateTime);
     }
 
     @Override
-    public List<Operation> getAllLoan() {
-        return operationRepository.getAllLoan();
-    }
-
-    @Override
-    public List<Operation> getAllLoanByAccount(Long accountId) {
-        return operationRepository.getAllLoanByAccount(accountId);
-    }
-
-    @Override
-    public List<Operation> getBetweenDates(LocalDate startDate, LocalDate endDate) {
-        return operationRepository.getBetweenDates(startDate, endDate);
-    }
-
-    @Override
-    public List<Operation> getBetweenDatesByAccount(LocalDate startDate, LocalDate endDate, Long accountId) {
-        return operationRepository.getBetweenDatesByAccount(startDate, endDate, accountId);
-    }
-
-    @Override
-    public List<Operation> getAllLendBetweenDates(LocalDate startDate, LocalDate endDate) {
-        return operationRepository.getAllLendBetweenDates(startDate, endDate);
-    }
-
-    @Override
-    public List<Operation> getAllLoanBetweenDates(LocalDate startDate, LocalDate endDate) {
-        return operationRepository.getAllLoanBetweenDates(startDate, endDate);
-    }
-
-    @Override
-    public List<Operation> getAllLendBetweenDatesByAccount(LocalDate startDate, LocalDate endDate, Long accountId) {
-        return operationRepository.getAllLendBetweenDatesByAccount(startDate, endDate, accountId);
-    }
-
-    @Override
-    public List<Operation> getAllLoanBetweenDatesByAccount(LocalDate startDate, LocalDate endDate, Long accountId) {
-        return operationRepository.getAllLoanBetweenDatesByAccount(startDate, endDate, accountId);
-    }
-
-    @Override
-    public Operation save(Operation operation, Long accountId) {
-        if (!operation.isNew() && get(operation.getId(), accountId).isEmpty())
-            return null;
-        Account account = accountRepository.getById(accountId);
+    public Operation save(Long accountId, Operation operation) {
+        Account account = accountRepository.getReferenceById(accountId);
         operation.setAccount(account);
         return operationRepository.save(operation);
     }
 
     @Override
-    public int delete(Long operationId, Long accountId) {
-        return operationRepository.delete(operationId, accountId);
+    public int delete(Long accountId, Long operationId) {
+        return operationRepository.delete(accountId, operationId);
     }
 
     @Override

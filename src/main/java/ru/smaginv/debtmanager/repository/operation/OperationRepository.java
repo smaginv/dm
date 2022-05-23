@@ -1,42 +1,28 @@
 package ru.smaginv.debtmanager.repository.operation;
 
 import ru.smaginv.debtmanager.entity.operation.Operation;
+import ru.smaginv.debtmanager.entity.operation.OperationType;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface OperationRepository {
 
-    Optional<Operation> get(Long operationId, Long accountId);
+    Optional<Operation> get(Long accountId, Long operationId);
 
     List<Operation> getAllByAccount(Long accountId);
 
     List<Operation> getAll();
 
-    List<Operation> getAllLend();
+    List<Operation> getByType(Long accountId, OperationType operationType);
 
-    List<Operation> getAllLendByAccount(Long accountId);
+    List<Operation> find(Long accountId, OperationType operationType,
+                         LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-    List<Operation> getAllLoan();
+    Operation save(Long accountId, Operation operation);
 
-    List<Operation> getAllLoanByAccount(Long accountId);
-
-    List<Operation> getBetweenDates(LocalDate startDate, LocalDate endDate);
-
-    List<Operation> getBetweenDatesByAccount(LocalDate startDate, LocalDate endDate, Long accountId);
-
-    List<Operation> getAllLendBetweenDates(LocalDate startDate, LocalDate endDate);
-
-    List<Operation> getAllLoanBetweenDates(LocalDate startDate, LocalDate endDate);
-
-    List<Operation> getAllLendBetweenDatesByAccount(LocalDate startDate, LocalDate endDate, Long accountId);
-
-    List<Operation> getAllLoanBetweenDatesByAccount(LocalDate startDate, LocalDate endDate, Long accountId);
-
-    Operation save(Operation operation, Long accountId);
-
-    int delete(Long operationId, Long accountId);
+    int delete(Long accountId, Long operationId);
 
     int deleteAllByAccount(Long accountId);
 }

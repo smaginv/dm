@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@ToString(exclude = {""})
+@ToString
 @Entity
 @Table(name = "contact")
 @TypeDef(

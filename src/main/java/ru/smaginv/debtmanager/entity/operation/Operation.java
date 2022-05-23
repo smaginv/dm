@@ -13,6 +13,7 @@ import ru.smaginv.debtmanager.util.entity.PostgreSQLEnumType;
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -49,6 +50,7 @@ public class Operation implements HasId {
     @Column(name = "type")
     private OperationType operationType;
 
+    @PastOrPresent
     @Column(name = "oper_date")
     private LocalDateTime operDate;
 

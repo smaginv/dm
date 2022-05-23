@@ -5,78 +5,43 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.smaginv.debtmanager.entity.operation.Operation;
+import ru.smaginv.debtmanager.entity.operation.OperationType;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface OperationRepositoryJpa extends JpaRepository<Operation, Long> {
 
     @Query("SELECT o FROM Operation o WHERE o.id = :operationId AND o.account.id = :accountId")
-    Optional<Operation> get(@Param("operationId") Long operationId, @Param("accountId") Long accountId);
+    Optional<Operation> get(@Param("accountId") Long accountId, @Param("operationId") Long operationId);
 
-    @Query("SELECT o FROM Operation o WHERE o.account.id = :accountId")
+    @Query("SELECT o FROM Operation o WHERE o.account.id = :accountId ORDER BY o.operDate DESC")
     List<Operation> getAllByAccount(@Param("accountId") Long accountId);
 
-    @Query("SELECT o FROM Operation o ORDER BY o.id")
+    @Query("SELECT o FROM Operation o ORDER BY o.operDate DESC")
     List<Operation> getAll();
 
-    @Query("SELECT o FROM Operation o WHERE o.operationType = 'LEND'")
-    List<Operation> getAllLend();
+    @Query("SELECT o FROM Operation o WHERE o.operationType = :operationType")
+    List<Operation> getByType(@Param("operationType") OperationType operationType);
 
-    @Query("SELECT o FROM Operation o WHERE o.account.id = :accountId AND o.operationType = 'LEND'")
-    List<Operation> getAllLendByAccount(@Param("accountId") Long accountId);
-
-    @Query("SELECT o FROM Operation o WHERE o.operationType = 'LOAN'")
-    List<Operation> getAllLoan();
-
-    @Query("SELECT o FROM Operation o WHERE o.account.id = :accountId AND o.operationType = 'LOAN'")
-    List<Operation> getAllLoanByAccount(@Param("accountId") Long accountId);
-
-    @Query("SELECT o FROM Operation o WHERE o.operDate >= :startDate AND o.operDate <= :endDate ORDER BY o.operDate")
-    List<Operation> getBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+    @Query("SELECT o FROM Operation o WHERE o.operationType = :operationType AND o.account.id = :accountId")
+    List<Operation> getByAccountAndType(@Param("accountId") Long accountId,
+                                        @Param("operationType") OperationType operationType);
 
     @Query("""
-            SELECT o FROM Operation o WHERE o.account.id = :accountId AND
-             o.operDate >= :startDate AND o.operDate <= :endDate
+            SELECT DISTINCT o FROM Operation o WHERE o.operationType = :operationType AND
+             (:accountId IS NULL OR o.account.id = :accountId) AND
+              o.operDate >= :startDateTime AND o.operDate <= :endDateTime
             """)
-    List<Operation> getBetweenDatesByAccount(@Param("startDate") LocalDate startDate,
-                                             @Param("endDate") LocalDate endDate,
-                                             @Param("accountId") Long accountId);
-
-    @Query("""
-            SELECT o FROM Operation o WHERE o.operationType = 'LEND' AND
-             o.operDate >= :startDate AND o.operDate <= :endDate
-            """)
-    List<Operation> getAllLendBetweenDates(@Param("startDate") LocalDate startDate,
-                                           @Param("endDate") LocalDate endDate);
-
-    @Query("""
-            SELECT o FROM Operation o WHERE o.operationType = 'LOAN' AND
-             o.operDate >= :startDate AND o.operDate <= :endDate
-            """)
-    List<Operation> getAllLoanBetweenDates(@Param("startDate") LocalDate startDate,
-                                           @Param("endDate") LocalDate endDate);
-
-    @Query("""
-            SELECT o FROM Operation o WHERE o.account.id = :accountId AND o.operationType = 'LEND' AND
-             o.operDate >= :startDate AND o.operDate <= :endDate
-            """)
-    List<Operation> getAllLendBetweenDatesByAccount(@Param("startDate") LocalDate startDate,
-                                                    @Param("endDate") LocalDate endDate,
-                                                    @Param("accountId") Long accountId);
-
-    @Query("""
-            SELECT o FROM Operation o WHERE o.account.id = :accountId AND o.operationType = 'LOAN' AND
-             o.operDate >= :startDate AND o.operDate <= :endDate
-            """)
-    List<Operation> getAllLoanBetweenDatesByAccount(@Param("startDate") LocalDate startDate,
-                                                    @Param("endDate") LocalDate endDate,
-                                                    @Param("accountId") Long accountId);
+    List<Operation> find(@Param("accountId") Long accountId,
+                         @Param("operationType") OperationType operationType,
+                         @Param("startDateTime") LocalDateTime startDateTime,
+                         @Param("endDateTime") LocalDateTime endDateTime);
 
     @Modifying
     @Query("DELETE FROM Operation o WHERE o.id = :operationId AND o.account.id = :accountId")
-    int delete(@Param("operationId") Long operationId, @Param("accountId") Long accountId);
+    int delete(@Param("accountId") Long accountId, @Param("operationId") Long operationId);
 
     @Modifying
     @Query("DELETE FROM Operation o WHERE o.account.id = :accountId")

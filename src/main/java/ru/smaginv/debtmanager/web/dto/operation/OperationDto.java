@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.smaginv.debtmanager.entity.operation.OperationType;
+import ru.smaginv.debtmanager.util.validation.EnumValidator;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
 
 import javax.validation.constraints.NotBlank;
@@ -13,23 +15,23 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@JsonPropertyOrder({"id", "type", "operDate", "amount", "description"})
+@JsonPropertyOrder({
+        "id", "type", "operDate", "amount", "description"
+})
 public class OperationDto implements HasIdDto {
 
     private String id;
 
-    @NotBlank
-    @Size(max = 4)
+    @EnumValidator(enumClass = OperationType.class)
     private String type;
 
-    @NotBlank
     @Size(max = 64)
     private String operDate;
 
     @NotBlank
+    @Size(max = 16)
     private String amount;
 
-    @NotBlank
     @Size(max = 512)
     private String description;
 

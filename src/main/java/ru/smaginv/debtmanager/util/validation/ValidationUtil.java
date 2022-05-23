@@ -2,7 +2,7 @@ package ru.smaginv.debtmanager.util.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.smaginv.debtmanager.config.AppProperties;
+import ru.smaginv.debtmanager.config.PropertiesConfig;
 import ru.smaginv.debtmanager.entity.contact.ContactType;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
 import ru.smaginv.debtmanager.web.dto.contact.AbstractContactDto;
@@ -18,9 +18,9 @@ public class ValidationUtil {
     private final List<String> emailPatterns;
 
     @Autowired
-    public ValidationUtil(AppProperties appProperties) {
-        this.phonePatterns = appProperties.pattern().getPhones();
-        this.emailPatterns = appProperties.pattern().getEmails();
+    public ValidationUtil(PropertiesConfig propertiesConfig) {
+        this.phonePatterns = propertiesConfig.pattern().getPhones();
+        this.emailPatterns = propertiesConfig.pattern().getEmails();
     }
 
     public void checkNotFound(boolean found) {

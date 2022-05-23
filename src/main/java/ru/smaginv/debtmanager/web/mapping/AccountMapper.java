@@ -18,6 +18,7 @@ import java.util.List;
 )
 public interface AccountMapper {
 
+    @Mapping(target = "person", ignore = true)
     @Mapping(source = "type", target = "accountType")
     @Mapping(source = "currency", target = "currencyCode")
     @Mapping(source = "openDate", target = "openDate", qualifiedByName = "parseStringToLocalDateTime")
@@ -30,6 +31,7 @@ public interface AccountMapper {
     @Mapping(source = "closedDate", target = "closedDate", qualifiedByName = "formatDateToString")
     AccountDto mapDto(Account account);
 
+    @Mapping(target = "operations", ignore = true)
     @Mapping(source = "accountType", target = "type")
     @Mapping(source = "currencyCode", target = "currency")
     @Mapping(source = "openDate", target = "openDate", qualifiedByName = "formatDateToString")
@@ -38,6 +40,7 @@ public interface AccountMapper {
 
     List<AccountDto> mapDtos(List<Account> accounts);
 
+    @Mapping(target = "person", ignore = true)
     @Mapping(source = "type", target = "accountType")
     @Mapping(source = "currency", target = "currencyCode")
     @Mapping(source = "openDate", target = "openDate", qualifiedByName = "parseStringToLocalDateTime")

@@ -1,10 +1,10 @@
 package ru.smaginv.debtmanager.util;
 
+import java.time.LocalDateTime;
+
 public class AppUtil {
 
-    private static final String EMPTY = "";
+    public static final String EMPTY = "";
 
-    public static String emptyString() {
-        return EMPTY;
-    }
+    public static final LocalDateTime MIN_DATE = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
 }
