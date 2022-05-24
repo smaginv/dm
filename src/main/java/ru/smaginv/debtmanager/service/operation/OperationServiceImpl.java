@@ -3,17 +3,22 @@ package ru.smaginv.debtmanager.service.operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.smaginv.debtmanager.entity.account.Account;
+import ru.smaginv.debtmanager.entity.account.AccountType;
 import ru.smaginv.debtmanager.entity.operation.Operation;
 import ru.smaginv.debtmanager.entity.operation.OperationType;
+import ru.smaginv.debtmanager.repository.account.AccountRepository;
 import ru.smaginv.debtmanager.repository.operation.OperationRepository;
 import ru.smaginv.debtmanager.util.AppUtil;
 import ru.smaginv.debtmanager.util.MappingUtil;
+import ru.smaginv.debtmanager.util.exception.AccountActiveException;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationSearchDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationTypeDto;
 import ru.smaginv.debtmanager.web.mapping.OperationMapper;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -26,14 +31,17 @@ import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptiona
 public class OperationServiceImpl implements OperationService {
 
     private final OperationRepository operationRepository;
+    private final AccountRepository accountRepository;
     private final OperationMapper operationMapper;
     private final ValidationUtil validationUtil;
     private final MappingUtil mappingUtil;
 
     @Autowired
-    public OperationServiceImpl(OperationRepository operationRepository, OperationMapper operationMapper,
-                                ValidationUtil validationUtil, MappingUtil mappingUtil) {
+    public OperationServiceImpl(OperationRepository operationRepository, AccountRepository accountRepository,
+                                OperationMapper operationMapper, ValidationUtil validationUtil,
+                                MappingUtil mappingUtil) {
         this.operationRepository = operationRepository;
+        this.accountRepository = accountRepository;
         this.operationMapper = operationMapper;
         this.validationUtil = validationUtil;
         this.mappingUtil = mappingUtil;
@@ -84,17 +92,24 @@ public class OperationServiceImpl implements OperationService {
     @Transactional
     @Override
     public void update(Long accountId, OperationDto operationDto) {
+        Account account = getAccount(accountId);
         Operation operation = getOperation(accountId, mappingUtil.mapId(operationDto));
+        rollBackOperation(account, operation);
         if (!operation.getOperationType().name().equals(operationDto.getType()))
             operationDto.setType(null);
         operationMapper.update(operationDto, operation);
         operationRepository.save(accountId, operation);
+        setAccountAmount(account, operation);
+        accountRepository.save(account);
     }
 
     @Transactional
     @Override
     public OperationDto create(Long accountId, OperationDto operationDto) {
+        Account account = getAccount(accountId);
         Operation operation = operationMapper.map(operationDto);
+        setAccountAmount(account, operation);
+        accountRepository.save(account);
         if (Objects.isNull(operation.getOperDate()))
             operation.setOperDate(LocalDateTime.now());
         operation = operationRepository.save(accountId, operation);
@@ -104,6 +119,10 @@ public class OperationServiceImpl implements OperationService {
     @Transactional
     @Override
     public void delete(Long accountId, Long operationId) {
+        Account account = getAccount(accountId);
+        Operation operation = getOperation(accountId, operationId);
+        rollBackOperation(account, operation);
+        accountRepository.save(account);
         int result = operationRepository.delete(accountId, operationId);
         validationUtil.checkNotFoundWithId(result != 0, operationId);
     }
@@ -111,7 +130,58 @@ public class OperationServiceImpl implements OperationService {
     @Transactional
     @Override
     public void deleteAllByAccount(Long accountId) {
+        Account account = getAccount(accountId);
+        List<Operation> operations = operationRepository.getAllByAccount(accountId);
+        operations.forEach(operation -> rollBackOperation(account, operation));
+        accountRepository.save(account);
         validationUtil.checkNotFound(operationRepository.deleteAllByAccount(accountId) != 0);
+    }
+
+    private void setAccountAmount(Account account, Operation operation) {
+        BigDecimal amount;
+        if (account.getAccountType().equals(AccountType.LEND)) {
+            if (operation.getOperationType().equals(OperationType.RECEIPT))
+                amount = account.getAmount().subtract(operation.getAmount());
+            else
+                amount = account.getAmount().add(operation.getAmount());
+        } else {
+            if (operation.getOperationType().equals(OperationType.RECEIPT))
+                amount = account.getAmount().add(operation.getAmount());
+            else
+                amount = account.getAmount().subtract(operation.getAmount());
+        }
+        if (amount.compareTo(BigDecimal.ZERO) == 0) {
+            account.setActive(false);
+            account.setClosedDate(LocalDateTime.now());
+        }
+        account.setAmount(amount);
+    }
+
+    private void rollBackOperation(Account account, Operation operation) {
+        BigDecimal amount;
+        if (account.getAccountType().equals(AccountType.LEND)) {
+            if (operation.getOperationType().equals(OperationType.RECEIPT))
+                amount = account.getAmount().add(operation.getAmount());
+            else
+                amount = account.getAmount().subtract(operation.getAmount());
+        } else {
+            if (operation.getOperationType().equals(OperationType.RECEIPT))
+                amount = account.getAmount().subtract(operation.getAmount());
+            else
+                amount = account.getAmount().add(operation.getAmount());
+        }
+        if (!account.getActive() && amount.compareTo(BigDecimal.ZERO) != 0) {
+            account.setActive(true);
+            account.setClosedDate(null);
+        }
+        account.setAmount(amount);
+    }
+
+    private Account getAccount(Long accountId) {
+        Account account = getEntityFromOptional(accountRepository.getReferenceById(accountId), accountId);
+        if (!account.getActive())
+            throw new AccountActiveException("account must be active");
+        return account;
     }
 
     private Operation getOperation(Long accountId, Long operationId) {

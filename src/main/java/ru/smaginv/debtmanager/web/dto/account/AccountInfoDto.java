@@ -16,7 +16,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @JsonPropertyOrder(
-        {"id", "type", "amount", "currency", "rate", "openDate", "closedDate", "isActive", "operations", "comment"}
+        {"id", "type", "amount", "currency", "rate", "openDate", "closedDate", "active", "operations", "comment"}
 )
 public class AccountInfoDto implements HasIdDto {
 
@@ -45,7 +45,7 @@ public class AccountInfoDto implements HasIdDto {
     private String comment;
 
     @NotBlank
-    private String isActive;
+    private String active;
 
     private List<OperationDto> operations;
 

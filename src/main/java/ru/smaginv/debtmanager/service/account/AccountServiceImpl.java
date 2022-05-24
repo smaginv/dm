@@ -5,20 +5,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.account.Account;
 import ru.smaginv.debtmanager.entity.account.AccountType;
+import ru.smaginv.debtmanager.entity.operation.Operation;
 import ru.smaginv.debtmanager.repository.account.AccountRepository;
-import ru.smaginv.debtmanager.service.operation.OperationService;
+import ru.smaginv.debtmanager.repository.operation.OperationRepository;
 import ru.smaginv.debtmanager.util.MappingUtil;
+import ru.smaginv.debtmanager.util.exception.AccountActiveException;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
-import ru.smaginv.debtmanager.web.dto.account.AccountDto;
-import ru.smaginv.debtmanager.web.dto.account.AccountInfoDto;
-import ru.smaginv.debtmanager.web.dto.account.AccountStateDto;
-import ru.smaginv.debtmanager.web.dto.account.AccountTypeDto;
-import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
+import ru.smaginv.debtmanager.web.dto.account.*;
 import ru.smaginv.debtmanager.web.mapping.AccountMapper;
+import ru.smaginv.debtmanager.web.mapping.OperationMapper;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptional;
 
@@ -27,18 +26,20 @@ import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptiona
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
+    private final OperationRepository operationRepository;
     private final AccountMapper accountMapper;
-    private final OperationService operationService;
+    private final OperationMapper operationMapper;
     private final ValidationUtil validationUtil;
     private final MappingUtil mappingUtil;
 
     @Autowired
-    public AccountServiceImpl(AccountRepository accountRepository, AccountMapper accountMapper,
-                              OperationService operationService, ValidationUtil validationUtil,
-                              MappingUtil mappingUtil) {
+    public AccountServiceImpl(AccountRepository accountRepository, OperationRepository operationRepository,
+                              AccountMapper accountMapper, OperationMapper operationMapper,
+                              ValidationUtil validationUtil, MappingUtil mappingUtil) {
         this.accountRepository = accountRepository;
+        this.operationRepository = operationRepository;
         this.accountMapper = accountMapper;
-        this.operationService = operationService;
+        this.operationMapper = operationMapper;
         this.validationUtil = validationUtil;
         this.mappingUtil = mappingUtil;
     }
@@ -52,9 +53,9 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountInfoDto getWithOperations(Long personId, Long accountId) {
         Account account = getAccount(personId, accountId);
-        List<OperationDto> operations = operationService.getAllByAccount(accountId);
+        List<Operation> operations = operationRepository.getAllByAccount(accountId);
         AccountInfoDto accountInfoDto = accountMapper.mapInfoDto(account);
-        accountInfoDto.setOperations(operations);
+        accountInfoDto.setOperations(operationMapper.mapDtos(operations));
         return accountInfoDto;
     }
 
@@ -72,7 +73,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AccountDto> getByState(AccountStateDto accountStateDto) {
         Long personId = accountStateDto.getPersonId();
-        boolean isActive = Boolean.parseBoolean(accountStateDto.getIsActive());
+        boolean isActive = Boolean.parseBoolean(accountStateDto.getActive());
         List<Account> accounts = accountRepository.getByState(personId, isActive);
         return accountMapper.mapDtos(accounts);
     }
@@ -86,9 +87,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Transactional
     @Override
-    public void update(Long personId, AccountDto accountDto) {
-        Account account = getAccount(personId, mappingUtil.mapId(accountDto));
-        accountMapper.update(accountDto, account);
+    public void update(Long personId, AccountUpdateDto accountUpdateDto) {
+        Account account = getAccount(personId, mappingUtil.mapId(accountUpdateDto));
+        accountMapper.update(accountUpdateDto, account);
         accountRepository.save(personId, account);
     }
 
@@ -97,9 +98,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountDto create(Long personId, AccountDto accountDto) {
         Account account = accountMapper.map(accountDto);
         account.setOpenDate(LocalDateTime.now());
-        account.setIsActive(true);
-        if (Objects.nonNull(account.getClosedDate()))
-            account.setClosedDate(null);
+        account.setActive(true);
         account = accountRepository.save(personId, account);
         return accountMapper.mapDto(account);
     }
@@ -107,6 +106,9 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     @Override
     public void delete(Long personId, Long accountId) {
+        Account account = getAccount(personId, accountId);
+        if (account.getAmount().compareTo(BigDecimal.ZERO) != 0)
+            throw new AccountActiveException("amount of account must be 0.0");
         int result = accountRepository.delete(personId, accountId);
         validationUtil.checkNotFoundWithId(result != 0, accountId);
     }

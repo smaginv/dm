@@ -18,14 +18,14 @@ public interface AccountRepositoryJpa extends JpaRepository<Account, Long> {
     @Query("SELECT a FROM Account a ORDER BY a.id")
     List<Account> getAll();
 
-    @Query("SELECT a FROM Account a WHERE a.person.id = :personId")
+    @Query("SELECT a FROM Account a WHERE a.person.id = :personId ORDER BY a.amount")
     List<Account> getAllByPerson(@Param("personId") Long personId);
 
-    @Query("SELECT a FROM Account a WHERE a.isActive = :isActive")
-    List<Account> getByState(@Param("isActive") boolean isActive);
+    @Query("SELECT a FROM Account a WHERE a.active = :active")
+    List<Account> getByState(@Param("active") boolean active);
 
-    @Query("SELECT a FROM Account a WHERE a.person.id = :personId AND a.isActive = :isActive")
-    List<Account> getByPersonAndState(@Param("personId") Long personId, @Param("isActive") boolean isActive);
+    @Query("SELECT a FROM Account a WHERE a.person.id = :personId AND a.active = :active")
+    List<Account> getByPersonAndState(@Param("personId") Long personId, @Param("active") boolean active);
 
     @Query("SELECT a FROM Account a WHERE a.accountType = :accountType")
     List<Account> getAllByType(@Param("accountType") AccountType accountType);
@@ -35,10 +35,10 @@ public interface AccountRepositoryJpa extends JpaRepository<Account, Long> {
     int delete(@Param("personId") Long personId, @Param("accountId") Long accountId);
 
     @Modifying
-    @Query("DELETE FROM Account a WHERE a.person.id = :personId AND a.isActive = :#{false}")
+    @Query("DELETE FROM Account a WHERE a.person.id = :personId AND a.active = :#{false}")
     int deleteAllInactiveByPerson(@Param("personId") Long personId);
 
     @Modifying
-    @Query("DELETE FROM Account a WHERE a.isActive = :#{false}")
+    @Query("DELETE FROM Account a WHERE a.active = :#{false}")
     int deleteAllInactive();
 }

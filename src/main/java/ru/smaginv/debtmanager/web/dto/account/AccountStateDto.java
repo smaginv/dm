@@ -13,5 +13,5 @@ public class AccountStateDto {
     private Long personId;
 
     @BooleanValidator
-    private String isActive;
+    private String active;
 }

@@ -18,17 +18,16 @@ import java.util.Objects;
 @Setter
 @ToString
 @JsonPropertyOrder({
-        "id", "type", "amount", "currency", "rate", "openDate", "closedDate", "isActive", "comment"
+        "id", "type", "amount", "currency", "rate", "openDate", "closedDate", "active", "comment"
 })
 @JsonIgnoreProperties(
-        value = {"isActive"},
+        value = {"openDate", "closedDate", "active"},
         allowGetters = true
 )
 public class AccountDto implements HasIdDto {
 
     private String id;
 
-    @NotBlank
     @EnumValidator(enumClass = AccountType.class)
     private String type;
 
@@ -41,16 +40,14 @@ public class AccountDto implements HasIdDto {
     @NotBlank
     private String rate;
 
-    @Size(max = 64)
     private String openDate;
 
-    @Size(max = 64)
     private String closedDate;
 
     @Size(max = 512)
     private String comment;
 
-    private String isActive;
+    private String active;
 
     @Override
     public boolean isNew() {

@@ -1,9 +1,6 @@
 package ru.smaginv.debtmanager.service.account;
 
-import ru.smaginv.debtmanager.web.dto.account.AccountDto;
-import ru.smaginv.debtmanager.web.dto.account.AccountInfoDto;
-import ru.smaginv.debtmanager.web.dto.account.AccountStateDto;
-import ru.smaginv.debtmanager.web.dto.account.AccountTypeDto;
+import ru.smaginv.debtmanager.web.dto.account.*;
 
 import java.util.List;
 
@@ -21,7 +18,7 @@ public interface AccountService {
 
     List<AccountDto> getAllByType(AccountTypeDto accountTypeDto);
 
-    void update(Long personId, AccountDto accountDto);
+    void update(Long personId, AccountUpdateDto accountUpdateDto);
 
     AccountDto create(Long personId, AccountDto accountDto);
 

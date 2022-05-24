@@ -6,8 +6,8 @@ import java.util.Map;
 
 public enum AccountType {
 
-    DEBIT("DEBIT"),
-    CREDIT("CREDIT");
+    LEND("LEND"),
+    LOAN("LOAN");
 
     private final String value;
 

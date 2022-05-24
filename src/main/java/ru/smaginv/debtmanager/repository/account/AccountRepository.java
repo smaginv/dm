@@ -10,15 +10,19 @@ public interface AccountRepository {
 
     Optional<Account> get(Long personId, Long accountId);
 
+    Optional<Account> getReferenceById(Long accountId);
+
     List<Account> getAll();
 
     List<Account> getAllByPerson(Long personId);
 
-    List<Account> getByState(Long personId, boolean isActive);
+    List<Account> getByState(Long personId, boolean active);
 
     List<Account> getAllByType(AccountType accountType);
 
     Account save(Long personId, Account account);
+
+    void save(Account account);
 
     int delete(Long personId, Long accountId);
 

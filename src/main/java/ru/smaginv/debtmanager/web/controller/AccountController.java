@@ -8,10 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.service.account.AccountService;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
-import ru.smaginv.debtmanager.web.dto.account.AccountDto;
-import ru.smaginv.debtmanager.web.dto.account.AccountInfoDto;
-import ru.smaginv.debtmanager.web.dto.account.AccountStateDto;
-import ru.smaginv.debtmanager.web.dto.account.AccountTypeDto;
+import ru.smaginv.debtmanager.web.dto.account.*;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -94,10 +91,10 @@ public class AccountController {
     )
     public ResponseEntity<?> update(@PathVariable Long personId,
                                     @PathVariable String accountId,
-                                    @Valid @RequestBody AccountDto accountDto) {
-        validationUtil.assureIdConsistent(accountDto, accountId);
-        log.info("update account: {}, with id: {}", accountDto, accountId);
-        accountService.update(personId, accountDto);
+                                    @Valid @RequestBody AccountUpdateDto accountUpdateDto) {
+        validationUtil.assureIdConsistent(accountUpdateDto, accountId);
+        log.info("update account: {}, with id: {}", accountUpdateDto, accountId);
+        accountService.update(personId, accountUpdateDto);
         return ResponseEntity.noContent().build();
     }
 

@@ -1,9 +1,6 @@
 package ru.smaginv.debtmanager.entity.account;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import ru.smaginv.debtmanager.entity.HasId;
@@ -20,6 +17,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @ToString(exclude = {"closedDate", "comment"})
 @Entity
 @Table(name = "account")
@@ -49,7 +47,7 @@ public class Account implements HasId {
     private AccountType accountType;
 
     @Digits(integer = 10, fraction = 2)
-    @DecimalMin(value = "1.0")
+    @DecimalMin(value = "0.0")
     @Column(name = "amount")
     private BigDecimal amount;
 
@@ -70,11 +68,13 @@ public class Account implements HasId {
     @Column(name = "closed_date")
     private LocalDateTime closedDate;
 
+    @Size(max = 512)
     @Column(name = "comment")
     private String comment;
 
-    @Column(name = "is_active")
-    private Boolean isActive;
+    @NotNull
+    @Column(name = "active")
+    private Boolean active;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id")

@@ -39,7 +39,7 @@ ALTER SEQUENCE contact_seq OWNED BY contact.contact_id;
 ALTER TABLE contact
     ALTER COLUMN contact_id SET DEFAULT nextval('contact_seq');
 
-CREATE TYPE account_type AS ENUM ('DEBIT', 'CREDIT');
+CREATE TYPE account_type AS ENUM ('LEND', 'LOAN');
 
 CREATE TABLE account
 (
@@ -52,14 +52,14 @@ CREATE TABLE account
     open_date   TIMESTAMP      NOT NULL DEFAULT now(),
     closed_date TIMESTAMP,
     comment     VARCHAR,
-    is_active   BOOLEAN        NOT NULL DEFAULT true
+    active      BOOLEAN        NOT NULL DEFAULT true
 );
 CREATE SEQUENCE account_seq INCREMENT 10 START 20;
 ALTER SEQUENCE account_seq OWNED BY account.account_id;
 ALTER TABLE account
     ALTER COLUMN account_id SET DEFAULT nextval('account_seq');
 
-CREATE TYPE operation_type AS ENUM ('LEND', 'LOAN');
+CREATE TYPE operation_type AS ENUM ('RECEIPT', 'EXPENSE');
 
 CREATE TABLE operation
 (

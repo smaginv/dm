@@ -29,6 +29,11 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
+    public Optional<Account> getReferenceById(Long accountId) {
+        return Optional.of(accountRepository.getReferenceById(accountId));
+    }
+
+    @Override
     public List<Account> getAll() {
         return accountRepository.getAll();
     }
@@ -39,10 +44,10 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public List<Account> getByState(Long personId, boolean isActive) {
+    public List<Account> getByState(Long personId, boolean active) {
         if (Objects.isNull(personId))
-            return accountRepository.getByState(isActive);
-        return accountRepository.getByPersonAndState(personId, isActive);
+            return accountRepository.getByState(active);
+        return accountRepository.getByPersonAndState(personId, active);
     }
 
     @Override
@@ -55,6 +60,11 @@ public class AccountRepositoryImpl implements AccountRepository {
         Person person = personRepository.getReferenceById(personId);
         account.setPerson(person);
         return accountRepository.save(account);
+    }
+
+    @Override
+    public void save(Account account) {
+        accountRepository.save(account);
     }
 
     @Override

@@ -17,29 +17,29 @@ VALUES (1, 1, 'PHONE', '79181234567'),
        (9, 5, 'PHONE', '79181234579'),
        (10, 5, 'EMAIL', 'bob@mail.ru');
 
-INSERT INTO account (account_id, person_id, type, amount, currency, rate, open_date, closed_date, comment, is_active)
-VALUES (1, 1, 'DEBIT', 100.00, 'RUB', 0.0, '2022-05-01 10:23:54', null, 'debit account for Ann', true),
-       (2, 1, 'CREDIT', 300.00, 'RUB', 0.0, '2022-05-02 11:01:25', null, 'credit account for Ann', true),
-       (3, 2, 'DEBIT', 500.00, 'RUB', 0.0, '2022-05-03 12:24:36', null, 'debit account for Tom', true),
-       (4, 2, 'CREDIT', 200.00, 'RUB', 0.0, '2022-05-04 09:58:36', null, 'credit account for Tom', true),
-       (5, 3, 'DEBIT', 400.00, 'RUB', 0.0, '2022-05-06 14:03:36', null, 'debit account for Helen', true),
-       (6, 3, 'CREDIT', 200.00, 'RUB', 0.0, '2022-05-07 15:11:36', null, 'credit account for Helen', true),
-       (7, 4, 'DEBIT', 400.00, 'RUB', 0.0, '2022-05-08 17:35:36', null, 'debit account for Joan', true),
-       (8, 4, 'CREDIT', 300.00, 'RUB', 0.0, '2022-05-09 18:47:36', null, 'credit account for Joan', true),
-       (9, 5, 'DEBIT', 600.00, 'RUB', 0.0, '2022-05-10 08:32:36', null, 'debit account for Bob', true),
-       (10, 5, 'CREDIT', 300.00, 'RUB', 0.0, '2022-05-10 16:37:36', null, 'credit account for Bob', true),
-       (11, 1, 'CREDIT', 333.00, 'RUB', 0.0, '2022-04-14 04:44:44', null, 'inactive credit account for Ann', false),
-       (12, 5, 'CREDIT', 444.00, 'RUB', 0.0, '2022-04-15 05:55:55', null, 'inactive credit account for Bob', false),
-       (13, 3, 'CREDIT', 555.00, 'RUB', 0.0, '2022-04-16 07:07:07', null, 'inactive credit account for Helen', false);
+INSERT INTO account (account_id, person_id, type, amount, currency, rate, open_date, closed_date, comment, active)
+VALUES (1, 1, 'LEND', 100.00, 'RUB', 0.0, '2022-05-01 10:23:54', null, 'lend to Ann', true),
+       (2, 1, 'LOAN', 300.00, 'RUB', 0.0, '2022-05-02 11:01:25', null, 'loan from Ann', true),
+       (3, 2, 'LEND', 500.00, 'RUB', 0.0, '2022-05-03 12:24:36', null, 'lend to Tom', true),
+       (4, 2, 'LOAN', 200.00, 'RUB', 0.0, '2022-05-04 09:58:36', null, 'loan from Tom', true),
+       (5, 3, 'LEND', 400.00, 'RUB', 0.0, '2022-05-06 14:03:36', null, 'lend to Helen', true),
+       (6, 3, 'LOAN', 200.00, 'RUB', 0.0, '2022-05-07 15:11:36', null, 'loan from Helen', true),
+       (7, 4, 'LEND', 400.00, 'RUB', 0.0, '2022-05-08 17:35:36', null, 'lend to Joan', true),
+       (8, 4, 'LOAN', 300.00, 'RUB', 0.0, '2022-05-09 18:47:36', null, 'loan from Joan', true),
+       (9, 5, 'LEND', 600.00, 'RUB', 0.0, '2022-05-10 08:32:36', null, 'lend to Bob', true),
+       (10, 5, 'LOAN', 300.00, 'RUB', 0.0, '2022-05-10 16:37:36', null, 'loan from Bob', true),
+       (11, 1, 'LOAN', 333.00, 'RUB', 0.0, '2022-04-14 04:44:44', null, 'inactive loan account from Ann', false),
+       (12, 5, 'LOAN', 444.00, 'RUB', 0.0, '2022-04-15 05:55:55', null, 'inactive loan account from Bob', false),
+       (13, 3, 'LOAN', 555.00, 'RUB', 0.0, '2022-04-16 07:07:07', null, 'inactive loan account from Helen', false);
 
 INSERT INTO operation (operation_id, account_id, type, oper_date, amount, description)
-VALUES (1, 1, 'LEND', '2022-05-01 10:23:54', 100.00, 'lend to Ann'),
-       (2, 2, 'LOAN', '2022-05-02 11:01:25', 300.00, 'loan to Ann'),
-       (3, 3, 'LEND', '2022-05-03 12:24:36', 500.00, 'lend to Tom'),
-       (4, 4, 'LOAN', '2022-05-04 09:58:36', 200.00, 'loan to Tom'),
-       (5, 5, 'LEND', '2022-05-06 14:03:36', 400.00, 'lend to Helen'),
-       (6, 6, 'LOAN', '2022-05-07 15:11:36', 200.00, 'loan to Helen'),
-       (7, 7, 'LEND', '2022-05-08 17:35:36', 400.00, 'lend to Joan'),
-       (8, 8, 'LOAN', '2022-05-09 18:47:36', 300.00, 'loan to Joan'),
-       (9, 9, 'LEND', '2022-05-10 08:32:36', 600.00, 'lend to Bob'),
-       (10, 10, 'LOAN', '2022-05-10 16:37:36', 300.00, 'loan to Bob');
+VALUES (1, 1, 'EXPENSE', '2022-05-01 10:23:54', 100.00, 'lend to Ann'),
+       (2, 2, 'RECEIPT', '2022-05-02 11:01:25', 300.00, 'loan from Ann'),
+       (3, 3, 'EXPENSE', '2022-05-03 12:24:36', 500.00, 'lend to Tom'),
+       (4, 4, 'RECEIPT', '2022-05-04 09:58:36', 200.00, 'loan from Tom'),
+       (5, 5, 'EXPENSE', '2022-05-06 14:03:36', 400.00, 'lend to Helen'),
+       (6, 6, 'RECEIPT', '2022-05-07 15:11:36', 200.00, 'loan from Helen'),
+       (7, 7, 'EXPENSE', '2022-05-08 17:35:36', 400.00, 'lend to Joan'),
+       (8, 8, 'RECEIPT', '2022-05-09 18:47:36', 300.00, 'loan from Joan'),
+       (9, 9, 'EXPENSE', '2022-05-10 08:32:36', 600.00, 'lend to Bob'),
+       (10, 10, 'RECEIPT', '2022-05-10 16:37:36', 300.00, 'loan from Bob');

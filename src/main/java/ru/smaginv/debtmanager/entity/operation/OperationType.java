@@ -6,8 +6,8 @@ import java.util.Map;
 
 public enum OperationType {
 
-    LEND("LEND"),
-    LOAN("LOAN");
+    RECEIPT("RECEIPT"),
+    EXPENSE("EXPENSE");
 
     private final String value;
 

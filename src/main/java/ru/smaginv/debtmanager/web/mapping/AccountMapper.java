@@ -8,6 +8,7 @@ import ru.smaginv.debtmanager.entity.account.Account;
 import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.account.AccountInfoDto;
+import ru.smaginv.debtmanager.web.dto.account.AccountUpdateDto;
 
 import java.util.List;
 
@@ -40,10 +41,12 @@ public interface AccountMapper {
 
     List<AccountDto> mapDtos(List<Account> accounts);
 
+    @Mapping(target = "accountType", ignore = true)
+    @Mapping(target = "amount", ignore = true)
+    @Mapping(target = "currencyCode", ignore = true)
+    @Mapping(target = "openDate", ignore = true)
+    @Mapping(target = "closedDate", ignore = true)
+    @Mapping(target = "active", ignore = true)
     @Mapping(target = "person", ignore = true)
-    @Mapping(source = "type", target = "accountType")
-    @Mapping(source = "currency", target = "currencyCode")
-    @Mapping(source = "openDate", target = "openDate", qualifiedByName = "parseStringToLocalDateTime")
-    @Mapping(source = "closedDate", target = "closedDate", qualifiedByName = "parseStringToLocalDateTime")
-    void update(AccountDto accountDto, @MappingTarget Account account);
+    void update(AccountUpdateDto accountUpdateDto, @MappingTarget Account account);
 }
