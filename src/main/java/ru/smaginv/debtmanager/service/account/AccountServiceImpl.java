@@ -16,6 +16,8 @@ import ru.smaginv.debtmanager.web.dto.account.*;
 import ru.smaginv.debtmanager.web.mapping.AccountMapper;
 import ru.smaginv.debtmanager.web.mapping.OperationMapper;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -85,6 +87,20 @@ public class AccountServiceImpl implements AccountService {
         return accountMapper.mapDtos(accounts);
     }
 
+    @Override
+    public String getTotalAmountByType(AccountTypeDto accountTypeDto) {
+        AccountType accountType = AccountType.getByValue(accountTypeDto.getType());
+        List<Account> accounts = accountRepository.getAllByType(accountType);
+        return calculateTotalAmount(accounts, AccountStatus.ACTIVE);
+    }
+
+    @Override
+    public String getArchiveTotalAmountByType(AccountTypeDto accountTypeDto) {
+        AccountType accountType = AccountType.getByValue(accountTypeDto.getType());
+        List<Account> accounts = accountRepository.getAllByType(accountType);
+        return calculateTotalAmount(accounts, AccountStatus.INACTIVE);
+    }
+
     @Transactional
     @Override
     public void update(Long personId, AccountUpdateDto accountUpdateDto) {
@@ -129,5 +145,15 @@ public class AccountServiceImpl implements AccountService {
 
     private Account getAccount(Long personId, Long accountId) {
         return getEntityFromOptional(accountRepository.get(personId, accountId), accountId);
+    }
+
+    private String calculateTotalAmount(List<Account> accounts, AccountStatus accountStatus) {
+        return accounts.stream()
+                .filter(account -> account.getAccountStatus().equals(accountStatus))
+                .map(Account::getAmount)
+                .reduce(BigDecimal::add)
+                .orElse(BigDecimal.ZERO)
+                .setScale(2, RoundingMode.DOWN)
+                .toString();
     }
 }

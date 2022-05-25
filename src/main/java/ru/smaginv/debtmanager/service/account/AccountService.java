@@ -18,6 +18,10 @@ public interface AccountService {
 
     List<AccountDto> getAllByType(AccountTypeDto accountTypeDto);
 
+    String getTotalAmountByType(AccountTypeDto accountTypeDto);
+
+    String getArchiveTotalAmountByType(AccountTypeDto accountTypeDto);
+
     void update(Long personId, AccountUpdateDto accountUpdateDto);
 
     AccountDto create(Long personId, AccountDto accountDto);

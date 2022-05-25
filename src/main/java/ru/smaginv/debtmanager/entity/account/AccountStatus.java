@@ -7,8 +7,7 @@ import java.util.Map;
 public enum AccountStatus {
 
     ACTIVE("ACTIVE"),
-    INACTIVE("INACTIVE"),
-    RESUMED("RESUMED");
+    INACTIVE("INACTIVE");
 
     private final String value;
 

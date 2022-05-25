@@ -198,7 +198,7 @@ public class OperationServiceImpl implements OperationService {
                 amount = account.getAmount().add(operation.getAmount());
         }
         if (account.getAccountStatus().equals(AccountStatus.INACTIVE) && amount.compareTo(BigDecimal.ZERO) != 0) {
-            account.setAccountStatus(AccountStatus.RESUMED);
+            account.setAccountStatus(AccountStatus.ACTIVE);
             account.setClosedDate(null);
         }
         account.setAmount(amount);

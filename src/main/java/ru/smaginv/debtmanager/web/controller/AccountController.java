@@ -81,9 +81,25 @@ public class AccountController {
     @GetMapping(
             value = "/accounts/type"
     )
-    public ResponseEntity<List<AccountDto>> getAllByType(@Valid @RequestBody AccountTypeDto accountType) {
-        log.info("get all accounts by type: {}", accountType);
-        return ResponseEntity.ok(accountService.getAllByType(accountType));
+    public ResponseEntity<List<AccountDto>> getAllByType(@Valid @RequestBody AccountTypeDto accountTypeDto) {
+        log.info("get all accounts by type: {}", accountTypeDto);
+        return ResponseEntity.ok(accountService.getAllByType(accountTypeDto));
+    }
+
+    @GetMapping(
+            value = "/accounts/type/total-amount"
+    )
+    public ResponseEntity<String> getTotalAmountByType(@Valid @RequestBody AccountTypeDto accountTypeDto) {
+        log.info("get total amount by account type: {}", accountTypeDto);
+        return ResponseEntity.ok(accountService.getTotalAmountByType(accountTypeDto));
+    }
+
+    @GetMapping(
+            value = "/accounts/archive/type/total-amount"
+    )
+    public ResponseEntity<String> getArchiveTotalAmountByType(@Valid @RequestBody AccountTypeDto accountTypeDto) {
+        log.info("get total amount by account type: {}", accountTypeDto);
+        return ResponseEntity.ok(accountService.getArchiveTotalAmountByType(accountTypeDto));
     }
 
     @PatchMapping(

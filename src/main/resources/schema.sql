@@ -41,7 +41,7 @@ ALTER TABLE contact
     ALTER COLUMN contact_id SET DEFAULT nextval('contact_seq');
 
 CREATE TYPE account_type AS ENUM ('LEND', 'LOAN');
-CREATE TYPE account_status AS ENUM ('ACTIVE', 'INACTIVE', 'RESUMED');
+CREATE TYPE account_status AS ENUM ('ACTIVE', 'INACTIVE');
 
 CREATE TABLE account
 (
