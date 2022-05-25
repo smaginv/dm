@@ -3,6 +3,7 @@ package ru.smaginv.debtmanager.repository.account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.smaginv.debtmanager.entity.account.Account;
+import ru.smaginv.debtmanager.entity.account.AccountStatus;
 import ru.smaginv.debtmanager.entity.account.AccountType;
 import ru.smaginv.debtmanager.entity.person.Person;
 import ru.smaginv.debtmanager.repository.person.PersonRepositoryJpa;
@@ -44,10 +45,10 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public List<Account> getByState(Long personId, boolean active) {
+    public List<Account> getByState(Long personId, AccountStatus accountStatus) {
         if (Objects.isNull(personId))
-            return accountRepository.getByState(active);
-        return accountRepository.getByPersonAndState(personId, active);
+            return accountRepository.getByState(accountStatus);
+        return accountRepository.getByPersonAndState(personId, accountStatus);
     }
 
     @Override

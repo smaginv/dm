@@ -1,6 +1,7 @@
 package ru.smaginv.debtmanager.repository.account;
 
 import ru.smaginv.debtmanager.entity.account.Account;
+import ru.smaginv.debtmanager.entity.account.AccountStatus;
 import ru.smaginv.debtmanager.entity.account.AccountType;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface AccountRepository {
 
     List<Account> getAllByPerson(Long personId);
 
-    List<Account> getByState(Long personId, boolean active);
+    List<Account> getByState(Long personId, AccountStatus accountStatus);
 
     List<Account> getAllByType(AccountType accountType);
 

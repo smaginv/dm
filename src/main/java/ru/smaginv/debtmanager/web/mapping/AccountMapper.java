@@ -24,12 +24,14 @@ public interface AccountMapper {
     @Mapping(source = "currency", target = "currencyCode")
     @Mapping(source = "openDate", target = "openDate", qualifiedByName = "parseStringToLocalDateTime")
     @Mapping(source = "closedDate", target = "closedDate", qualifiedByName = "parseStringToLocalDateTime")
+    @Mapping(source = "status", target = "accountStatus")
     Account map(AccountDto accountDto);
 
     @Mapping(source = "accountType", target = "type")
     @Mapping(source = "currencyCode", target = "currency")
     @Mapping(source = "openDate", target = "openDate", qualifiedByName = "formatDateToString")
     @Mapping(source = "closedDate", target = "closedDate", qualifiedByName = "formatDateToString")
+    @Mapping(source = "accountStatus", target = "status")
     AccountDto mapDto(Account account);
 
     @Mapping(target = "operations", ignore = true)
@@ -37,6 +39,7 @@ public interface AccountMapper {
     @Mapping(source = "currencyCode", target = "currency")
     @Mapping(source = "openDate", target = "openDate", qualifiedByName = "formatDateToString")
     @Mapping(source = "closedDate", target = "closedDate", qualifiedByName = "formatDateToString")
+    @Mapping(source = "accountStatus", target = "status")
     AccountInfoDto mapInfoDto(Account account);
 
     List<AccountDto> mapDtos(List<Account> accounts);
@@ -46,7 +49,7 @@ public interface AccountMapper {
     @Mapping(target = "currencyCode", ignore = true)
     @Mapping(target = "openDate", ignore = true)
     @Mapping(target = "closedDate", ignore = true)
-    @Mapping(target = "active", ignore = true)
+    @Mapping(target = "accountStatus", ignore = true)
     @Mapping(target = "person", ignore = true)
     void update(AccountUpdateDto accountUpdateDto, @MappingTarget Account account);
 }

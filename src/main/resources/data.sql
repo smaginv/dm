@@ -17,20 +17,20 @@ VALUES (1, 1, 'PHONE', '79181234567'),
        (9, 5, 'PHONE', '79181234579'),
        (10, 5, 'EMAIL', 'bob@mail.ru');
 
-INSERT INTO account (account_id, person_id, type, amount, currency, rate, open_date, closed_date, comment, active)
-VALUES (1, 1, 'LEND', 100.00, 'RUB', 0.0, '2022-05-01 10:23:54', null, 'lend to Ann', true),
-       (2, 1, 'LOAN', 300.00, 'RUB', 0.0, '2022-05-02 11:01:25', null, 'loan from Ann', true),
-       (3, 2, 'LEND', 500.00, 'RUB', 0.0, '2022-05-03 12:24:36', null, 'lend to Tom', true),
-       (4, 2, 'LOAN', 200.00, 'RUB', 0.0, '2022-05-04 09:58:36', null, 'loan from Tom', true),
-       (5, 3, 'LEND', 400.00, 'RUB', 0.0, '2022-05-06 14:03:36', null, 'lend to Helen', true),
-       (6, 3, 'LOAN', 200.00, 'RUB', 0.0, '2022-05-07 15:11:36', null, 'loan from Helen', true),
-       (7, 4, 'LEND', 400.00, 'RUB', 0.0, '2022-05-08 17:35:36', null, 'lend to Joan', true),
-       (8, 4, 'LOAN', 300.00, 'RUB', 0.0, '2022-05-09 18:47:36', null, 'loan from Joan', true),
-       (9, 5, 'LEND', 600.00, 'RUB', 0.0, '2022-05-10 08:32:36', null, 'lend to Bob', true),
-       (10, 5, 'LOAN', 300.00, 'RUB', 0.0, '2022-05-10 16:37:36', null, 'loan from Bob', true),
-       (11, 1, 'LOAN', 333.00, 'RUB', 0.0, '2022-04-14 04:44:44', null, 'inactive loan account from Ann', false),
-       (12, 5, 'LOAN', 444.00, 'RUB', 0.0, '2022-04-15 05:55:55', null, 'inactive loan account from Bob', false),
-       (13, 3, 'LOAN', 555.00, 'RUB', 0.0, '2022-04-16 07:07:07', null, 'inactive loan account from Helen', false);
+INSERT INTO account (account_id, person_id, type, amount, currency, rate, open_date, closed_date, comment, status)
+VALUES (1, 1, 'LEND', 100.00, 'RUB', 0.0, '2022-05-01 10:23:54', null, 'lend to Ann', 'ACTIVE'),
+       (2, 1, 'LOAN', 300.00, 'RUB', 0.0, '2022-05-02 11:01:25', null, 'loan from Ann', 'ACTIVE'),
+       (3, 2, 'LEND', 500.00, 'RUB', 0.0, '2022-05-03 12:24:36', null, 'lend to Tom', 'ACTIVE'),
+       (4, 2, 'LOAN', 200.00, 'RUB', 0.0, '2022-05-04 09:58:36', null, 'loan from Tom', 'ACTIVE'),
+       (5, 3, 'LEND', 400.00, 'RUB', 0.0, '2022-05-06 14:03:36', null, 'lend to Helen', 'ACTIVE'),
+       (6, 3, 'LOAN', 200.00, 'RUB', 0.0, '2022-05-07 15:11:36', null, 'loan from Helen', 'ACTIVE'),
+       (7, 4, 'LEND', 400.00, 'RUB', 0.0, '2022-05-08 17:35:36', null, 'lend to Joan', 'ACTIVE'),
+       (8, 4, 'LOAN', 300.00, 'RUB', 0.0, '2022-05-09 18:47:36', null, 'loan from Joan', 'ACTIVE'),
+       (9, 5, 'LEND', 600.00, 'RUB', 0.0, '2022-05-10 08:32:36', null, 'lend to Bob', 'ACTIVE'),
+       (10, 5, 'LOAN', 300.00, 'RUB', 0.0, '2022-05-10 16:37:36', null, 'loan from Bob', 'ACTIVE'),
+       (11, 1, 'LOAN', 333.00, 'RUB', 0.0, '2022-04-14 04:44:44', null, 'inactive loan account from Ann', 'INACTIVE'),
+       (12, 5, 'LOAN', 444.00, 'RUB', 0.0, '2022-04-15 05:55:55', null, 'inactive loan account from Bob', 'INACTIVE'),
+       (13, 3, 'LOAN', 555.00, 'RUB', 0.0, '2022-04-16 07:07:07', null, 'inactive loan account from Helen', 'INACTIVE');
 
 INSERT INTO operation (operation_id, account_id, type, oper_date, amount, description)
 VALUES (1, 1, 'EXPENSE', '2022-05-01 10:23:54', 100.00, 'lend to Ann'),

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.account.Account;
+import ru.smaginv.debtmanager.entity.account.AccountStatus;
 import ru.smaginv.debtmanager.entity.account.AccountType;
 import ru.smaginv.debtmanager.entity.operation.Operation;
 import ru.smaginv.debtmanager.repository.account.AccountRepository;
@@ -15,7 +16,6 @@ import ru.smaginv.debtmanager.web.dto.account.*;
 import ru.smaginv.debtmanager.web.mapping.AccountMapper;
 import ru.smaginv.debtmanager.web.mapping.OperationMapper;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -73,8 +73,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AccountDto> getByState(AccountStateDto accountStateDto) {
         Long personId = accountStateDto.getPersonId();
-        boolean isActive = Boolean.parseBoolean(accountStateDto.getActive());
-        List<Account> accounts = accountRepository.getByState(personId, isActive);
+        AccountStatus accountStatus = AccountStatus.getByValue(accountStateDto.getStatus());
+        List<Account> accounts = accountRepository.getByState(personId, accountStatus);
         return accountMapper.mapDtos(accounts);
     }
 
@@ -98,7 +98,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountDto create(Long personId, AccountDto accountDto) {
         Account account = accountMapper.map(accountDto);
         account.setOpenDate(LocalDateTime.now());
-        account.setActive(true);
+        account.setAccountStatus(AccountStatus.ACTIVE);
         account = accountRepository.save(personId, account);
         return accountMapper.mapDto(account);
     }
@@ -107,8 +107,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void delete(Long personId, Long accountId) {
         Account account = getAccount(personId, accountId);
-        if (account.getAmount().compareTo(BigDecimal.ZERO) != 0)
-            throw new AccountActiveException("amount of account must be 0.0");
+        if (account.getAccountStatus().equals(AccountStatus.ACTIVE))
+            throw new AccountActiveException("status of account must be 'INACTIVE'");
         int result = accountRepository.delete(personId, accountId);
         validationUtil.checkNotFoundWithId(result != 0, accountId);
     }

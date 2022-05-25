@@ -72,9 +72,10 @@ public class Account implements HasId {
     @Column(name = "comment")
     private String comment;
 
-    @NotNull
-    @Column(name = "active")
-    private Boolean active;
+    @Type(type = "pgsql_enum")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private AccountStatus accountStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id")

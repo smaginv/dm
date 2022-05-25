@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.account.Account;
+import ru.smaginv.debtmanager.entity.account.AccountStatus;
 import ru.smaginv.debtmanager.entity.account.AccountType;
 import ru.smaginv.debtmanager.entity.operation.Operation;
 import ru.smaginv.debtmanager.entity.operation.OperationType;
@@ -151,7 +152,7 @@ public class OperationServiceImpl implements OperationService {
                 amount = account.getAmount().subtract(operation.getAmount());
         }
         if (amount.compareTo(BigDecimal.ZERO) == 0) {
-            account.setActive(false);
+            account.setAccountStatus(AccountStatus.INACTIVE);
             account.setClosedDate(LocalDateTime.now());
         }
         account.setAmount(amount);
@@ -170,8 +171,8 @@ public class OperationServiceImpl implements OperationService {
             else
                 amount = account.getAmount().add(operation.getAmount());
         }
-        if (!account.getActive() && amount.compareTo(BigDecimal.ZERO) != 0) {
-            account.setActive(true);
+        if (account.getAccountStatus().equals(AccountStatus.INACTIVE) && amount.compareTo(BigDecimal.ZERO) != 0) {
+            account.setAccountStatus(AccountStatus.RESUMED);
             account.setClosedDate(null);
         }
         account.setAmount(amount);
@@ -179,8 +180,8 @@ public class OperationServiceImpl implements OperationService {
 
     private Account getAccount(Long accountId) {
         Account account = getEntityFromOptional(accountRepository.getReferenceById(accountId), accountId);
-        if (!account.getActive())
-            throw new AccountActiveException("account must be active");
+        if (account.getAccountStatus().equals(AccountStatus.INACTIVE))
+            throw new AccountActiveException("account status must be 'ACTIVE' or 'RESUMED'");
         return account;
     }
 

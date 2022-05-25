@@ -10,6 +10,7 @@ DROP SEQUENCE IF EXISTS person_seq;
 
 DROP TYPE IF EXISTS operation_type;
 DROP TYPE IF EXISTS account_type;
+DROP TYPE IF EXISTS account_status;
 DROP TYPE IF EXISTS contact_type;
 
 CREATE TABLE person
@@ -40,6 +41,7 @@ ALTER TABLE contact
     ALTER COLUMN contact_id SET DEFAULT nextval('contact_seq');
 
 CREATE TYPE account_type AS ENUM ('LEND', 'LOAN');
+CREATE TYPE account_status AS ENUM ('ACTIVE', 'INACTIVE', 'RESUMED');
 
 CREATE TABLE account
 (
@@ -52,7 +54,7 @@ CREATE TABLE account
     open_date   TIMESTAMP      NOT NULL DEFAULT now(),
     closed_date TIMESTAMP,
     comment     VARCHAR,
-    active      BOOLEAN        NOT NULL DEFAULT true
+    status      account_status NOT NULL
 );
 CREATE SEQUENCE account_seq INCREMENT 10 START 20;
 ALTER SEQUENCE account_seq OWNED BY account.account_id;

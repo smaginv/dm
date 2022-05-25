@@ -18,10 +18,10 @@ import java.util.Objects;
 @Setter
 @ToString
 @JsonPropertyOrder({
-        "id", "type", "amount", "currency", "rate", "openDate", "closedDate", "active", "comment"
+        "id", "type", "amount", "currency", "rate", "openDate", "closedDate", "status", "comment"
 })
 @JsonIgnoreProperties(
-        value = {"openDate", "closedDate", "active"},
+        value = {"openDate", "closedDate", "status"},
         allowGetters = true
 )
 public class AccountDto implements HasIdDto {
@@ -47,7 +47,7 @@ public class AccountDto implements HasIdDto {
     @Size(max = 512)
     private String comment;
 
-    private String active;
+    private String status;
 
     @Override
     public boolean isNew() {
