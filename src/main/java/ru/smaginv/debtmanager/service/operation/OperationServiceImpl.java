@@ -13,10 +13,13 @@ import ru.smaginv.debtmanager.repository.operation.OperationRepository;
 import ru.smaginv.debtmanager.util.AppUtil;
 import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.util.exception.AccountActiveException;
+import ru.smaginv.debtmanager.util.exception.AccountOperationException;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
+import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationSearchDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationTypeDto;
+import ru.smaginv.debtmanager.web.mapping.AccountMapper;
 import ru.smaginv.debtmanager.web.mapping.OperationMapper;
 
 import java.math.BigDecimal;
@@ -34,16 +37,18 @@ public class OperationServiceImpl implements OperationService {
     private final OperationRepository operationRepository;
     private final AccountRepository accountRepository;
     private final OperationMapper operationMapper;
+    private final AccountMapper accountMapper;
     private final ValidationUtil validationUtil;
     private final MappingUtil mappingUtil;
 
     @Autowired
     public OperationServiceImpl(OperationRepository operationRepository, AccountRepository accountRepository,
-                                OperationMapper operationMapper, ValidationUtil validationUtil,
-                                MappingUtil mappingUtil) {
+                                OperationMapper operationMapper, AccountMapper accountMapper,
+                                ValidationUtil validationUtil, MappingUtil mappingUtil) {
         this.operationRepository = operationRepository;
         this.accountRepository = accountRepository;
         this.operationMapper = operationMapper;
+        this.accountMapper = accountMapper;
         this.validationUtil = validationUtil;
         this.mappingUtil = mappingUtil;
     }
@@ -119,6 +124,27 @@ public class OperationServiceImpl implements OperationService {
 
     @Transactional
     @Override
+    public AccountDto closeAccount(Long accountId, OperationDto operationDto) {
+        Account account = getAccount(accountId);
+        AccountType accountType = account.getAccountType();
+        Operation operation = operationMapper.map(operationDto);
+        OperationType operationType = operation.getOperationType();
+        if (accountType.equals(AccountType.LEND) && operationType.equals(OperationType.EXPENSE))
+            throw new AccountOperationException("operation type must be 'RECEIPT'");
+        else if (accountType.equals(AccountType.LOAN) && operationType.equals(OperationType.RECEIPT))
+            throw new AccountOperationException("operation type must be 'EXPENSE'");
+        if (account.getAmount().compareTo(operation.getAmount()) != 0)
+            throw new AccountOperationException("amount of operation must be: " + account.getAmount());
+        setAccountAmount(account, operation);
+        if (Objects.isNull(operation.getOperDate()))
+            operation.setOperDate(LocalDateTime.now());
+        operationRepository.save(accountId, operation);
+        accountRepository.save(account);
+        return accountMapper.mapDto(account);
+    }
+
+    @Transactional
+    @Override
     public void delete(Long accountId, Long operationId) {
         Account account = getAccount(accountId);
         Operation operation = getOperation(accountId, operationId);
@@ -179,7 +205,7 @@ public class OperationServiceImpl implements OperationService {
     }
 
     private Account getAccount(Long accountId) {
-        Account account = getEntityFromOptional(accountRepository.getReferenceById(accountId), accountId);
+        Account account = getEntityFromOptional(accountRepository.getById(accountId), accountId);
         if (account.getAccountStatus().equals(AccountStatus.INACTIVE))
             throw new AccountActiveException("account status must be 'ACTIVE' or 'RESUMED'");
         return account;

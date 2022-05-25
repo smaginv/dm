@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.service.operation.OperationService;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
+import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationSearchDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationTypeDto;
@@ -102,6 +103,15 @@ public class OperationController {
                 .buildAndExpand(created.getId())
                 .toUri();
         return ResponseEntity.created(location).body(created);
+    }
+
+    @PatchMapping(
+            value = "/accounts/{accountId}/operations/close-account"
+    )
+    public ResponseEntity<AccountDto> closeAccount(@PathVariable Long accountId,
+                                                   @Valid @RequestBody OperationDto operationDto) {
+        log.info("close account: {}, by operation: {}", accountId, operationDto);
+        return ResponseEntity.ok(operationService.closeAccount(accountId, operationDto));
     }
 
     @DeleteMapping(

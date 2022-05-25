@@ -64,7 +64,7 @@ public class Account implements HasId {
     @Column(name = "open_date")
     private LocalDateTime openDate;
 
-    @FutureOrPresent
+    @PastOrPresent
     @Column(name = "closed_date")
     private LocalDateTime closedDate;
 

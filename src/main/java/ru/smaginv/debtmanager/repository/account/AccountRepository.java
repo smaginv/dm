@@ -11,7 +11,7 @@ public interface AccountRepository {
 
     Optional<Account> get(Long personId, Long accountId);
 
-    Optional<Account> getReferenceById(Long accountId);
+    Optional<Account> getById(Long accountId);
 
     List<Account> getAll();
 

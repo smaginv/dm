@@ -1,5 +1,6 @@
 package ru.smaginv.debtmanager.service.operation;
 
+import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationSearchDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationTypeDto;
@@ -21,6 +22,8 @@ public interface OperationService {
     void update(Long accountId, OperationDto operationDto);
 
     OperationDto create(Long accountId, OperationDto operationDto);
+
+    AccountDto closeAccount(Long accountId, OperationDto operationDto);
 
     void delete(Long accountId, Long operationId);
 

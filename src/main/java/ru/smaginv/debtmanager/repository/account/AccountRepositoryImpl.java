@@ -30,8 +30,8 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Optional<Account> getReferenceById(Long accountId) {
-        return Optional.of(accountRepository.getReferenceById(accountId));
+    public Optional<Account> getById(Long accountId) {
+        return accountRepository.get(accountId);
     }
 
     @Override
