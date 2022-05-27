@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.smaginv.debtmanager.config.PropertiesConfig;
 import ru.smaginv.debtmanager.entity.contact.ContactType;
+import ru.smaginv.debtmanager.util.exception.NotFoundException;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
 import ru.smaginv.debtmanager.web.dto.contact.AbstractContactDto;
 
-import javax.persistence.EntityNotFoundException;
 import javax.validation.ValidationException;
 import java.util.List;
 
@@ -25,19 +25,19 @@ public class ValidationUtil {
 
     public void checkNotFound(boolean found) {
         if (!found) {
-            throw new EntityNotFoundException();
+            throw new NotFoundException();
         }
     }
 
     public void checkNotFoundWithId(boolean found, Long id) {
         if (!found) {
-            throw new EntityNotFoundException("not found with id: " + id);
+            throw new NotFoundException("not found with id: " + id);
         }
     }
 
     public void checkIsNew(HasIdDto entity) {
         if (!entity.isNew()) {
-            throw new IllegalArgumentException(entity + " must be new (id = null)");
+            throw new IllegalArgumentException(entity.getClass().getSimpleName() + " must be new (id = null)");
         }
     }
 
@@ -45,7 +45,7 @@ public class ValidationUtil {
         if (entity.isNew())
             entity.setId(id);
         else if (!entity.getId().equals(id))
-            throw new IllegalArgumentException(entity + " must be with id: " + id);
+            throw new IllegalArgumentException(entity.getClass().getSimpleName() + " must be with id: " + id);
     }
 
     public void validateContact(AbstractContactDto contactDto) {

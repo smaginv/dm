@@ -1,6 +1,7 @@
 package ru.smaginv.debtmanager.util.entity;
 
-import javax.persistence.EntityNotFoundException;
+import ru.smaginv.debtmanager.util.exception.NotFoundException;
+
 import java.util.Optional;
 
 public class EntityUtil {
@@ -8,12 +9,12 @@ public class EntityUtil {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static <T> T getEntityFromOptional(Optional<T> entity) {
         return entity.orElseThrow(() ->
-                new EntityNotFoundException("Not found entity"));
+                new NotFoundException("Not found entity"));
     }
 
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static <T, ID> T getEntityFromOptional(Optional<T> entity, ID id) {
         return entity.orElseThrow(() ->
-                new EntityNotFoundException("Not found entity with id: " + id));
+                new NotFoundException("Not found entity with id: " + id));
     }
 }

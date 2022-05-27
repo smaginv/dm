@@ -24,7 +24,7 @@ public class EnumValidatorConstraint implements ConstraintValidator<EnumValidato
             return true;
         if (!values.contains(value)) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("type must be: " + values).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("must be: " + values).addConstraintViolation();
             return false;
         }
         return true;

@@ -24,7 +24,7 @@ public class BooleanValidatorConstraint implements ConstraintValidator<BooleanVa
             return true;
         if (!values.contains(value.toLowerCase())) {
             context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("value must be: " + values).addConstraintViolation();
+            context.buildConstraintViolationWithTemplate("must be: " + values).addConstraintViolation();
             return false;
         }
         return true;

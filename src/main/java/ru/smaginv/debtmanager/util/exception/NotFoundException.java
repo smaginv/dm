@@ -6,13 +6,16 @@ import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 
 @Getter
-public class AccountOperationException extends RuntimeException implements AppException {
+public class NotFoundException extends RuntimeException implements AppException {
 
-    private final HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+    private final HttpStatus httpStatus = HttpStatus.NOT_FOUND;
 
     private final LocalDateTime timestamp = LocalDateTime.now();
 
-    public AccountOperationException(String message) {
+    public NotFoundException() {
+    }
+
+    public NotFoundException(String message) {
         super(message);
     }
 }
