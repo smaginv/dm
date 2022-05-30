@@ -48,16 +48,22 @@ public class ValidationUtil {
             throw new IllegalArgumentException(entity.getClass().getSimpleName() + " must be with id: " + id);
     }
 
-    public void validateContact(AbstractContactDto contactDto) {
-        ContactType type = ContactType.getByValue(contactDto.getType());
-        if (type.equals(ContactType.PHONE))
-            validateValue(phonePatterns, contactDto.getValue());
-        else
-            validateValue(emailPatterns, contactDto.getValue());
+    public boolean validateEmail(String email) {
+        return validateValue(emailPatterns, email);
     }
 
-    private void validateValue(List<String> patterns, String value) {
-        if (patterns.stream().noneMatch(value::matches))
-            throw new ValidationException("not valid contact value: " + value);
+    public void validateContact(AbstractContactDto contactDto) {
+        ContactType type = ContactType.getByValue(contactDto.getType());
+        boolean valid;
+        if (type.equals(ContactType.PHONE))
+            valid = validateValue(phonePatterns, contactDto.getValue());
+        else
+            valid = validateValue(emailPatterns, contactDto.getValue());
+        if (!valid)
+            throw new ValidationException("not valid contact value: " + contactDto.getValue());
+    }
+
+    private boolean validateValue(List<String> patterns, String value) {
+        return patterns.stream().anyMatch(value::matches);
     }
 }

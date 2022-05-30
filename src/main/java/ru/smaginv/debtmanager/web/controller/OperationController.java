@@ -82,9 +82,9 @@ public class OperationController {
             value = "/accounts/{accountId}/operations/{operationId}"
     )
     public ResponseEntity<?> update(@PathVariable Long accountId,
-                                    @PathVariable String operationId,
+                                    @PathVariable Long operationId,
                                     @RequestBody OperationDto operationDto) {
-        validationUtil.assureIdConsistent(operationDto, operationId);
+        validationUtil.assureIdConsistent(operationDto, String.valueOf(operationId));
         log.info("update operation: {}, with id: {}", operationDto, operationId);
         operationService.update(accountId, operationDto);
         return ResponseEntity.noContent().build();

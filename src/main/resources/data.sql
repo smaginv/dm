@@ -1,3 +1,12 @@
+INSERT INTO users (user_id, name, email, password, status)
+VALUES (1, 'admin', 'admin@email.ru', 'admin', 'ACTIVE'),
+       (2, 'user', 'user@email.ru', 'user', 'ACTIVE');
+
+INSERT INTO roles(user_id, role)
+VALUES (1, 'ADMIN'),
+       (1, 'USER'),
+       (2, 'USER');
+
 INSERT INTO person (person_id, first_name, last_name, comment)
 VALUES (1, 'Ann', 'Jefferson', 'first person'),
        (2, 'Tom', 'Ballson', 'two person'),

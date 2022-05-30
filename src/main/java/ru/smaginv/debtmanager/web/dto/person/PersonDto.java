@@ -12,7 +12,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@JsonPropertyOrder({"id", "firstName", "lastName", "comment"})
+@JsonPropertyOrder({
+        "id", "firstName", "lastName", "comment"
+})
 public class PersonDto implements HasIdDto {
 
     private String id;

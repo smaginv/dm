@@ -72,8 +72,8 @@ public class PersonController {
     @PatchMapping(
             value = "/person/{personId}"
     )
-    public ResponseEntity<?> update(@Valid @RequestBody PersonDto personDto, @PathVariable String personId) {
-        validationUtil.assureIdConsistent(personDto, personId);
+    public ResponseEntity<?> update(@Valid @RequestBody PersonDto personDto, @PathVariable Long personId) {
+        validationUtil.assureIdConsistent(personDto, String.valueOf(personId));
         log.info("update person: {}, with id: {}", personDto, personId);
         personService.update(personDto);
         return ResponseEntity.noContent().build();

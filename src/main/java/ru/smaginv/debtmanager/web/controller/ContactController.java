@@ -64,9 +64,9 @@ public class ContactController {
             value = "/person/{personId}/contacts/{contactId}"
     )
     public ResponseEntity<?> update(@PathVariable Long personId,
-                                    @PathVariable String contactId,
+                                    @PathVariable Long contactId,
                                     @Valid @RequestBody ContactDto contactDto) {
-        validationUtil.assureIdConsistent(contactDto, contactId);
+        validationUtil.assureIdConsistent(contactDto, String.valueOf(contactId));
         log.info("update contact: {}, with id: {}", contactDto, contactId);
         contactService.update(personId, contactDto);
         return ResponseEntity.noContent().build();

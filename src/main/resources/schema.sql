@@ -2,16 +2,46 @@ DROP TABLE IF EXISTS operation;
 DROP TABLE IF EXISTS account;
 DROP TABLE IF EXISTS contact;
 DROP TABLE IF EXISTS person;
+DROP TABLE IF EXISTS roles;
+DROP TABLE IF EXISTS users;
 
 DROP SEQUENCE IF EXISTS operation_seq;
 DROP SEQUENCE IF EXISTS account_seq;
 DROP SEQUENCE IF EXISTS contact_seq;
 DROP SEQUENCE IF EXISTS person_seq;
+DROP SEQUENCE IF EXISTS users_seq;
 
 DROP TYPE IF EXISTS operation_type;
 DROP TYPE IF EXISTS account_type;
 DROP TYPE IF EXISTS account_status;
 DROP TYPE IF EXISTS contact_type;
+DROP TYPE IF EXISTS user_role;
+DROP TYPE IF EXISTS user_status;
+
+CREATE TYPE user_status AS ENUM ('ACTIVE', 'INACTIVE');
+
+CREATE TABLE users
+(
+    user_id  BIGINT PRIMARY KEY,
+    name     VARCHAR        NOT NULL,
+    email    VARCHAR UNIQUE NOT NULL,
+    password VARCHAR        NOT NULL,
+    status   user_status    NOT NULL
+);
+CREATE SEQUENCE users_seq INCREMENT 10 START 20;
+ALTER SEQUENCE users_seq OWNED BY users.user_id;
+ALTER TABLE users
+    ALTER COLUMN user_id SET DEFAULT nextval('users_seq');
+
+CREATE TYPE user_role AS ENUM ('ADMIN', 'USER');
+
+CREATE TABLE roles
+(
+    user_id BIGINT    NOT NULL REFERENCES users (user_id) ON DELETE CASCADE,
+    role    user_role NOT NULL
+);
+ALTER TABLE roles
+    ADD CONSTRAINT user_role_idx UNIQUE (user_id, role);
 
 CREATE TABLE person
 (

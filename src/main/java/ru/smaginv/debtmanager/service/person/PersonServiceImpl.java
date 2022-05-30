@@ -87,7 +87,7 @@ public class PersonServiceImpl implements PersonService {
     public void update(PersonDto personDto) {
         Person person = getPerson(mappingUtil.mapId(personDto));
         personMapper.update(personDto, person);
-        personMapper.mapDto(personRepository.save(person));
+        personRepository.save(person);
     }
 
     @Transactional

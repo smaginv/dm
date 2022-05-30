@@ -106,9 +106,9 @@ public class AccountController {
             value = "/person/{personId}/accounts/{accountId}"
     )
     public ResponseEntity<?> update(@PathVariable Long personId,
-                                    @PathVariable String accountId,
+                                    @PathVariable Long accountId,
                                     @Valid @RequestBody AccountUpdateDto accountUpdateDto) {
-        validationUtil.assureIdConsistent(accountUpdateDto, accountId);
+        validationUtil.assureIdConsistent(accountUpdateDto, String.valueOf(accountId));
         log.info("update account: {}, with id: {}", accountUpdateDto, accountId);
         accountService.update(personId, accountUpdateDto);
         return ResponseEntity.noContent().build();

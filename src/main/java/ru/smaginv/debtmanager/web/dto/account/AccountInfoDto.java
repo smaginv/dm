@@ -13,9 +13,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@JsonPropertyOrder(
-        {"id", "type", "amount", "currency", "rate", "openDate", "closedDate", "status", "operations", "comment"}
-)
+@JsonPropertyOrder({
+        "id", "type", "amount", "currency", "rate", "openDate", "closedDate", "status", "operations", "comment"
+})
 public class AccountInfoDto implements HasIdDto {
 
     private String id;

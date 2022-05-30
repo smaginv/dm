@@ -11,7 +11,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString(callSuper = true)
-@JsonPropertyOrder({"id", "type", "value"})
+@JsonPropertyOrder({
+        "id", "type", "value"
+})
 public class ContactDto extends AbstractContactDto implements HasIdDto {
 
     private String id;
