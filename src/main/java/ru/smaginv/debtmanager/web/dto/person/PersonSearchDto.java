@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
-import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 
 import java.util.Objects;
 
@@ -23,7 +23,7 @@ public class PersonSearchDto implements HasIdDto {
 
     private String lastName;
 
-    ContactSearchDto contact;
+    ContactDto contact;
 
     @Override
     public boolean isNew() {

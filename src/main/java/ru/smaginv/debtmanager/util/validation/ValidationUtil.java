@@ -6,7 +6,7 @@ import ru.smaginv.debtmanager.config.PropertiesConfig;
 import ru.smaginv.debtmanager.entity.contact.ContactType;
 import ru.smaginv.debtmanager.util.exception.NotFoundException;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
-import ru.smaginv.debtmanager.web.dto.contact.AbstractContactDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 
 import javax.validation.ValidationException;
 import java.util.List;
@@ -52,7 +52,7 @@ public class ValidationUtil {
         return validateValue(emailPatterns, email);
     }
 
-    public void validateContact(AbstractContactDto contactDto) {
+    public void validateContact(ContactDto contactDto) {
         ContactType type = ContactType.getByValue(contactDto.getType());
         boolean valid;
         if (type.equals(ContactType.PHONE))

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.service.person.PersonService;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
-import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonInfoDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonSearchDto;
@@ -47,10 +47,10 @@ public class PersonController {
     @GetMapping(
             value = "/person/by-contact"
     )
-    public ResponseEntity<PersonInfoDto> getByContact(@Valid @RequestBody ContactSearchDto contactSearchDto) {
-        validationUtil.validateContact(contactSearchDto);
-        log.info("get person by contact {}", contactSearchDto);
-        return ResponseEntity.ok(personService.getByContact(contactSearchDto));
+    public ResponseEntity<PersonInfoDto> getByContact(@Valid @RequestBody ContactDto contactDto) {
+        validationUtil.validateContact(contactDto);
+        log.info("get person by contact {}", contactDto);
+        return ResponseEntity.ok(personService.getByContact(contactDto));
     }
 
     @GetMapping(
@@ -69,7 +69,7 @@ public class PersonController {
         return ResponseEntity.ok(personService.find(personSearchDto));
     }
 
-    @PatchMapping(
+    @PutMapping(
             value = "/person/{personId}"
     )
     public ResponseEntity<?> update(@Valid @RequestBody PersonDto personDto, @PathVariable Long personId) {
@@ -106,10 +106,10 @@ public class PersonController {
     @DeleteMapping(
             value = "/person/by-contact"
     )
-    public ResponseEntity<?> deleteByContact(@Valid @RequestBody ContactSearchDto contactSearchDto) {
-        validationUtil.validateContact(contactSearchDto);
-        log.info("delete person by contact: {}", contactSearchDto);
-        personService.deleteByContact(contactSearchDto);
+    public ResponseEntity<?> deleteByContact(@Valid @RequestBody ContactDto contactDto) {
+        validationUtil.validateContact(contactDto);
+        log.info("delete person by contact: {}", contactDto);
+        personService.deleteByContact(contactDto);
         return ResponseEntity.noContent().build();
     }
 }

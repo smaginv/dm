@@ -6,7 +6,6 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.smaginv.debtmanager.entity.contact.Contact;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
-import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
 
 import java.util.List;
 
@@ -19,11 +18,6 @@ public interface ContactMapper {
     @Mapping(target = "person", ignore = true)
     @Mapping(source = "type", target = "contactType")
     Contact map(ContactDto contactDto);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "person", ignore = true)
-    @Mapping(source = "type", target = "contactType")
-    Contact map(ContactSearchDto contactSearchDto);
 
     @Mapping(source = "contactType", target = "type")
     ContactDto mapDto(Contact contact);

@@ -14,7 +14,6 @@ import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -59,7 +58,6 @@ public class Operation implements HasId {
     @Column(name = "amount")
     private BigDecimal amount;
 
-    @Size(max = 512)
     @Column(name = "description")
     private String description;
 

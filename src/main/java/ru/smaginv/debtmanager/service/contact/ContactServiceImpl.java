@@ -8,9 +8,7 @@ import ru.smaginv.debtmanager.entity.contact.ContactType;
 import ru.smaginv.debtmanager.repository.contact.ContactRepository;
 import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
-import ru.smaginv.debtmanager.web.dto.contact.AbstractContactDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
-import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
 import ru.smaginv.debtmanager.web.mapping.ContactMapper;
 
 import javax.validation.ValidationException;
@@ -87,12 +85,12 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public Contact map(ContactSearchDto contactSearchDto) {
-        return contactMapper.map(contactSearchDto);
+    public Contact map(ContactDto contactDto) {
+        return contactMapper.map(contactDto);
     }
 
     @Override
-    public <T extends AbstractContactDto> T validate(T contactDto) {
+    public ContactDto validate(ContactDto contactDto) {
         if (Objects.isNull(contactDto) ||
                 (Objects.isNull(contactDto.getType()) || Objects.isNull(contactDto.getValue())))
             return null;

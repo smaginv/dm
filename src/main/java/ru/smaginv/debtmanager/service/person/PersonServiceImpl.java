@@ -12,7 +12,6 @@ import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
-import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonInfoDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonSearchDto;
@@ -56,8 +55,8 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public PersonInfoDto getByContact(ContactSearchDto contactSearchDto) {
-        Contact contact = contactService.map(contactSearchDto);
+    public PersonInfoDto getByContact(ContactDto contactDto) {
+        Contact contact = contactService.map(contactDto);
         Person person = getEntityFromOptional(personRepository.getByContact(contact));
         PersonInfoDto personInfoDto = personMapper.mapInfoDto(person);
         List<AccountDto> accounts = accountService.getAllByPerson(person.getId());
@@ -76,8 +75,8 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public List<PersonDto> find(PersonSearchDto personSearchDto) {
         Person person = personMapper.map(personSearchDto);
-        ContactSearchDto contactSearchDto = contactService.validate(personSearchDto.getContact());
-        Contact contact = contactService.map(contactSearchDto);
+        ContactDto contactDto = contactService.validate(personSearchDto.getContact());
+        Contact contact = contactService.map(contactDto);
         List<Person> people = personRepository.find(person, contact);
         return personMapper.mapDtos(people);
     }
@@ -105,8 +104,8 @@ public class PersonServiceImpl implements PersonService {
 
     @Transactional
     @Override
-    public void deleteByContact(ContactSearchDto contactSearchDto) {
-        Contact contact = contactService.map(contactSearchDto);
+    public void deleteByContact(ContactDto contactDto) {
+        Contact contact = contactService.map(contactDto);
         validationUtil.checkNotFound(personRepository.deleteByContact(contact) != 0);
     }
 

@@ -60,7 +60,7 @@ public class ContactController {
         return ResponseEntity.ok(contactService.getAll());
     }
 
-    @PatchMapping(
+    @PutMapping(
             value = "/person/{personId}/contacts/{contactId}"
     )
     public ResponseEntity<?> update(@PathVariable Long personId,

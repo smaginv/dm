@@ -1,9 +1,7 @@
 package ru.smaginv.debtmanager.service.contact;
 
 import ru.smaginv.debtmanager.entity.contact.Contact;
-import ru.smaginv.debtmanager.web.dto.contact.AbstractContactDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
-import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
 
 import java.util.List;
 
@@ -23,7 +21,7 @@ public interface ContactService {
 
     void deleteAllByPerson(Long personId);
 
-    Contact map(ContactSearchDto contactSearchDto);
+    Contact map(ContactDto contactDto);
 
-    <T extends AbstractContactDto> T validate(T contactDto);
+    ContactDto validate(ContactDto contactDto);
 }

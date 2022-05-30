@@ -1,6 +1,6 @@
 package ru.smaginv.debtmanager.service.person;
 
-import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonInfoDto;
 import ru.smaginv.debtmanager.web.dto.person.PersonSearchDto;
@@ -11,7 +11,7 @@ public interface PersonService {
 
     PersonInfoDto get(Long personId);
 
-    PersonInfoDto getByContact(ContactSearchDto contactSearchDto);
+    PersonInfoDto getByContact(ContactDto contactDto);
 
     List<PersonDto> getAll();
 
@@ -23,5 +23,5 @@ public interface PersonService {
 
     void delete(Long personId);
 
-    void deleteByContact(ContactSearchDto contactSearchDto);
+    void deleteByContact(ContactDto contactDto);
 }

@@ -78,12 +78,12 @@ public class OperationController {
         return ResponseEntity.ok(operationService.find(operationSearchDto));
     }
 
-    @PatchMapping(
+    @PutMapping(
             value = "/accounts/{accountId}/operations/{operationId}"
     )
     public ResponseEntity<?> update(@PathVariable Long accountId,
                                     @PathVariable Long operationId,
-                                    @RequestBody OperationDto operationDto) {
+                                    @Valid @RequestBody OperationDto operationDto) {
         validationUtil.assureIdConsistent(operationDto, String.valueOf(operationId));
         log.info("update operation: {}, with id: {}", operationDto, operationId);
         operationService.update(accountId, operationDto);
