@@ -22,11 +22,13 @@ CREATE TYPE user_status AS ENUM ('ACTIVE', 'INACTIVE');
 
 CREATE TABLE users
 (
-    user_id  BIGINT PRIMARY KEY,
-    name     VARCHAR        NOT NULL,
-    email    VARCHAR UNIQUE NOT NULL,
-    password VARCHAR        NOT NULL,
-    status   user_status    NOT NULL
+    user_id    BIGINT PRIMARY KEY,
+    first_name VARCHAR,
+    last_name  VARCHAR,
+    username   VARCHAR UNIQUE NOT NULL,
+    email      VARCHAR UNIQUE NOT NULL,
+    password   VARCHAR        NOT NULL,
+    status     user_status    NOT NULL
 );
 CREATE SEQUENCE users_seq INCREMENT 10 START 20;
 ALTER SEQUENCE users_seq OWNED BY users.user_id;

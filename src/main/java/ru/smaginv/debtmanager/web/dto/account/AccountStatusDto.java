@@ -9,7 +9,7 @@ import ru.smaginv.debtmanager.util.validation.EnumValidator;
 @Getter
 @Setter
 @ToString
-public class AccountStateDto {
+public class AccountStatusDto {
 
     private Long personId;
 

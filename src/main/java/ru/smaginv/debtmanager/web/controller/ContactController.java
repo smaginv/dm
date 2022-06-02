@@ -17,7 +17,6 @@ import java.util.List;
 @Log4j2
 @RestController
 @RequestMapping(
-        value = "/people",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
@@ -66,7 +65,7 @@ public class ContactController {
     public ResponseEntity<?> update(@PathVariable Long personId,
                                     @PathVariable Long contactId,
                                     @Valid @RequestBody ContactDto contactDto) {
-        validationUtil.assureIdConsistent(contactDto, String.valueOf(contactId));
+        validationUtil.assureIdConsistent(contactDto, contactId);
         log.info("update contact: {}, with id: {}", contactDto, contactId);
         contactService.update(personId, contactDto);
         return ResponseEntity.noContent().build();

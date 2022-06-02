@@ -20,7 +20,6 @@ import java.util.List;
 @Log4j2
 @RestController
 @RequestMapping(
-        value = "/people",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
@@ -54,6 +53,7 @@ public class PersonController {
     }
 
     @GetMapping(
+            value = "/people",
             consumes = MediaType.ALL_VALUE
     )
     public ResponseEntity<List<PersonDto>> getAll() {
@@ -73,7 +73,7 @@ public class PersonController {
             value = "/person/{personId}"
     )
     public ResponseEntity<?> update(@Valid @RequestBody PersonDto personDto, @PathVariable Long personId) {
-        validationUtil.assureIdConsistent(personDto, String.valueOf(personId));
+        validationUtil.assureIdConsistent(personDto, personId);
         log.info("update person: {}, with id: {}", personDto, personId);
         personService.update(personDto);
         return ResponseEntity.noContent().build();

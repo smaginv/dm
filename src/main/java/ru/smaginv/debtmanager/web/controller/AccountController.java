@@ -17,7 +17,6 @@ import java.util.List;
 @Log4j2
 @RestController
 @RequestMapping(
-        value = "/people",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
@@ -71,15 +70,15 @@ public class AccountController {
     }
 
     @GetMapping(
-            value = "/accounts/by-state"
+            value = "/accounts/by-status"
     )
-    public ResponseEntity<List<AccountDto>> getByState(@Valid @RequestBody AccountStateDto accountStateDto) {
-        log.info("get by state: {}", accountStateDto);
-        return ResponseEntity.ok(accountService.getByState(accountStateDto));
+    public ResponseEntity<List<AccountDto>> getByStatus(@Valid @RequestBody AccountStatusDto accountStatusDto) {
+        log.info("get by state: {}", accountStatusDto);
+        return ResponseEntity.ok(accountService.getByStatus(accountStatusDto));
     }
 
     @GetMapping(
-            value = "/accounts/type"
+            value = "/accounts/by-type"
     )
     public ResponseEntity<List<AccountDto>> getAllByType(@Valid @RequestBody AccountTypeDto accountTypeDto) {
         log.info("get all accounts by type: {}", accountTypeDto);
@@ -87,7 +86,7 @@ public class AccountController {
     }
 
     @GetMapping(
-            value = "/accounts/type/total-amount"
+            value = "/accounts/by-type/total-amount"
     )
     public ResponseEntity<String> getTotalAmountByType(@Valid @RequestBody AccountTypeDto accountTypeDto) {
         log.info("get total amount by account type: {}", accountTypeDto);
@@ -95,7 +94,7 @@ public class AccountController {
     }
 
     @GetMapping(
-            value = "/accounts/archive/type/total-amount"
+            value = "/accounts/archive/by-type/total-amount"
     )
     public ResponseEntity<String> getArchiveTotalAmountByType(@Valid @RequestBody AccountTypeDto accountTypeDto) {
         log.info("get total amount by account type: {}", accountTypeDto);
@@ -108,7 +107,7 @@ public class AccountController {
     public ResponseEntity<?> update(@PathVariable Long personId,
                                     @PathVariable Long accountId,
                                     @Valid @RequestBody AccountUpdateDto accountUpdateDto) {
-        validationUtil.assureIdConsistent(accountUpdateDto, String.valueOf(accountId));
+        validationUtil.assureIdConsistent(accountUpdateDto, accountId);
         log.info("update account: {}, with id: {}", accountUpdateDto, accountId);
         accountService.update(personId, accountUpdateDto);
         return ResponseEntity.noContent().build();

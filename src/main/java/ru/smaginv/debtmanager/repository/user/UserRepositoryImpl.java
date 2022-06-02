@@ -2,6 +2,7 @@ package ru.smaginv.debtmanager.repository.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import ru.smaginv.debtmanager.entity.user.Status;
 import ru.smaginv.debtmanager.entity.user.User;
 
 import java.util.List;
@@ -23,6 +24,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<User> getByUsername(String username) {
+        return userRepository.getByUsername(username);
+    }
+
+    @Override
     public Optional<User> getByEmail(String email) {
         return userRepository.getByEmail(email);
     }
@@ -30,6 +36,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<User> getAll() {
         return userRepository.getAll();
+    }
+
+    @Override
+    public List<User> getAllByStatus(Status status) {
+        return userRepository.getAllByStatus(status);
     }
 
     @Override

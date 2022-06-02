@@ -41,10 +41,11 @@ public class ValidationUtil {
         }
     }
 
-    public void assureIdConsistent(HasIdDto entity, String id) {
+    public void assureIdConsistent(HasIdDto entity, Long id) {
+        String pathId = String.valueOf(id);
         if (entity.isNew())
-            entity.setId(id);
-        else if (!entity.getId().equals(id))
+            entity.setId(pathId);
+        else if (!entity.getId().equals(pathId))
             throw new IllegalArgumentException(entity.getClass().getSimpleName() + " must be with id: " + id);
     }
 

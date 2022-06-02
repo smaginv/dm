@@ -15,14 +15,13 @@ import java.util.List;
 )
 public interface UserMapper {
 
-    @Mapping(target = "userStatus", source = "status")
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "roles", ignore = true)
     User map(UserDto userDto);
 
-    @Mapping(target = "status", source = "userStatus")
     UserDto mapDto(User user);
 
     List<UserDto> mapDtos(List<User> users);
 
-    @Mapping(target = "userStatus", source = "status")
     void update(UserDto userDto, @MappingTarget User user);
 }

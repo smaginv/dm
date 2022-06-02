@@ -10,7 +10,7 @@ import ru.smaginv.debtmanager.entity.operation.Operation;
 import ru.smaginv.debtmanager.repository.account.AccountRepository;
 import ru.smaginv.debtmanager.repository.operation.OperationRepository;
 import ru.smaginv.debtmanager.util.MappingUtil;
-import ru.smaginv.debtmanager.util.exception.AccountActiveException;
+import ru.smaginv.debtmanager.util.exception.EntityStatusException;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.account.*;
 import ru.smaginv.debtmanager.web.mapping.AccountMapper;
@@ -73,10 +73,10 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountDto> getByState(AccountStateDto accountStateDto) {
-        Long personId = accountStateDto.getPersonId();
-        AccountStatus accountStatus = AccountStatus.getByValue(accountStateDto.getStatus());
-        List<Account> accounts = accountRepository.getByState(personId, accountStatus);
+    public List<AccountDto> getByStatus(AccountStatusDto accountStatusDto) {
+        Long personId = accountStatusDto.getPersonId();
+        AccountStatus accountStatus = AccountStatus.getByValue(accountStatusDto.getStatus());
+        List<Account> accounts = accountRepository.getByStatus(personId, accountStatus);
         return accountMapper.mapDtos(accounts);
     }
 
@@ -124,7 +124,7 @@ public class AccountServiceImpl implements AccountService {
     public void delete(Long personId, Long accountId) {
         Account account = getAccount(personId, accountId);
         if (account.getAccountStatus().equals(AccountStatus.ACTIVE))
-            throw new AccountActiveException("status of account must be 'INACTIVE'");
+            throw new EntityStatusException("status of account must be 'INACTIVE'");
         int result = accountRepository.delete(personId, accountId);
         validationUtil.checkNotFoundWithId(result != 0, accountId);
     }

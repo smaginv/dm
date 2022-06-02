@@ -1,5 +1,6 @@
 package ru.smaginv.debtmanager.repository.user;
 
+import ru.smaginv.debtmanager.entity.user.Status;
 import ru.smaginv.debtmanager.entity.user.User;
 
 import java.util.List;
@@ -9,9 +10,13 @@ public interface UserRepository {
 
     Optional<User> get(Long userId);
 
+    Optional<User> getByUsername(String username);
+
     Optional<User> getByEmail(String email);
 
     List<User> getAll();
+
+    List<User> getAllByStatus(Status status);
 
     User save(User user);
 

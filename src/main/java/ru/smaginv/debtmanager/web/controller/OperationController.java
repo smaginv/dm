@@ -20,7 +20,6 @@ import java.util.List;
 @Log4j2
 @RestController
 @RequestMapping(
-        value = "/people",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
@@ -84,7 +83,7 @@ public class OperationController {
     public ResponseEntity<?> update(@PathVariable Long accountId,
                                     @PathVariable Long operationId,
                                     @Valid @RequestBody OperationDto operationDto) {
-        validationUtil.assureIdConsistent(operationDto, String.valueOf(operationId));
+        validationUtil.assureIdConsistent(operationDto, operationId);
         log.info("update operation: {}, with id: {}", operationDto, operationId);
         operationService.update(accountId, operationDto);
         return ResponseEntity.noContent().build();
@@ -105,7 +104,7 @@ public class OperationController {
         return ResponseEntity.created(location).body(created);
     }
 
-    @PatchMapping(
+    @PutMapping(
             value = "/accounts/{accountId}/operations/close-account"
     )
     public ResponseEntity<AccountDto> closeAccount(@PathVariable Long accountId,

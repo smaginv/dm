@@ -37,8 +37,14 @@ public class User implements HasId {
     @Column(name = "user_id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "email")
     private String email;
@@ -49,7 +55,7 @@ public class User implements HasId {
     @Type(type = "pgsql_enum")
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private UserStatus userStatus;
+    private Status status;
 
     @Type(type = "pgsql_enum")
     @Enumerated(EnumType.STRING)

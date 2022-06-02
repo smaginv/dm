@@ -28,7 +28,7 @@ import static ru.smaginv.debtmanager.util.AppUtil.VALIDATION_FAILED;
 public class AppExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {
-            NotFoundException.class, AccountActiveException.class, AccountOperationException.class
+            NotFoundException.class, EntityStatusException.class, AccountOperationException.class
     })
     public ResponseEntity<ErrorInfo> handleAppException(AppException ex, WebRequest request) {
         ErrorInfo errorInfo = createErrorInfo(ex, request);

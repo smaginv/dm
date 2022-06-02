@@ -1,6 +1,8 @@
-INSERT INTO users (user_id, name, email, password, status)
-VALUES (1, 'admin', 'admin@email.ru', 'admin', 'ACTIVE'),
-       (2, 'user', 'user@email.ru', 'user', 'ACTIVE');
+INSERT INTO users (user_id, first_name, last_name, username, email, password, status)
+VALUES (1, 'Admin', 'Adminov', 'admin', 'admin@email.ru',
+        '$2a$12$FJntlc9LAcWr.2pYTo3Xz.FkAIcHexOZ08iDpLWwxh4SZJnQDGq1W', 'ACTIVE'),
+       (2, 'User', 'Userov', 'user', 'user@email.ru', '$2a$12$q27cx73nQKpSIQDbr0Q8zumab1qg8os24L0iN.NS/s..PxE3cpEnO',
+        'ACTIVE');
 
 INSERT INTO roles(user_id, role)
 VALUES (1, 'ADMIN'),

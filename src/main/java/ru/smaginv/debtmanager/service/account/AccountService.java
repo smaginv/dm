@@ -14,7 +14,7 @@ public interface AccountService {
 
     List<AccountDto> getAllByPerson(Long personId);
 
-    List<AccountDto> getByState(AccountStateDto accountStateDto);
+    List<AccountDto> getByStatus(AccountStatusDto accountStatusDto);
 
     List<AccountDto> getAllByType(AccountTypeDto accountTypeDto);
 

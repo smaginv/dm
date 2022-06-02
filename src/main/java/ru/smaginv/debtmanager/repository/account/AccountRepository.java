@@ -17,7 +17,7 @@ public interface AccountRepository {
 
     List<Account> getAllByPerson(Long personId);
 
-    List<Account> getByState(Long personId, AccountStatus accountStatus);
+    List<Account> getByStatus(Long personId, AccountStatus accountStatus);
 
     List<Account> getAllByType(AccountType accountType);
 

@@ -45,10 +45,10 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public List<Account> getByState(Long personId, AccountStatus accountStatus) {
+    public List<Account> getByStatus(Long personId, AccountStatus accountStatus) {
         if (Objects.isNull(personId))
-            return accountRepository.getByState(accountStatus);
-        return accountRepository.getByPersonAndState(personId, accountStatus);
+            return accountRepository.getByStatus(accountStatus);
+        return accountRepository.getByPersonAndStatus(personId, accountStatus);
     }
 
     @Override

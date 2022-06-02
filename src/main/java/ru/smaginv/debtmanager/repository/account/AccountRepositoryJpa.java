@@ -26,11 +26,11 @@ public interface AccountRepositoryJpa extends JpaRepository<Account, Long> {
     List<Account> getAllByPerson(@Param("personId") Long personId);
 
     @Query("SELECT a FROM Account a WHERE a.accountStatus = :accountStatus")
-    List<Account> getByState(@Param("accountStatus") AccountStatus accountStatus);
+    List<Account> getByStatus(@Param("accountStatus") AccountStatus accountStatus);
 
     @Query("SELECT a FROM Account a WHERE a.person.id = :personId AND a.accountStatus = :accountStatus")
-    List<Account> getByPersonAndState(@Param("personId") Long personId,
-                                      @Param("accountStatus") AccountStatus accountStatus);
+    List<Account> getByPersonAndStatus(@Param("personId") Long personId,
+                                       @Param("accountStatus") AccountStatus accountStatus);
 
     @Query("SELECT a FROM Account a WHERE a.accountType = :accountType")
     List<Account> getAllByType(@Param("accountType") AccountType accountType);

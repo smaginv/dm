@@ -12,8 +12,8 @@ import ru.smaginv.debtmanager.repository.account.AccountRepository;
 import ru.smaginv.debtmanager.repository.operation.OperationRepository;
 import ru.smaginv.debtmanager.util.AppUtil;
 import ru.smaginv.debtmanager.util.MappingUtil;
-import ru.smaginv.debtmanager.util.exception.AccountActiveException;
 import ru.smaginv.debtmanager.util.exception.AccountOperationException;
+import ru.smaginv.debtmanager.util.exception.EntityStatusException;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
@@ -207,7 +207,7 @@ public class OperationServiceImpl implements OperationService {
     private Account getAccount(Long accountId) {
         Account account = getEntityFromOptional(accountRepository.getById(accountId), accountId);
         if (account.getAccountStatus().equals(AccountStatus.INACTIVE))
-            throw new AccountActiveException("account status must be 'ACTIVE' or 'RESUMED'");
+            throw new EntityStatusException("account status must be 'ACTIVE'");
         return account;
     }
 
