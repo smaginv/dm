@@ -21,12 +21,16 @@ import java.util.Objects;
         "id", "type", "amount", "currency", "rate", "openDate", "closedDate", "status", "comment"
 })
 @JsonIgnoreProperties(
-        value = {"openDate", "closedDate", "status"},
+        value = {"id", "openDate", "closedDate", "status"},
         allowGetters = true
 )
 public class AccountDto implements HasIdDto {
 
     private String id;
+
+    @NotBlank
+    @JsonIgnoreProperties(allowSetters = true)
+    private String personId;
 
     @EnumValidator(enumClass = AccountType.class)
     private String type;

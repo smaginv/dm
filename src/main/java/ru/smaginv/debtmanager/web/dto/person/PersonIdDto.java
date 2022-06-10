@@ -4,22 +4,17 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
-import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Getter
 @Setter
 @ToString
-public class PersonSearchDto implements HasIdDto {
+public class PersonIdDto implements HasIdDto {
 
+    @NotBlank
     private String id;
-
-    private String firstName;
-
-    private String lastName;
-
-    ContactSearchDto contact;
 
     @Override
     public boolean isNew() {

@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.service.user.UserService;
-import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.user.*;
 
 import javax.validation.Valid;
@@ -25,24 +24,18 @@ import java.util.List;
 public class AdminController {
 
     private final UserService userService;
-    private final ValidationUtil validationUtil;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AdminController(UserService userService, ValidationUtil validationUtil,
-                           PasswordEncoder passwordEncoder) {
+    public AdminController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
-        this.validationUtil = validationUtil;
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping(
-            value = "/{userId}",
-            consumes = MediaType.ALL_VALUE
-    )
-    public ResponseEntity<UserDto> getById(@PathVariable Long userId) {
-        log.info("get user by id: {}", userId);
-        return ResponseEntity.ok(userService.get(userId));
+    @GetMapping
+    public ResponseEntity<UserDto> get(@Valid @RequestBody UserIdDto userIdDto) {
+        log.info("get user: {}", userIdDto);
+        return ResponseEntity.ok(userService.get(userIdDto));
     }
 
     @GetMapping(
@@ -50,7 +43,7 @@ public class AdminController {
     )
     public ResponseEntity<UserDto> getByUsername(@Valid @RequestBody UsernameDto usernameDto) {
         log.info("get user by username: {}", usernameDto);
-        return ResponseEntity.ok(userService.getByUsername(usernameDto.getUsername()));
+        return ResponseEntity.ok(userService.getByUsername(usernameDto));
     }
 
     @GetMapping(
@@ -77,57 +70,47 @@ public class AdminController {
         return ResponseEntity.ok(userService.getAllByStatus(userStatusDto));
     }
 
-    @PutMapping(
-            value = "/{userId}"
-    )
-    public ResponseEntity<?> update(@PathVariable Long userId, @Valid @RequestBody UserDto userDto) {
-        validationUtil.assureIdConsistent(userDto, userId);
-        log.info("update user: {}", userDto);
-        String encodePassword = passwordEncoder.encode(userDto.getPassword());
-        userDto.setPassword(encodePassword);
-        userService.update(userDto);
+    @PutMapping
+    public ResponseEntity<?> update(@Valid @RequestBody UserUpdateDto userUpdateDto) {
+        log.info("update user: {}", userUpdateDto);
+        String encodePassword = passwordEncoder.encode(userUpdateDto.getPassword());
+        userUpdateDto.setPassword(encodePassword);
+        userService.update(userUpdateDto);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping(
-            value = "/{userId}/set-status"
+            value = "/set-status"
     )
-    public ResponseEntity<UserDto> setStatus(@PathVariable Long userId,
-                                             @Valid @RequestBody UserStatusDto userStatusDto) {
-        log.info("set status: {}, for user: {}", userStatusDto, userId);
-        return ResponseEntity.ok(userService.setStatus(userId, userStatusDto));
+    public ResponseEntity<UserDto> setStatus(@Valid @RequestBody UserStatusDto userStatusDto) {
+        log.info("set status: {}, for user: {}", userStatusDto.getStatus(), userStatusDto.getUserId());
+        return ResponseEntity.ok(userService.setStatus(userStatusDto));
     }
 
     @PatchMapping(
-            value = "/{userId}/set-role"
+            value = "/set-role"
     )
-    public ResponseEntity<UserDto> setRole(@PathVariable Long userId,
-                                           @Valid @RequestBody UserRoleDto userRoleDto) {
-        log.info("set role: {}, for user: {}", userRoleDto, userId);
-        return ResponseEntity.ok(userService.setRole(userId, userRoleDto));
+    public ResponseEntity<UserDto> setRole(@Valid @RequestBody UserRoleDto userRoleDto) {
+        log.info("set role: {}, for user: {}", userRoleDto.getRole(), userRoleDto.getUserId());
+        return ResponseEntity.ok(userService.setRole(userRoleDto));
     }
 
     @PostMapping
     public ResponseEntity<UserDto> create(@Valid @RequestBody UserDto userDto) {
-        validationUtil.checkIsNew(userDto);
         log.info("create user: {}", userDto);
         String encodePassword = passwordEncoder.encode(userDto.getPassword());
         userDto.setPassword(encodePassword);
         UserDto created = userService.create(userDto);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{userId}")
-                .buildAndExpand(created.getId())
+                .build()
                 .toUri();
         return ResponseEntity.created(location).body(created);
     }
 
-    @DeleteMapping(
-            value = "/{userId}",
-            consumes = MediaType.ALL_VALUE
-    )
-    public ResponseEntity<?> deleteById(@PathVariable Long userId) {
-        log.info("delete user by id: {}", userId);
-        userService.delete(userId);
+    @DeleteMapping
+    public ResponseEntity<?> deleteById(@Valid @RequestBody UserIdDto userIdDto) {
+        log.info("delete user by id: {}", userIdDto);
+        userService.delete(userIdDto);
         return ResponseEntity.noContent().build();
     }
 

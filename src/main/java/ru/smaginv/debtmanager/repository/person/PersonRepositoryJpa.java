@@ -12,40 +12,59 @@ import java.util.Optional;
 
 public interface PersonRepositoryJpa extends JpaRepository<Person, Long> {
 
-    @Query("SELECT p FROM Person p WHERE p.id = :personId")
-    Optional<Person> get(@Param("personId") Long personId);
+    @Query("""
+            SELECT p FROM Person p
+            WHERE p.id = :personId AND p.user.id = :userId
+            """)
+    Optional<Person> get(@Param("personId") Long personId, @Param("userId") Long userId);
 
     @Query("""
-            SELECT p FROM Person p JOIN Contact c ON p.id = c.person.id WHERE
-             c.contactType = :#{#contact.contactType} AND c.value = :#{#contact.value}
+            SELECT p FROM Person p
+            JOIN Contact c ON p.id = c.person.id
+            WHERE c.contactType = :#{#contact.contactType} AND c.value = :#{#contact.value} AND
+            p.user.id = :userId
             """)
-    Optional<Person> getByContact(@Param("contact") Contact contact);
-
-    @Query("SELECT p FROM Person p ORDER BY p.id")
-    List<Person> getAll();
-
-    @Query("""
-            SELECT DISTINCT p FROM Person p WHERE
-             p.id = :#{#person.id} OR p.firstName = :#{#person.firstName} OR p.lastName = :#{#person.lastName}
-            """)
-    List<Person> find(@Param("person") Person person);
+    Optional<Person> getByContact(@Param("contact") Contact contact, @Param("userId") Long userId);
 
     @Query("""
-            SELECT DISTINCT p FROM Person p JOIN Contact c ON p.id = c.person.id WHERE
-             p.id = :#{#person.id} OR p.firstName = :#{#person.firstName} OR p.lastName = :#{#person.lastName} OR
-             c.contactType = :#{#contact.contactType} AND c.value = :#{#contact.value}
+            SELECT p FROM Person p
+            WHERE p.user.id = :userId
+            ORDER BY p.id
             """)
-    List<Person> find(@Param("person") Person person, @Param("contact") Contact contact);
+    List<Person> getAll(@Param("userId") Long userId);
+
+    @Query("""
+            SELECT DISTINCT p FROM Person p
+            WHERE p.user.id = :userId AND
+            (p.id = :#{#person.id} OR p.firstName = :#{#person.firstName} OR p.lastName = :#{#person.lastName})
+            """)
+    List<Person> find(@Param("person") Person person, @Param("userId") Long userId);
+
+    @Query("""
+            SELECT DISTINCT p FROM Person p
+            JOIN Contact c ON p.id = c.person.id
+            WHERE p.user.id = :userId AND
+            (p.id = :#{#person.id} OR p.firstName = :#{#person.firstName} OR p.lastName = :#{#person.lastName} OR
+            (c.contactType = :#{#contact.contactType} AND c.value = :#{#contact.value}))
+            """)
+    List<Person> find(@Param("person") Person person,
+                      @Param("contact") Contact contact,
+                      @Param("userId") Long userId);
 
     @Modifying
-    @Query("DELETE FROM Person p WHERE p.id = :personId")
-    int delete(@Param("personId") Long personId);
+    @Query("""
+            DELETE FROM Person p
+            WHERE p.id = :personId AND p.user.id = :userId
+            """)
+    int delete(@Param("personId") Long personId, @Param("userId") Long userId);
 
     @Modifying
     @Query("""
-            DELETE FROM Person p WHERE p.id IN
-             (SELECT c.person.id FROM Contact c WHERE
-              c.contactType = :#{#contact.contactType} AND c.value = :#{#contact.value})
+            DELETE FROM Person p
+            WHERE p.user.id = :userId AND
+            p.id IN
+            (SELECT c.person.id FROM Contact c
+            WHERE c.contactType = :#{#contact.contactType} AND c.value = :#{#contact.value})
             """)
-    int deleteByContact(@Param("contact") Contact contact);
+    int deleteByContact(@Param("contact") Contact contact, @Param("userId") Long userId);
 }

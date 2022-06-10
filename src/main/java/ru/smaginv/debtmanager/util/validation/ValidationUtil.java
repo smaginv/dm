@@ -1,12 +1,14 @@
 package ru.smaginv.debtmanager.util.validation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import ru.smaginv.debtmanager.config.PropertiesConfig;
 import ru.smaginv.debtmanager.entity.contact.ContactType;
 import ru.smaginv.debtmanager.util.exception.NotFoundException;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
-import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
+import ru.smaginv.debtmanager.web.dto.contact.AbstractContactDto;
 
 import javax.validation.ValidationException;
 import java.util.List;
@@ -35,25 +37,16 @@ public class ValidationUtil {
         }
     }
 
-    public void checkIsNew(HasIdDto entity) {
-        if (!entity.isNew()) {
-            throw new IllegalArgumentException(entity.getClass().getSimpleName() + " must be new (id = null)");
-        }
-    }
-
-    public void assureIdConsistent(HasIdDto entity, Long id) {
-        String pathId = String.valueOf(id);
-        if (entity.isNew())
-            entity.setId(pathId);
-        else if (!entity.getId().equals(pathId))
-            throw new IllegalArgumentException(entity.getClass().getSimpleName() + " must be with id: " + id);
+    public void checkIdEquality(Long id, HasIdDto entity) {
+        if (!String.valueOf(id).equals(entity.getId()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 
     public boolean validateEmail(String email) {
         return validateValue(emailPatterns, email);
     }
 
-    public void validateContact(ContactDto contactDto) {
+    public void validateContact(AbstractContactDto contactDto) {
         ContactType type = ContactType.getByValue(contactDto.getType());
         boolean valid;
         if (type.equals(ContactType.PHONE))

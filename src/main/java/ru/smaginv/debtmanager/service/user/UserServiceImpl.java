@@ -1,7 +1,6 @@
 package ru.smaginv.debtmanager.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.user.Role;
@@ -10,11 +9,9 @@ import ru.smaginv.debtmanager.entity.user.User;
 import ru.smaginv.debtmanager.repository.user.UserRepository;
 import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.util.exception.EntityStatusException;
+import ru.smaginv.debtmanager.util.exception.NotFoundException;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
-import ru.smaginv.debtmanager.web.dto.user.UserDto;
-import ru.smaginv.debtmanager.web.dto.user.UserEmailDto;
-import ru.smaginv.debtmanager.web.dto.user.UserRoleDto;
-import ru.smaginv.debtmanager.web.dto.user.UserStatusDto;
+import ru.smaginv.debtmanager.web.dto.user.*;
 import ru.smaginv.debtmanager.web.mapping.UserMapper;
 
 import java.util.List;
@@ -41,14 +38,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto get(Long userId) {
-        return userMapper.mapDto(getUser(userId));
+    public UserDto get(UserIdDto userIdDto) {
+        return userMapper.mapDto(getUser(mappingUtil.mapId(userIdDto)));
     }
 
     @Override
     public UserDto getByUsername(String username) {
+        User user = userRepository.getByUsername(username).orElseThrow();
+        return userMapper.mapDto(user);
+    }
+
+    @Override
+    public UserDto getByUsername(UsernameDto usernameDto) {
+        String username = usernameDto.getUsername();
         User user = userRepository.getByUsername(username).orElseThrow(
-                () -> new UsernameNotFoundException("User '" + username + "' was not found")
+                () -> new NotFoundException("User '" + username + "' was not found")
         );
         return userMapper.mapDto(user);
     }
@@ -72,16 +76,16 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void update(UserDto userDto) {
-        User user = getUser(mappingUtil.mapId(userDto));
-        userMapper.update(userDto, user);
+    public void update(UserUpdateDto userUpdateDto) {
+        User user = getUser(mappingUtil.mapId(userUpdateDto));
+        userMapper.update(userUpdateDto, user);
         userRepository.save(user);
     }
 
     @Transactional
     @Override
-    public UserDto setStatus(Long userId, UserStatusDto userStatusDto) {
-        User user = getUser(userId);
+    public UserDto setStatus(UserStatusDto userStatusDto) {
+        User user = getUser(mappingUtil.mapId(userStatusDto.getUserId()));
         Status newValue = Status.getByValue(userStatusDto.getStatus());
         checkCompliance(user.getStatus(), newValue);
         user.setStatus(newValue);
@@ -90,10 +94,10 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto setRole(Long userId, UserRoleDto userRoleDto) {
-        User user = getUser(userId);
+    public UserDto setRole(UserRoleDto userRoleDto) {
+        User user = getUser(mappingUtil.mapId(userRoleDto.getUserId()));
         if (user.getStatus().equals(Status.INACTIVE))
-            throw new EntityStatusException("status of user must be 'ACTIVE'");
+            throw new EntityStatusException("status of user must be: " + Status.ACTIVE);
         Role newValue = Role.getByValue(userRoleDto.getRole());
         user.getRoles().forEach(role -> checkCompliance(role, newValue));
         user.getRoles().add(newValue);
@@ -112,7 +116,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void delete(Long userId) {
+    public void delete(UserIdDto userIdDto) {
+        Long userId = mappingUtil.mapId(userIdDto);
         validationUtil.checkNotFoundWithId(userRepository.deleteByEmail(userId) != 0, userId);
     }
 

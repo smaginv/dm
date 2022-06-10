@@ -1,27 +1,31 @@
 package ru.smaginv.debtmanager.service.contact;
 
 import ru.smaginv.debtmanager.entity.contact.Contact;
+import ru.smaginv.debtmanager.web.dto.contact.AbstractContactDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactIdDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactUpdateDto;
+import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
 
 import java.util.List;
 
 public interface ContactService {
 
-    ContactDto get(Long personId, Long contactId);
+    ContactDto get(ContactIdDto contactIdDto);
 
-    List<ContactDto> getAllByPerson(Long personId);
+    List<ContactDto> getAllByPerson(PersonIdDto personIdDto);
 
     List<ContactDto> getAll();
 
-    void update(Long personId, ContactDto contactDto);
+    void update(ContactUpdateDto contactUpdateDto);
 
-    ContactDto create(Long personId, ContactDto contactDto);
+    ContactDto create(ContactDto contactDto);
 
-    void delete(Long personId, Long contactId);
+    void delete(ContactIdDto contactIdDto);
 
-    void deleteAllByPerson(Long personId);
+    void deleteAllByPerson(PersonIdDto personIdDto);
 
-    Contact map(ContactDto contactDto);
+    <T extends AbstractContactDto> Contact map(T contactDto);
 
-    ContactDto validate(ContactDto contactDto);
+    <T extends AbstractContactDto> T validate(T contactDto);
 }

@@ -5,10 +5,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.contact.Contact;
 import ru.smaginv.debtmanager.entity.contact.ContactType;
+import ru.smaginv.debtmanager.entity.contact.UniqueContact;
 import ru.smaginv.debtmanager.repository.contact.ContactRepository;
 import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
+import ru.smaginv.debtmanager.web.dto.contact.AbstractContactDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactIdDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactUpdateDto;
+import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
 import ru.smaginv.debtmanager.web.mapping.ContactMapper;
 
 import javax.validation.ValidationException;
@@ -24,27 +29,30 @@ public class ContactServiceImpl implements ContactService {
 
     private final ContactRepository contactRepository;
     private final ContactMapper contactMapper;
+    private final UniqueContactService uniqueContactService;
     private final ValidationUtil validationUtil;
     private final MappingUtil mappingUtil;
 
     @Autowired
     public ContactServiceImpl(ContactRepository contactRepository, ContactMapper contactMapper,
-                              ValidationUtil validationUtil, MappingUtil mappingUtil) {
+                              UniqueContactService uniqueContactService, ValidationUtil validationUtil,
+                              MappingUtil mappingUtil) {
         this.contactRepository = contactRepository;
         this.contactMapper = contactMapper;
+        this.uniqueContactService = uniqueContactService;
         this.validationUtil = validationUtil;
         this.mappingUtil = mappingUtil;
     }
 
     @Override
-    public ContactDto get(Long personId, Long contactId) {
-        Contact contact = getContact(personId, contactId);
+    public ContactDto get(ContactIdDto contactIdDto) {
+        Contact contact = getContact(mappingUtil.mapId(contactIdDto));
         return contactMapper.mapDto(contact);
     }
 
     @Override
-    public List<ContactDto> getAllByPerson(Long personId) {
-        List<Contact> contacts = contactRepository.getAllByPerson(personId);
+    public List<ContactDto> getAllByPerson(PersonIdDto personIdDto) {
+        List<Contact> contacts = contactRepository.getAllByPerson(mappingUtil.mapId(personIdDto));
         return contactMapper.mapDtos(contacts);
     }
 
@@ -55,42 +63,57 @@ public class ContactServiceImpl implements ContactService {
 
     @Transactional
     @Override
-    public void update(Long personId, ContactDto contactDto) {
-        validationUtil.validateContact(contactDto);
-        Contact contact = getContact(personId, mappingUtil.mapId(contactDto));
-        contactMapper.update(contactDto, contact);
-        contactRepository.save(personId, contact);
+    public void update(ContactUpdateDto contactUpdateDto) {
+        validationUtil.validateContact(contactUpdateDto);
+        Contact contact = getContact(mappingUtil.mapId(contactUpdateDto));
+        if (contactUpdateDto.getValue().equals(contact.getValue()))
+            throw new IllegalArgumentException("contact value already exists: " + contactUpdateDto.getValue());
+        contactMapper.update(contactUpdateDto, contact);
+        contact = contactRepository.update(contact);
+        uniqueContactService.deleteByContactId(contact.getId());
+        UniqueContact uniqueContact = contactMapper.mapUnique(contact);
+        uniqueContactService.save(uniqueContact);
     }
 
     @Transactional
     @Override
-    public ContactDto create(Long personId, ContactDto contactDto) {
-        validationUtil.checkIsNew(contactDto);
+    public ContactDto create(ContactDto contactDto) {
         validationUtil.validateContact(contactDto);
-        Contact contact = contactRepository.save(personId, contactMapper.map(contactDto));
+        Contact contact = contactMapper.map(contactDto);
+        contact = contactRepository.create(mappingUtil.mapId(contactDto.getPersonId()), contact);
+        UniqueContact uniqueContact = contactMapper.mapUnique(contact);
+        uniqueContactService.save(uniqueContact);
         return contactMapper.mapDto(contact);
     }
 
     @Transactional
     @Override
-    public void delete(Long personId, Long contactId) {
-        int result = contactRepository.delete(personId, contactId);
+    public void delete(ContactIdDto contactIdDto) {
+        Long contactId = mappingUtil.mapId(contactIdDto);
+        int result = contactRepository.delete(contactId);
         validationUtil.checkNotFoundWithId(result != 0, contactId);
+        uniqueContactService.deleteByContactId(contactId);
     }
 
     @Transactional
     @Override
-    public void deleteAllByPerson(Long personId) {
+    public void deleteAllByPerson(PersonIdDto personIdDto) {
+        Long personId = mappingUtil.mapId(personIdDto);
+        List<Long> contactIds = contactRepository.getAllByPerson(personId)
+                .stream()
+                .map(Contact::getId)
+                .toList();
         validationUtil.checkNotFound(contactRepository.deleteAllByPerson(personId) != 0);
+        uniqueContactService.deleteByContactIds(contactIds);
     }
 
     @Override
-    public Contact map(ContactDto contactDto) {
+    public <T extends AbstractContactDto> Contact map(T contactDto) {
         return contactMapper.map(contactDto);
     }
 
     @Override
-    public ContactDto validate(ContactDto contactDto) {
+    public <T extends AbstractContactDto> T validate(T contactDto) {
         if (Objects.isNull(contactDto) ||
                 (Objects.isNull(contactDto.getType()) || Objects.isNull(contactDto.getValue())))
             return null;
@@ -103,7 +126,7 @@ public class ContactServiceImpl implements ContactService {
         return contactDto;
     }
 
-    private Contact getContact(Long personId, Long contactId) {
-        return getEntityFromOptional(contactRepository.get(personId, contactId), contactId);
+    private Contact getContact(Long contactId) {
+        return getEntityFromOptional(contactRepository.get(contactId), contactId);
     }
 }

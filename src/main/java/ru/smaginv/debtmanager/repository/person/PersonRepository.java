@@ -16,7 +16,9 @@ public interface PersonRepository {
 
     List<Person> find(Person person, Contact contact);
 
-    Person save(Person person);
+    void update(Person person);
+
+    Person create(Person person);
 
     int delete(Long personId);
 

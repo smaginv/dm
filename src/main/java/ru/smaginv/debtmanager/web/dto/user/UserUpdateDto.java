@@ -1,10 +1,10 @@
-package ru.smaginv.debtmanager.web.dto.person;
+package ru.smaginv.debtmanager.web.dto.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.smaginv.debtmanager.util.validation.EmailValidator;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
 
 import javax.validation.constraints.NotBlank;
@@ -14,12 +14,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-@JsonPropertyOrder({
-        "id", "firstName", "lastName", "comment"
-})
-public class PersonDto implements HasIdDto {
+public class UserUpdateDto implements HasIdDto {
 
-    @JsonIgnoreProperties(allowGetters = true)
+    @NotBlank
     private String id;
 
     @NotBlank
@@ -30,8 +27,17 @@ public class PersonDto implements HasIdDto {
     @Size(min = 2, max = 32)
     private String lastName;
 
-    @Size(max = 512)
-    private String comment;
+    @NotBlank
+    @Size(min = 2, max = 32)
+    private String username;
+
+    @EmailValidator
+    private String email;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotBlank
+    @Size(min = 8, max = 256)
+    private String password;
 
     @Override
     public boolean isNew() {

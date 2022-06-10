@@ -1,25 +1,20 @@
-package ru.smaginv.debtmanager.web.dto.person;
+package ru.smaginv.debtmanager.web.dto.contact;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
-import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Getter
 @Setter
-@ToString
-public class PersonSearchDto implements HasIdDto {
+@ToString(callSuper = true)
+public class ContactUpdateDto extends AbstractContactDto implements HasIdDto {
 
+    @NotBlank
     private String id;
-
-    private String firstName;
-
-    private String lastName;
-
-    ContactSearchDto contact;
 
     @Override
     public boolean isNew() {

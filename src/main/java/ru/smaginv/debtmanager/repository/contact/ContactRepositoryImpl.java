@@ -9,6 +9,9 @@ import ru.smaginv.debtmanager.repository.person.PersonRepositoryJpa;
 import java.util.List;
 import java.util.Optional;
 
+import static ru.smaginv.debtmanager.util.AppUtil.getAuthUserId;
+import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptional;
+
 @Repository
 public class ContactRepositoryImpl implements ContactRepository {
 
@@ -22,34 +25,39 @@ public class ContactRepositoryImpl implements ContactRepository {
     }
 
     @Override
-    public Optional<Contact> get(Long personId, Long contactId) {
-        return contactRepository.get(personId, contactId);
+    public Optional<Contact> get(Long contactId) {
+        return contactRepository.get(contactId, getAuthUserId());
     }
 
     @Override
     public List<Contact> getAllByPerson(Long personId) {
-        return contactRepository.getAllByPerson(personId);
+        return contactRepository.getAllByPerson(personId, getAuthUserId());
     }
 
     @Override
     public List<Contact> getAll() {
-        return contactRepository.getAll();
+        return contactRepository.getAll(getAuthUserId());
     }
 
     @Override
-    public Contact save(Long personId, Contact contact) {
-        Person person = personRepository.getReferenceById(personId);
+    public Contact update(Contact contact) {
+        return contactRepository.save(contact);
+    }
+
+    @Override
+    public Contact create(Long personId, Contact contact) {
+        Person person = getEntityFromOptional(personRepository.get(personId, getAuthUserId()), personId);
         contact.setPerson(person);
         return contactRepository.save(contact);
     }
 
     @Override
-    public int delete(Long personId, Long contactId) {
-        return contactRepository.delete(personId, contactId);
+    public int delete(Long contactId) {
+        return contactRepository.delete(contactId, getAuthUserId());
     }
 
     @Override
     public int deleteAllByPerson(Long personId) {
-        return contactRepository.deleteAllByPerson(personId);
+        return contactRepository.deleteAllByPerson(personId, getAuthUserId());
     }
 }

@@ -12,6 +12,8 @@ import ru.smaginv.debtmanager.service.user.UserService;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.AuthUser;
 import ru.smaginv.debtmanager.web.dto.user.UserDto;
+import ru.smaginv.debtmanager.web.dto.user.UserIdDto;
+import ru.smaginv.debtmanager.web.dto.user.UserUpdateDto;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -37,22 +39,22 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @GetMapping(
-            consumes = MediaType.ALL_VALUE
-    )
-    public ResponseEntity<UserDto> get(@AuthenticationPrincipal AuthUser authUser) {
+    @GetMapping
+    public ResponseEntity<UserDto> get(@AuthenticationPrincipal AuthUser authUser,
+                                       @Valid @RequestBody UserIdDto userIdDto) {
+        validationUtil.checkIdEquality(authUser.getId(), userIdDto);
         log.info("get user : {}", authUser);
-        return ResponseEntity.ok(userService.get(authUser.getId()));
+        return ResponseEntity.ok(userService.get(userIdDto));
     }
 
     @PutMapping
     public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser,
-                                    @Valid @RequestBody UserDto userDto) {
-        validationUtil.assureIdConsistent(userDto, authUser.getId());
-        log.info("update user: {}", userDto);
-        String encodePassword = passwordEncoder.encode(userDto.getPassword());
-        userDto.setPassword(encodePassword);
-        userService.update(userDto);
+                                    @Valid @RequestBody UserUpdateDto userUpdateDto) {
+        validationUtil.checkIdEquality(authUser.getId(), userUpdateDto);
+        log.info("update user: {}", userUpdateDto);
+        String encodePassword = passwordEncoder.encode(userUpdateDto.getPassword());
+        userUpdateDto.setPassword(encodePassword);
+        userService.update(userUpdateDto);
         return ResponseEntity.noContent().build();
     }
 
@@ -60,7 +62,6 @@ public class UserController {
             value = "/register"
     )
     public ResponseEntity<UserDto> register(@Valid @RequestBody UserDto userDto) {
-        validationUtil.checkIsNew(userDto);
         log.info("register user: {}", userDto);
         String encodePassword = passwordEncoder.encode(userDto.getPassword());
         userDto.setPassword(encodePassword);
@@ -72,12 +73,12 @@ public class UserController {
         return ResponseEntity.created(location).body(created);
     }
 
-    @DeleteMapping(
-            consumes = MediaType.ALL_VALUE
-    )
-    public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser) {
+    @DeleteMapping
+    public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser,
+                                    @Valid @RequestBody UserIdDto userIdDto) {
+        validationUtil.checkIdEquality(authUser.getId(), userIdDto);
         log.info("delete user: {}", authUser);
-        userService.delete(authUser.getId());
+        userService.delete(userIdDto);
         return ResponseEntity.noContent().build();
     }
 }

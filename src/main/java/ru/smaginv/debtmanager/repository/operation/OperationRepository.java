@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface OperationRepository {
 
-    Optional<Operation> get(Long accountId, Long operationId);
+    Optional<Operation> get(Long operationId);
 
     List<Operation> getAllByAccount(Long accountId);
 
@@ -20,9 +20,11 @@ public interface OperationRepository {
     List<Operation> find(Long accountId, OperationType operationType,
                          LocalDateTime startDateTime, LocalDateTime endDateTime);
 
-    Operation save(Long accountId, Operation operation);
+    void update(Operation operation);
 
-    int delete(Long accountId, Long operationId);
+    Operation create(Operation operation);
+
+    int delete(Long operationId);
 
     int deleteAllByAccount(Long accountId);
 }

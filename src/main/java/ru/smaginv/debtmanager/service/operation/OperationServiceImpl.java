@@ -16,9 +16,8 @@ import ru.smaginv.debtmanager.util.exception.AccountOperationException;
 import ru.smaginv.debtmanager.util.exception.EntityStatusException;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.account.AccountDto;
-import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
-import ru.smaginv.debtmanager.web.dto.operation.OperationSearchDto;
-import ru.smaginv.debtmanager.web.dto.operation.OperationTypeDto;
+import ru.smaginv.debtmanager.web.dto.account.AccountIdDto;
+import ru.smaginv.debtmanager.web.dto.operation.*;
 import ru.smaginv.debtmanager.web.mapping.AccountMapper;
 import ru.smaginv.debtmanager.web.mapping.OperationMapper;
 
@@ -54,13 +53,14 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public OperationDto get(Long accountId, Long operationId) {
-        Operation operation = getOperation(accountId, operationId);
+    public OperationDto get(OperationIdDto operationIdDto) {
+        Operation operation = getOperation(mappingUtil.mapId(operationIdDto));
         return operationMapper.mapDto(operation);
     }
 
     @Override
-    public List<OperationDto> getAllByAccount(Long accountId) {
+    public List<OperationDto> getAllByAccount(AccountIdDto accountIdDto) {
+        Long accountId = mappingUtil.mapId(accountIdDto.getId());
         List<Operation> operations = operationRepository.getAllByAccount(accountId);
         return operationMapper.mapDtos(operations);
     }
@@ -97,66 +97,68 @@ public class OperationServiceImpl implements OperationService {
 
     @Transactional
     @Override
-    public void update(Long accountId, OperationDto operationDto) {
-        Account account = getAccount(accountId);
-        Operation operation = getOperation(accountId, mappingUtil.mapId(operationDto));
+    public void update(OperationUpdateDto operationUpdateDto) {
+        Operation operation = getOperation(mappingUtil.mapId(operationUpdateDto));
+        Account account = getAccount(mappingUtil.mapId(operationUpdateDto.getAccountId()));
+        LocalDateTime newOperDate = mappingUtil.parseStringToLocalDateTime(operationUpdateDto.getOperDate());
+        if (Objects.nonNull(newOperDate) && account.getOpenDate().isAfter(newOperDate))
+            throw new AccountOperationException("operation date must be: " + account.getOpenDate() + " or later");
         rollBackOperation(account, operation);
-        if (!operation.getOperationType().name().equals(operationDto.getType()))
-            operationDto.setType(null);
-        operationMapper.update(operationDto, operation);
-        operationRepository.save(accountId, operation);
+        operationMapper.update(operationUpdateDto, operation);
+        operationRepository.update(operation);
         setAccountAmount(account, operation);
         accountRepository.save(account);
     }
 
     @Transactional
     @Override
-    public OperationDto create(Long accountId, OperationDto operationDto) {
-        Account account = getAccount(accountId);
+    public OperationDto create(OperationDto operationDto) {
+        Account account = getAccount(mappingUtil.mapId(operationDto.getAccountId()));
         Operation operation = operationMapper.map(operationDto);
         setAccountAmount(account, operation);
         accountRepository.save(account);
-        if (Objects.isNull(operation.getOperDate()))
-            operation.setOperDate(LocalDateTime.now());
-        operation = operationRepository.save(accountId, operation);
+        operation.setOperDate(LocalDateTime.now());
+        operation.setAccount(account);
+        operation = operationRepository.create(operation);
         return operationMapper.mapDto(operation);
     }
 
     @Transactional
     @Override
-    public AccountDto closeAccount(Long accountId, OperationDto operationDto) {
-        Account account = getAccount(accountId);
+    public AccountDto closeAccount(OperationDto operationDto) {
+        Account account = getAccount(mappingUtil.mapId(operationDto.getAccountId()));
         AccountType accountType = account.getAccountType();
         Operation operation = operationMapper.map(operationDto);
         OperationType operationType = operation.getOperationType();
         if (accountType.equals(AccountType.LEND) && operationType.equals(OperationType.EXPENSE))
-            throw new AccountOperationException("operation type must be 'RECEIPT'");
+            throw new AccountOperationException("operation type must be: " + OperationType.RECEIPT);
         else if (accountType.equals(AccountType.LOAN) && operationType.equals(OperationType.RECEIPT))
-            throw new AccountOperationException("operation type must be 'EXPENSE'");
+            throw new AccountOperationException("operation type must be: " + OperationType.EXPENSE);
         if (account.getAmount().compareTo(operation.getAmount()) != 0)
             throw new AccountOperationException("amount of operation must be: " + account.getAmount());
         setAccountAmount(account, operation);
-        if (Objects.isNull(operation.getOperDate()))
-            operation.setOperDate(LocalDateTime.now());
-        operationRepository.save(accountId, operation);
+        operation.setOperDate(LocalDateTime.now());
+        operationRepository.create(operation);
         accountRepository.save(account);
         return accountMapper.mapDto(account);
     }
 
     @Transactional
     @Override
-    public void delete(Long accountId, Long operationId) {
-        Account account = getAccount(accountId);
-        Operation operation = getOperation(accountId, operationId);
+    public void delete(OperationIdsDto operationIdsDto) {
+        Account account = getAccount(mappingUtil.mapId(operationIdsDto.getAccountId()));
+        Long operationId = mappingUtil.mapId(operationIdsDto);
+        Operation operation = getOperation(operationId);
         rollBackOperation(account, operation);
         accountRepository.save(account);
-        int result = operationRepository.delete(accountId, operationId);
+        int result = operationRepository.delete(operationId);
         validationUtil.checkNotFoundWithId(result != 0, operationId);
     }
 
     @Transactional
     @Override
-    public void deleteAllByAccount(Long accountId) {
+    public void deleteAllByAccount(AccountIdDto accountIdDto) {
+        Long accountId = mappingUtil.mapId(accountIdDto);
         Account account = getAccount(accountId);
         List<Operation> operations = operationRepository.getAllByAccount(accountId);
         operations.forEach(operation -> rollBackOperation(account, operation));
@@ -205,13 +207,13 @@ public class OperationServiceImpl implements OperationService {
     }
 
     private Account getAccount(Long accountId) {
-        Account account = getEntityFromOptional(accountRepository.getById(accountId), accountId);
+        Account account = getEntityFromOptional(accountRepository.get(accountId), accountId);
         if (account.getAccountStatus().equals(AccountStatus.INACTIVE))
             throw new EntityStatusException("account status must be 'ACTIVE'");
         return account;
     }
 
-    private Operation getOperation(Long accountId, Long operationId) {
-        return getEntityFromOptional(operationRepository.get(accountId, operationId), operationId);
+    private Operation getOperation(Long operationId) {
+        return getEntityFromOptional(operationRepository.get(operationId), operationId);
     }
 }

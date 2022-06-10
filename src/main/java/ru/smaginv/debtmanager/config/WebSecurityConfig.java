@@ -41,9 +41,11 @@ public class WebSecurityConfig {
         return http
                 .authorizeRequests()
                 .antMatchers("/user/register").anonymous()
-                .antMatchers("/user/**").hasAnyRole(ADMIN, USER)
-                .antMatchers("/person/**").hasAnyRole(ADMIN, USER)
                 .antMatchers("/accounts/**").hasAnyRole(ADMIN, USER)
+                .antMatchers("/contacts/**").hasAnyRole(ADMIN, USER)
+                .antMatchers("/operations/**").hasAnyRole(ADMIN, USER)
+                .antMatchers("/people/**").hasAnyRole(ADMIN, USER)
+                .antMatchers("/user/**").hasAnyRole(ADMIN, USER)
                 .antMatchers("/**").hasRole(ADMIN)
                 .and().httpBasic()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

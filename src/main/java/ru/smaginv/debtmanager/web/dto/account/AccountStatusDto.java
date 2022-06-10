@@ -11,8 +11,6 @@ import ru.smaginv.debtmanager.util.validation.EnumValidator;
 @ToString
 public class AccountStatusDto {
 
-    private Long personId;
-
     @EnumValidator(enumClass = AccountStatus.class)
     private String status;
 }

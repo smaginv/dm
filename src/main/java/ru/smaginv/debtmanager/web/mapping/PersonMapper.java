@@ -5,9 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.smaginv.debtmanager.entity.person.Person;
-import ru.smaginv.debtmanager.web.dto.person.PersonDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonInfoDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonSearchDto;
+import ru.smaginv.debtmanager.web.dto.person.*;
 
 import java.util.List;
 
@@ -18,9 +16,14 @@ import java.util.List;
 public interface PersonMapper {
 
     @Mapping(target = "comment", ignore = true)
+    @Mapping(target = "user", ignore = true)
     Person map(PersonSearchDto personSearchDto);
 
+    @Mapping(target = "user", ignore = true)
     Person map(PersonDto personDto);
+
+    @Mapping(target = "id", source = "personId")
+    PersonIdDto mapIdDto(Long personId);
 
     PersonDto mapDto(Person person);
 
@@ -30,5 +33,7 @@ public interface PersonMapper {
 
     List<PersonDto> mapDtos(List<Person> people);
 
-    void update(PersonDto personDto, @MappingTarget Person person);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    void update(PersonUpdateDto personUpdateDto, @MappingTarget Person person);
 }

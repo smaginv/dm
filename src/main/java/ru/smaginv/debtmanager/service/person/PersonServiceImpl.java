@@ -12,9 +12,8 @@ import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonInfoDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonSearchDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
+import ru.smaginv.debtmanager.web.dto.person.*;
 import ru.smaginv.debtmanager.web.mapping.PersonMapper;
 
 import java.util.List;
@@ -45,22 +44,24 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public PersonInfoDto get(Long personId) {
+    public PersonInfoDto get(PersonIdDto personIdDto) {
+        Long personId = mappingUtil.mapId(personIdDto);
         PersonInfoDto personInfoDto = personMapper.mapInfoDto(getPerson(personId));
-        List<AccountDto> accounts = accountService.getAllByPerson(personId);
-        List<ContactDto> contacts = contactService.getAllByPerson(personId);
+        List<AccountDto> accounts = accountService.getAllByPerson(personMapper.mapIdDto(personId));
+        List<ContactDto> contacts = contactService.getAllByPerson(personMapper.mapIdDto(personId));
         personInfoDto.setAccounts(accounts);
         personInfoDto.setContacts(contacts);
         return personInfoDto;
     }
 
     @Override
-    public PersonInfoDto getByContact(ContactDto contactDto) {
-        Contact contact = contactService.map(contactDto);
+    public PersonInfoDto getByContact(ContactSearchDto contactSearchDto) {
+        validationUtil.validateContact(contactSearchDto);
+        Contact contact = contactService.map(contactSearchDto);
         Person person = getEntityFromOptional(personRepository.getByContact(contact));
         PersonInfoDto personInfoDto = personMapper.mapInfoDto(person);
-        List<AccountDto> accounts = accountService.getAllByPerson(person.getId());
-        List<ContactDto> contacts = contactService.getAllByPerson(person.getId());
+        List<AccountDto> accounts = accountService.getAllByPerson(personMapper.mapIdDto(person.getId()));
+        List<ContactDto> contacts = contactService.getAllByPerson(personMapper.mapIdDto(person.getId()));
         personInfoDto.setAccounts(accounts);
         personInfoDto.setContacts(contacts);
         return personInfoDto;
@@ -75,37 +76,39 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public List<PersonDto> find(PersonSearchDto personSearchDto) {
         Person person = personMapper.map(personSearchDto);
-        ContactDto contactDto = contactService.validate(personSearchDto.getContact());
-        Contact contact = contactService.map(contactDto);
+        ContactSearchDto contactSearchDto = contactService.validate(personSearchDto.getContact());
+        Contact contact = contactService.map(contactSearchDto);
         List<Person> people = personRepository.find(person, contact);
         return personMapper.mapDtos(people);
     }
 
     @Transactional
     @Override
-    public void update(PersonDto personDto) {
-        Person person = getPerson(mappingUtil.mapId(personDto));
-        personMapper.update(personDto, person);
-        personRepository.save(person);
+    public void update(PersonUpdateDto personUpdateDto) {
+        Person person = getPerson(mappingUtil.mapId(personUpdateDto));
+        personMapper.update(personUpdateDto, person);
+        personRepository.update(person);
     }
 
     @Transactional
     @Override
     public PersonDto create(PersonDto personDto) {
-        Person person = personRepository.save(personMapper.map(personDto));
+        Person person = personRepository.create(personMapper.map(personDto));
         return personMapper.mapDto(person);
     }
 
     @Transactional
     @Override
-    public void delete(Long personId) {
+    public void delete(PersonIdDto personIdDto) {
+        Long personId = mappingUtil.mapId(personIdDto);
         validationUtil.checkNotFoundWithId(personRepository.delete(personId) != 0, personId);
     }
 
     @Transactional
     @Override
-    public void deleteByContact(ContactDto contactDto) {
-        Contact contact = contactService.map(contactDto);
+    public void deleteByContact(ContactSearchDto contactSearchDto) {
+        validationUtil.validateContact(contactSearchDto);
+        Contact contact = contactService.map(contactSearchDto);
         validationUtil.checkNotFound(personRepository.deleteByContact(contact) != 0);
     }
 

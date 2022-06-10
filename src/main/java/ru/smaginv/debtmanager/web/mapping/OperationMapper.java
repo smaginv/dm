@@ -7,6 +7,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.smaginv.debtmanager.entity.operation.Operation;
 import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
+import ru.smaginv.debtmanager.web.dto.operation.OperationUpdateDto;
 
 import java.util.List;
 
@@ -18,18 +19,20 @@ import java.util.List;
 public interface OperationMapper {
 
     @Mapping(target = "account", ignore = true)
-    @Mapping(source = "type", target = "operationType")
-    @Mapping(source = "operDate", target = "operDate", qualifiedByName = "parseStringToLocalDateTime")
+    @Mapping(target = "operationType", source = "type")
+    @Mapping(target = "operDate", source = "operDate", qualifiedByName = "parseStringToLocalDateTime")
     Operation map(OperationDto operationDto);
 
-    @Mapping(source = "operationType", target = "type")
-    @Mapping(source = "operDate", target = "operDate", qualifiedByName = "formatDateToString")
+    @Mapping(target = "accountId", ignore = true)
+    @Mapping(target = "type", source = "operationType")
+    @Mapping(target = "operDate", source = "operDate", qualifiedByName = "formatDateToString")
     OperationDto mapDto(Operation operation);
 
     List<OperationDto> mapDtos(List<Operation> operations);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "account", ignore = true)
-    @Mapping(source = "type", target = "operationType")
-    @Mapping(source = "operDate", target = "operDate", qualifiedByName = "parseStringToLocalDateTime")
-    void update(OperationDto operationDto, @MappingTarget Operation operation);
+    @Mapping(target = "operationType", ignore = true)
+    @Mapping(target = "operDate", source = "operDate", qualifiedByName = "parseStringToLocalDateTime")
+    void update(OperationUpdateDto operationUpdateDto, @MappingTarget Operation operation);
 }

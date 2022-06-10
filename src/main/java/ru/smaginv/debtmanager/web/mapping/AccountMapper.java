@@ -20,30 +20,32 @@ import java.util.List;
 public interface AccountMapper {
 
     @Mapping(target = "person", ignore = true)
-    @Mapping(source = "type", target = "accountType")
-    @Mapping(source = "currency", target = "currencyCode")
-    @Mapping(source = "openDate", target = "openDate", qualifiedByName = "parseStringToLocalDateTime")
-    @Mapping(source = "closedDate", target = "closedDate", qualifiedByName = "parseStringToLocalDateTime")
-    @Mapping(source = "status", target = "accountStatus")
+    @Mapping(target = "accountType", source = "type")
+    @Mapping(target = "currencyCode", source = "currency")
+    @Mapping(target = "openDate", source = "openDate", qualifiedByName = "parseStringToLocalDateTime")
+    @Mapping(target = "closedDate", source = "closedDate", qualifiedByName = "parseStringToLocalDateTime")
+    @Mapping(target = "accountStatus", source = "status")
     Account map(AccountDto accountDto);
 
-    @Mapping(source = "accountType", target = "type")
-    @Mapping(source = "currencyCode", target = "currency")
-    @Mapping(source = "openDate", target = "openDate", qualifiedByName = "formatDateToString")
-    @Mapping(source = "closedDate", target = "closedDate", qualifiedByName = "formatDateToString")
-    @Mapping(source = "accountStatus", target = "status")
+    @Mapping(target = "personId", ignore = true)
+    @Mapping(target = "type", source = "accountType")
+    @Mapping(target = "currency", source = "currencyCode")
+    @Mapping(target = "openDate", source = "openDate", qualifiedByName = "formatDateToString")
+    @Mapping(target = "closedDate", source = "closedDate", qualifiedByName = "formatDateToString")
+    @Mapping(target = "status", source = "accountStatus")
     AccountDto mapDto(Account account);
 
     @Mapping(target = "operations", ignore = true)
-    @Mapping(source = "accountType", target = "type")
-    @Mapping(source = "currencyCode", target = "currency")
-    @Mapping(source = "openDate", target = "openDate", qualifiedByName = "formatDateToString")
-    @Mapping(source = "closedDate", target = "closedDate", qualifiedByName = "formatDateToString")
-    @Mapping(source = "accountStatus", target = "status")
+    @Mapping(target = "type", source = "accountType")
+    @Mapping(target = "currency", source = "currencyCode")
+    @Mapping(target = "openDate", source = "openDate", qualifiedByName = "formatDateToString")
+    @Mapping(target = "closedDate", source = "closedDate", qualifiedByName = "formatDateToString")
+    @Mapping(target = "status", source = "accountStatus")
     AccountInfoDto mapInfoDto(Account account);
 
     List<AccountDto> mapDtos(List<Account> accounts);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "accountType", ignore = true)
     @Mapping(target = "amount", ignore = true)
     @Mapping(target = "currencyCode", ignore = true)

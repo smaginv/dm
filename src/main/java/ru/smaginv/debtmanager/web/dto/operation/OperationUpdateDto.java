@@ -1,5 +1,6 @@
-package ru.smaginv.debtmanager.web.dto.account;
+package ru.smaginv.debtmanager.web.dto.operation;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,16 +13,24 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
-public class AccountUpdateDto implements HasIdDto {
+public class OperationUpdateDto implements HasIdDto {
 
     @NotBlank
     private String id;
 
-    @Size(max = 4)
-    private String rate;
+    @NotBlank
+    @JsonIgnoreProperties(allowSetters = true)
+    private String accountId;
+
+    @Size(max = 64)
+    private String operDate;
+
+    @NotBlank
+    @Size(max = 16)
+    private String amount;
 
     @Size(max = 512)
-    private String comment;
+    private String description;
 
     @Override
     public boolean isNew() {

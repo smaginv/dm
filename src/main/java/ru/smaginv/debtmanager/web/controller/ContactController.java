@@ -7,8 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.service.contact.ContactService;
-import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactIdDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactUpdateDto;
+import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -17,41 +19,34 @@ import java.util.List;
 @Log4j2
 @RestController
 @RequestMapping(
+        value = "/contacts",
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
 public class ContactController {
 
     private final ContactService contactService;
-    private final ValidationUtil validationUtil;
 
     @Autowired
-    public ContactController(ContactService contactService, ValidationUtil validationUtil) {
+    public ContactController(ContactService contactService) {
         this.contactService = contactService;
-        this.validationUtil = validationUtil;
+    }
+
+    @GetMapping
+    public ResponseEntity<ContactDto> get(@Valid @RequestBody ContactIdDto contactIdDto) {
+        log.info("get contact: {}", contactIdDto);
+        return ResponseEntity.ok(contactService.get(contactIdDto));
     }
 
     @GetMapping(
-            value = "/person/{personId}/contacts/{contactId}",
-            consumes = MediaType.ALL_VALUE
+            value = "/by-person"
     )
-    public ResponseEntity<ContactDto> get(@PathVariable Long personId,
-                                          @PathVariable Long contactId) {
-        log.info("get contact by id: {} for person: {}", contactId, personId);
-        return ResponseEntity.ok(contactService.get(personId, contactId));
+    public ResponseEntity<List<ContactDto>> getAllByPerson(@Valid @RequestBody PersonIdDto personIdDto) {
+        log.info("get all contacts for person: {}", personIdDto);
+        return ResponseEntity.ok(contactService.getAllByPerson(personIdDto));
     }
 
     @GetMapping(
-            value = "/person/{personId}/contacts",
-            consumes = MediaType.ALL_VALUE
-    )
-    public ResponseEntity<List<ContactDto>> getAllByPerson(@PathVariable Long personId) {
-        log.info("get all contacts for person: {}", personId);
-        return ResponseEntity.ok(contactService.getAllByPerson(personId));
-    }
-
-    @GetMapping(
-            value = "/contacts",
             consumes = MediaType.ALL_VALUE
     )
     public ResponseEntity<List<ContactDto>> getAll() {
@@ -59,51 +54,36 @@ public class ContactController {
         return ResponseEntity.ok(contactService.getAll());
     }
 
-    @PutMapping(
-            value = "/person/{personId}/contacts/{contactId}"
-    )
-    public ResponseEntity<?> update(@PathVariable Long personId,
-                                    @PathVariable Long contactId,
-                                    @Valid @RequestBody ContactDto contactDto) {
-        validationUtil.assureIdConsistent(contactDto, contactId);
-        log.info("update contact: {}, with id: {}", contactDto, contactId);
-        contactService.update(personId, contactDto);
+    @PutMapping
+    public ResponseEntity<?> update(@Valid @RequestBody ContactUpdateDto contactUpdateDto) {
+        log.info("update contact: {}", contactUpdateDto);
+        contactService.update(contactUpdateDto);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(
-            value = "/person/{personId}/contacts"
-    )
-    public ResponseEntity<ContactDto> create(@PathVariable Long personId,
-                                             @Valid @RequestBody ContactDto contactDto) {
-        validationUtil.checkIsNew(contactDto);
-        log.info("create contact: {}, for person: {}", contactDto, personId);
-        ContactDto created = contactService.create(personId, contactDto);
+    @PostMapping
+    public ResponseEntity<ContactDto> create(@Valid @RequestBody ContactDto contactDto) {
+        log.info("create contact: {}", contactDto);
+        ContactDto created = contactService.create(contactDto);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{contactId}")
-                .buildAndExpand(created.getId())
+                .build()
                 .toUri();
         return ResponseEntity.created(location).body(created);
     }
 
-    @DeleteMapping(
-            value = "/person/{personId}/contacts/{contactId}",
-            consumes = MediaType.ALL_VALUE
-    )
-    public ResponseEntity<?> delete(@PathVariable Long personId,
-                                    @PathVariable Long contactId) {
-        log.info("delete contact with id: {}, for person: {}", contactId, personId);
-        contactService.delete(personId, contactId);
+    @DeleteMapping
+    public ResponseEntity<?> delete(@Valid @RequestBody ContactIdDto contactIdDto) {
+        log.info("delete contact with id: {}", contactIdDto);
+        contactService.delete(contactIdDto);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping(
-            value = "/person/{personId}/contacts",
-            consumes = MediaType.ALL_VALUE
+            value = "/by-person"
     )
-    public ResponseEntity<?> deleteAllByPerson(@PathVariable Long personId) {
-        log.info("delete all contacts for person: {}", personId);
-        contactService.deleteAllByPerson(personId);
+    public ResponseEntity<?> deleteAllByPerson(@Valid @RequestBody PersonIdDto personIdDto) {
+        log.info("delete all contacts for person: {}", personIdDto);
+        contactService.deleteAllByPerson(personIdDto);
         return ResponseEntity.noContent().build();
     }
 }

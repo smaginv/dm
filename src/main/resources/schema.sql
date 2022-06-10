@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS operation;
 DROP TABLE IF EXISTS account;
 DROP TABLE IF EXISTS contact;
+DROP TABLE IF EXISTS unique_contact;
 DROP TABLE IF EXISTS person;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS users;
@@ -8,6 +9,7 @@ DROP TABLE IF EXISTS users;
 DROP SEQUENCE IF EXISTS operation_seq;
 DROP SEQUENCE IF EXISTS account_seq;
 DROP SEQUENCE IF EXISTS contact_seq;
+DROP SEQUENCE IF EXISTS unique_contact_seq;
 DROP SEQUENCE IF EXISTS person_seq;
 DROP SEQUENCE IF EXISTS users_seq;
 
@@ -48,6 +50,7 @@ ALTER TABLE roles
 CREATE TABLE person
 (
     person_id  BIGINT PRIMARY KEY,
+    user_id    BIGINT REFERENCES users (user_id) ON DELETE CASCADE,
     first_name VARCHAR NOT NULL,
     last_name  VARCHAR,
     comment    VARCHAR
@@ -65,12 +68,25 @@ CREATE TABLE contact
     contact_id BIGINT PRIMARY KEY,
     person_id  BIGINT REFERENCES person (person_id) ON DELETE CASCADE,
     type       contact_type NOT NULL,
-    value      varchar
+    value      varchar      NOT NULL
 );
 CREATE SEQUENCE contact_seq INCREMENT 10 START 20;
 ALTER SEQUENCE contact_seq OWNED BY contact.contact_id;
 ALTER TABLE contact
     ALTER COLUMN contact_id SET DEFAULT nextval('contact_seq');
+
+CREATE TABLE unique_contact
+(
+    unique_contact_id BIGINT PRIMARY KEY,
+    user_id           BIGINT        NOT NULL,
+    contact_id        BIGINT UNIQUE NOT NULL,
+    contact_value     VARCHAR       NOT NULL,
+    UNIQUE (user_id, contact_value)
+);
+CREATE SEQUENCE unique_contact_seq INCREMENT 10 START 20;
+ALTER SEQUENCE unique_contact_seq OWNED BY unique_contact.unique_contact_id;
+ALTER TABLE unique_contact
+    ALTER COLUMN unique_contact_id SET DEFAULT nextval('unique_contact_seq');
 
 CREATE TYPE account_type AS ENUM ('LEND', 'LOAN');
 CREATE TYPE account_status AS ENUM ('ACTIVE', 'INACTIVE');

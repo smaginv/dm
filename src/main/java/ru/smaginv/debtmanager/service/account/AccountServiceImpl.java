@@ -13,6 +13,7 @@ import ru.smaginv.debtmanager.util.MappingUtil;
 import ru.smaginv.debtmanager.util.exception.EntityStatusException;
 import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.account.*;
+import ru.smaginv.debtmanager.web.dto.person.PersonIdDto;
 import ru.smaginv.debtmanager.web.mapping.AccountMapper;
 import ru.smaginv.debtmanager.web.mapping.OperationMapper;
 
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptional;
 
@@ -47,14 +49,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto get(Long personId, Long accountId) {
-        Account account = getAccount(personId, accountId);
+    public AccountDto get(AccountIdDto accountIdDto) {
+        Account account = getAccount(mappingUtil.mapId(accountIdDto));
         return accountMapper.mapDto(account);
     }
 
     @Override
-    public AccountInfoDto getWithOperations(Long personId, Long accountId) {
-        Account account = getAccount(personId, accountId);
+    public AccountInfoDto getWithOperations(AccountIdDto accountIdDto) {
+        Long accountId = mappingUtil.mapId(accountIdDto);
+        Account account = getAccount(accountId);
         List<Operation> operations = operationRepository.getAllByAccount(accountId);
         AccountInfoDto accountInfoDto = accountMapper.mapInfoDto(account);
         accountInfoDto.setOperations(operationMapper.mapDtos(operations));
@@ -67,16 +70,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public List<AccountDto> getAllByPerson(Long personId) {
-        List<Account> accounts = accountRepository.getAllByPerson(personId);
+    public List<AccountDto> getAllByPerson(PersonIdDto personIdDto) {
+        List<Account> accounts = accountRepository.getAllByPerson(mappingUtil.mapId(personIdDto));
         return accountMapper.mapDtos(accounts);
     }
 
     @Override
-    public List<AccountDto> getByStatus(AccountStatusDto accountStatusDto) {
-        Long personId = accountStatusDto.getPersonId();
+    public List<AccountDto> getAllByStatus(AccountStatusDto accountStatusDto) {
         AccountStatus accountStatus = AccountStatus.getByValue(accountStatusDto.getStatus());
-        List<Account> accounts = accountRepository.getByStatus(personId, accountStatus);
+        List<Account> accounts = accountRepository.getAllByStatus(accountStatus);
         return accountMapper.mapDtos(accounts);
     }
 
@@ -88,51 +90,52 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String getTotalAmountByType(AccountTypeDto accountTypeDto) {
+    public String getActiveAccountsTotalAmountByType(AccountTypeDto accountTypeDto) {
         AccountType accountType = AccountType.getByValue(accountTypeDto.getType());
-        List<Account> accounts = accountRepository.getAllByType(accountType);
-        return calculateTotalAmount(accounts, AccountStatus.ACTIVE);
+        BigDecimal amount = accountRepository.getActiveAccountsTotalAmountByType(accountType);
+        return checkAmount(amount);
     }
 
     @Override
-    public String getArchiveTotalAmountByType(AccountTypeDto accountTypeDto) {
+    public String getInactiveAccountsTotalAmountByType(AccountTypeDto accountTypeDto) {
         AccountType accountType = AccountType.getByValue(accountTypeDto.getType());
-        List<Account> accounts = accountRepository.getAllByType(accountType);
-        return calculateTotalAmount(accounts, AccountStatus.INACTIVE);
+        BigDecimal amount = accountRepository.getInactiveAccountsTotalAmountByType(accountType);
+        return checkAmount(amount);
     }
 
     @Transactional
     @Override
-    public void update(Long personId, AccountUpdateDto accountUpdateDto) {
-        Account account = getAccount(personId, mappingUtil.mapId(accountUpdateDto));
+    public void update(AccountUpdateDto accountUpdateDto) {
+        Account account = getAccount(mappingUtil.mapId(accountUpdateDto));
         accountMapper.update(accountUpdateDto, account);
-        accountRepository.save(personId, account);
+        accountRepository.update(account);
     }
 
     @Transactional
     @Override
-    public AccountDto create(Long personId, AccountDto accountDto) {
+    public AccountDto create(AccountDto accountDto) {
         Account account = accountMapper.map(accountDto);
         account.setOpenDate(LocalDateTime.now());
         account.setAccountStatus(AccountStatus.ACTIVE);
-        account = accountRepository.save(personId, account);
+        account = accountRepository.create(mappingUtil.mapId(accountDto.getPersonId()), account);
         return accountMapper.mapDto(account);
     }
 
     @Transactional
     @Override
-    public void delete(Long personId, Long accountId) {
-        Account account = getAccount(personId, accountId);
+    public void delete(AccountIdDto accountIdDto) {
+        Long accountId = mappingUtil.mapId(accountIdDto);
+        Account account = getAccount(accountId);
         if (account.getAccountStatus().equals(AccountStatus.ACTIVE))
             throw new EntityStatusException("status of account must be 'INACTIVE'");
-        int result = accountRepository.delete(personId, accountId);
+        int result = accountRepository.delete(accountId);
         validationUtil.checkNotFoundWithId(result != 0, accountId);
     }
 
     @Transactional
     @Override
-    public void deleteAllInactiveByPerson(Long personId) {
-        int result = accountRepository.deleteAllInactiveByPerson(personId);
+    public void deleteAllInactiveByPerson(PersonIdDto personIdDto) {
+        int result = accountRepository.deleteAllInactiveByPerson(mappingUtil.mapId(personIdDto));
         validationUtil.checkNotFound(result != 0);
     }
 
@@ -143,17 +146,13 @@ public class AccountServiceImpl implements AccountService {
         validationUtil.checkNotFound(result != 0);
     }
 
-    private Account getAccount(Long personId, Long accountId) {
-        return getEntityFromOptional(accountRepository.get(personId, accountId), accountId);
+    private Account getAccount(Long accountId) {
+        return getEntityFromOptional(accountRepository.get(accountId), accountId);
     }
 
-    private String calculateTotalAmount(List<Account> accounts, AccountStatus accountStatus) {
-        return accounts.stream()
-                .filter(account -> account.getAccountStatus().equals(accountStatus))
-                .map(Account::getAmount)
-                .reduce(BigDecimal::add)
-                .orElse(BigDecimal.ZERO)
-                .setScale(2, RoundingMode.DOWN)
-                .toString();
+    private String checkAmount(BigDecimal amount) {
+        if (Objects.isNull(amount))
+            amount = BigDecimal.ZERO;
+        return String.valueOf(amount.setScale(2, RoundingMode.DOWN));
     }
 }

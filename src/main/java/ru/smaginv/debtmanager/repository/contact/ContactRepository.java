@@ -7,15 +7,17 @@ import java.util.Optional;
 
 public interface ContactRepository {
 
-    Optional<Contact> get(Long personId, Long contactId);
+    Optional<Contact> get(Long contactId);
 
     List<Contact> getAllByPerson(Long personId);
 
     List<Contact> getAll();
 
-    Contact save(Long personId, Contact contact);
+    Contact update(Contact contact);
 
-    int delete(Long personId, Long contactId);
+    Contact create(Long personId, Contact contact);
+
+    int delete(Long contactId);
 
     int deleteAllByPerson(Long personId);
 }

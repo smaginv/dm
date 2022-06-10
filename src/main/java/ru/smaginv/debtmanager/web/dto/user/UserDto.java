@@ -21,7 +21,7 @@ import java.util.Set;
         "id", "firstName", "lastName", "username", "email", "status", "roles"
 })
 @JsonIgnoreProperties(
-        value = {"status", "roles"},
+        value = {"id", "status", "roles"},
         allowGetters = true
 )
 public class UserDto implements HasIdDto {

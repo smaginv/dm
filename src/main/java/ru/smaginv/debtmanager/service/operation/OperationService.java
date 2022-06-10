@@ -1,17 +1,16 @@
 package ru.smaginv.debtmanager.service.operation;
 
 import ru.smaginv.debtmanager.web.dto.account.AccountDto;
-import ru.smaginv.debtmanager.web.dto.operation.OperationDto;
-import ru.smaginv.debtmanager.web.dto.operation.OperationSearchDto;
-import ru.smaginv.debtmanager.web.dto.operation.OperationTypeDto;
+import ru.smaginv.debtmanager.web.dto.account.AccountIdDto;
+import ru.smaginv.debtmanager.web.dto.operation.*;
 
 import java.util.List;
 
 public interface OperationService {
 
-    OperationDto get(Long accountId, Long operationId);
+    OperationDto get(OperationIdDto operationIdDto);
 
-    List<OperationDto> getAllByAccount(Long accountId);
+    List<OperationDto> getAllByAccount(AccountIdDto accountIdDto);
 
     List<OperationDto> getAll();
 
@@ -19,13 +18,13 @@ public interface OperationService {
 
     List<OperationDto> find(OperationSearchDto operationSearchDto);
 
-    void update(Long accountId, OperationDto operationDto);
+    void update(OperationUpdateDto operationUpdateDto);
 
-    OperationDto create(Long accountId, OperationDto operationDto);
+    OperationDto create(OperationDto operationDto);
 
-    AccountDto closeAccount(Long accountId, OperationDto operationDto);
+    AccountDto closeAccount(OperationDto operationDto);
 
-    void delete(Long accountId, Long operationId);
+    void delete(OperationIdsDto operationIdsDto);
 
-    void deleteAllByAccount(Long accountId);
+    void deleteAllByAccount(AccountIdDto accountIdDto);
 }

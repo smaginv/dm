@@ -1,17 +1,16 @@
 package ru.smaginv.debtmanager.service.user;
 
-import ru.smaginv.debtmanager.web.dto.user.UserDto;
-import ru.smaginv.debtmanager.web.dto.user.UserEmailDto;
-import ru.smaginv.debtmanager.web.dto.user.UserRoleDto;
-import ru.smaginv.debtmanager.web.dto.user.UserStatusDto;
+import ru.smaginv.debtmanager.web.dto.user.*;
 
 import java.util.List;
 
 public interface UserService {
 
-    UserDto get(Long userId);
+    UserDto get(UserIdDto userIdDto);
 
     UserDto getByUsername(String username);
+
+    UserDto getByUsername(UsernameDto usernameDto);
 
     UserDto getByEmail(UserEmailDto userEmailDto);
 
@@ -19,15 +18,15 @@ public interface UserService {
 
     List<UserDto> getAllByStatus(UserStatusDto userStatusDto);
 
-    void update(UserDto userDto);
+    void update(UserUpdateDto userUpdateDto);
 
-    UserDto setStatus(Long userId, UserStatusDto userStatusDto);
+    UserDto setStatus(UserStatusDto userStatusDto);
 
-    UserDto setRole(Long userId, UserRoleDto userRoleDto);
+    UserDto setRole(UserRoleDto userRoleDto);
 
     UserDto create(UserDto userDto);
 
-    void delete(Long userId);
+    void delete(UserIdDto userIdDto);
 
     void deleteByEmail(UserEmailDto userEmailDto);
 }

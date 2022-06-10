@@ -35,6 +35,14 @@ public class MappingUtil {
     }
 
     public Long mapId(HasIdDto entity) {
+        if (Objects.isNull(entity) || Objects.isNull(entity.getId()))
+            return null;
         return Long.valueOf(entity.getId().trim());
+    }
+
+    public Long mapId(String id) {
+        if (Objects.isNull(id))
+            return null;
+        return Long.valueOf(id.trim());
     }
 }

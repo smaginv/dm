@@ -1,27 +1,25 @@
 package ru.smaginv.debtmanager.service.person;
 
-import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonInfoDto;
-import ru.smaginv.debtmanager.web.dto.person.PersonSearchDto;
+import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
+import ru.smaginv.debtmanager.web.dto.person.*;
 
 import java.util.List;
 
 public interface PersonService {
 
-    PersonInfoDto get(Long personId);
+    PersonInfoDto get(PersonIdDto personIdDto);
 
-    PersonInfoDto getByContact(ContactDto contactDto);
+    PersonInfoDto getByContact(ContactSearchDto contactSearchDto);
 
     List<PersonDto> getAll();
 
     List<PersonDto> find(PersonSearchDto personSearchDto);
 
-    void update(PersonDto personDto);
+    void update(PersonUpdateDto personUpdateDto);
 
     PersonDto create(PersonDto personDto);
 
-    void delete(Long personId);
+    void delete(PersonIdDto personIdDto);
 
-    void deleteByContact(ContactDto contactDto);
+    void deleteByContact(ContactSearchDto contactSearchDto);
 }

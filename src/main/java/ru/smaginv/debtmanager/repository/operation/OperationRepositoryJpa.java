@@ -13,37 +13,83 @@ import java.util.Optional;
 
 public interface OperationRepositoryJpa extends JpaRepository<Operation, Long> {
 
-    @Query("SELECT o FROM Operation o WHERE o.id = :operationId AND o.account.id = :accountId")
-    Optional<Operation> get(@Param("accountId") Long accountId, @Param("operationId") Long operationId);
-
-    @Query("SELECT o FROM Operation o WHERE o.account.id = :accountId ORDER BY o.operDate DESC")
-    List<Operation> getAllByAccount(@Param("accountId") Long accountId);
-
-    @Query("SELECT o FROM Operation o ORDER BY o.operDate DESC")
-    List<Operation> getAll();
-
-    @Query("SELECT o FROM Operation o WHERE o.operationType = :operationType")
-    List<Operation> getByType(@Param("operationType") OperationType operationType);
-
-    @Query("SELECT o FROM Operation o WHERE o.operationType = :operationType AND o.account.id = :accountId")
-    List<Operation> getByAccountAndType(@Param("accountId") Long accountId,
-                                        @Param("operationType") OperationType operationType);
+    @Query("""
+            SELECT o FROM Operation o
+            JOIN Account a ON o.account.id = a.id
+            JOIN Person p ON a.person.id = p.id
+            WHERE o.id = :operationId AND p.user.id = :userId
+            """)
+    Optional<Operation> get(@Param("operationId") Long operationId, @Param("userId") Long userId);
 
     @Query("""
-            SELECT DISTINCT o FROM Operation o WHERE o.operationType = :operationType AND
-             (:accountId IS NULL OR o.account.id = :accountId) AND
-              o.operDate >= :startDateTime AND o.operDate <= :endDateTime
+            SELECT o FROM Operation o
+            JOIN Account a ON o.account.id = a.id
+            JOIN Person p ON a.person.id = p.id
+            WHERE a.id = :accountId AND p.user.id = :userId
+            ORDER BY o.operDate DESC
+            """)
+    List<Operation> getAllByAccount(@Param("accountId") Long accountId, @Param("userId") Long userId);
+
+    @Query("""
+            SELECT o FROM Operation o
+            JOIN Account a ON o.account.id = a.id
+            JOIN Person p ON a.person.id = p.id
+            WHERE p.user.id = :userId
+            ORDER BY o.operDate DESC
+            """)
+    List<Operation> getAll(@Param("userId") Long userId);
+
+    @Query("""
+            SELECT o FROM Operation o
+            JOIN Account a ON o.account.id = a.id
+            JOIN Person p ON a.person.id = p.id
+            WHERE o.operationType = :operationType AND
+            p.user.id = :userId
+            ORDER BY o.operDate DESC
+            """)
+    List<Operation> getByType(@Param("operationType") OperationType operationType, @Param("userId") Long userId);
+
+    @Query("""
+            SELECT o FROM Operation o
+            JOIN Account a ON o.account.id = a.id
+            JOIN Person p ON a.person.id = p.id
+            WHERE a.id = :accountId AND o.operationType = :operationType AND
+            p.user.id = :userId
+            ORDER BY o.operDate DESC
+            """)
+    List<Operation> getByAccountAndType(@Param("accountId") Long accountId,
+                                        @Param("operationType") OperationType operationType,
+                                        @Param("userId") Long userId);
+
+    @Query("""
+            SELECT DISTINCT o FROM Operation o
+            JOIN Account a ON o.account.id = a.id
+            JOIN Person p ON a.person.id = p.id
+            WHERE o.operationType = :operationType AND
+            (:accountId IS NULL OR a.id = :accountId) AND
+            o.operDate >= :startDateTime AND o.operDate <= :endDateTime AND
+            p.user.id = :userId
+            ORDER BY o.operDate DESC
             """)
     List<Operation> find(@Param("accountId") Long accountId,
                          @Param("operationType") OperationType operationType,
                          @Param("startDateTime") LocalDateTime startDateTime,
-                         @Param("endDateTime") LocalDateTime endDateTime);
+                         @Param("endDateTime") LocalDateTime endDateTime,
+                         @Param("userId") Long userId);
 
     @Modifying
-    @Query("DELETE FROM Operation o WHERE o.id = :operationId AND o.account.id = :accountId")
-    int delete(@Param("accountId") Long accountId, @Param("operationId") Long operationId);
+    @Query("""
+            DELETE FROM Operation o
+            WHERE o.id = :operationId AND
+            :userId IN (SELECT u.id FROM User u)
+            """)
+    int delete(@Param("operationId") Long operationId, @Param("userId") Long userId);
 
     @Modifying
-    @Query("DELETE FROM Operation o WHERE o.account.id = :accountId")
-    int deleteAllByAccount(@Param("accountId") Long accountId);
+    @Query("""
+            DELETE FROM Operation o
+            WHERE o.account.id = :accountId AND
+            :userId IN (SELECT u.id FROM User u)
+            """)
+    int deleteAllByAccount(@Param("accountId") Long accountId, @Param("userId") Long userId);
 }

@@ -6,6 +6,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import ru.smaginv.debtmanager.entity.user.User;
 import ru.smaginv.debtmanager.web.dto.user.UserDto;
+import ru.smaginv.debtmanager.web.dto.user.UserUpdateDto;
 
 import java.util.List;
 
@@ -23,5 +24,8 @@ public interface UserMapper {
 
     List<UserDto> mapDtos(List<User> users);
 
-    void update(UserDto userDto, @MappingTarget User user);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    void update(UserUpdateDto userUpdateDto, @MappingTarget User user);
 }

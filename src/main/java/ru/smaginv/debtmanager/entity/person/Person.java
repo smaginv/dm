@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.smaginv.debtmanager.entity.HasId;
+import ru.smaginv.debtmanager.entity.user.User;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -39,6 +40,10 @@ public class Person implements HasId {
 
     @Column(name = "comment")
     private String comment;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Override
     public boolean isNew() {
