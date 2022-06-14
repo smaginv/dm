@@ -11,19 +11,19 @@ import java.util.List;
 
 public interface ContactService {
 
-    ContactDto get(ContactIdDto contactIdDto);
+    ContactDto get(Long userId, ContactIdDto contactIdDto);
 
-    List<ContactDto> getAllByPerson(PersonIdDto personIdDto);
+    List<ContactDto> getAllByPerson(Long userId, PersonIdDto personIdDto);
 
-    List<ContactDto> getAll();
+    List<ContactDto> getAll(Long userId);
 
-    void update(ContactUpdateDto contactUpdateDto);
+    void update(Long userId, ContactUpdateDto contactUpdateDto);
 
-    ContactDto create(ContactDto contactDto);
+    ContactDto create(Long userId, ContactDto contactDto);
 
-    void delete(ContactIdDto contactIdDto);
+    void delete(Long userId, ContactIdDto contactIdDto);
 
-    void deleteAllByPerson(PersonIdDto personIdDto);
+    void deleteAllByPerson(Long userId, PersonIdDto personIdDto);
 
     <T extends AbstractContactDto> Contact map(T contactDto);
 

@@ -4,9 +4,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.service.person.PersonService;
+import ru.smaginv.debtmanager.web.AuthUser;
 import ru.smaginv.debtmanager.web.dto.contact.ContactSearchDto;
 import ru.smaginv.debtmanager.web.dto.person.*;
 
@@ -31,46 +33,51 @@ public class PersonController {
     }
 
     @GetMapping
-    public ResponseEntity<PersonInfoDto> get(@Valid @RequestBody PersonIdDto personIdDto) {
+    public ResponseEntity<PersonInfoDto> get(@AuthenticationPrincipal AuthUser authUser,
+                                             @Valid @RequestBody PersonIdDto personIdDto) {
         log.info("get person by id: {}", personIdDto);
-        return ResponseEntity.ok(personService.get(personIdDto));
+        return ResponseEntity.ok(personService.get(authUser.getId(), personIdDto));
     }
 
     @GetMapping(
             value = "/by-contact"
     )
-    public ResponseEntity<PersonInfoDto> getByContact(@Valid @RequestBody ContactSearchDto contactSearchDto) {
+    public ResponseEntity<PersonInfoDto> getByContact(@AuthenticationPrincipal AuthUser authUser,
+                                                      @Valid @RequestBody ContactSearchDto contactSearchDto) {
         log.info("get person by contact {}", contactSearchDto);
-        return ResponseEntity.ok(personService.getByContact(contactSearchDto));
+        return ResponseEntity.ok(personService.getByContact(authUser.getId(), contactSearchDto));
     }
 
     @GetMapping(
             consumes = MediaType.ALL_VALUE
     )
-    public ResponseEntity<List<PersonDto>> getAll() {
+    public ResponseEntity<List<PersonDto>> getAll(@AuthenticationPrincipal AuthUser authUser) {
         log.info("get all people");
-        return ResponseEntity.ok(personService.getAll());
+        return ResponseEntity.ok(personService.getAll(authUser.getId()));
     }
 
     @GetMapping(
             value = "/find"
     )
-    public ResponseEntity<List<PersonDto>> find(@RequestBody PersonSearchDto personSearchDto) {
+    public ResponseEntity<List<PersonDto>> find(@AuthenticationPrincipal AuthUser authUser,
+                                                @RequestBody PersonSearchDto personSearchDto) {
         log.info("find people by {}", personSearchDto);
-        return ResponseEntity.ok(personService.find(personSearchDto));
+        return ResponseEntity.ok(personService.find(authUser.getId(), personSearchDto));
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody PersonUpdateDto personUpdateDto) {
+    public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser,
+                                    @Valid @RequestBody PersonUpdateDto personUpdateDto) {
         log.info("update person: {}", personUpdateDto);
-        personService.update(personUpdateDto);
+        personService.update(authUser.getId(), personUpdateDto);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public ResponseEntity<PersonDto> create(@Valid @RequestBody PersonDto personDto) {
+    public ResponseEntity<PersonDto> create(@AuthenticationPrincipal AuthUser authUser,
+                                            @Valid @RequestBody PersonDto personDto) {
         log.info("create person: {}", personDto);
-        PersonDto created = personService.create(personDto);
+        PersonDto created = personService.create(authUser.getId(), personDto);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .build()
                 .toUri();
@@ -78,18 +85,20 @@ public class PersonController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(@Valid @RequestBody PersonIdDto personIdDto) {
+    public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser,
+                                    @Valid @RequestBody PersonIdDto personIdDto) {
         log.info("delete person: {}", personIdDto);
-        personService.delete(personIdDto);
+        personService.delete(authUser.getId(), personIdDto);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping(
             value = "/by-contact"
     )
-    public ResponseEntity<?> deleteByContact(@Valid @RequestBody ContactSearchDto contactSearchDto) {
+    public ResponseEntity<?> deleteByContact(@AuthenticationPrincipal AuthUser authUser,
+                                             @Valid @RequestBody ContactSearchDto contactSearchDto) {
         log.info("delete person by contact: {}", contactSearchDto);
-        personService.deleteByContact(contactSearchDto);
+        personService.deleteByContact(authUser.getId(), contactSearchDto);
         return ResponseEntity.noContent().build();
     }
 }

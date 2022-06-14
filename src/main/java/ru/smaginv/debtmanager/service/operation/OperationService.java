@@ -8,23 +8,23 @@ import java.util.List;
 
 public interface OperationService {
 
-    OperationDto get(OperationIdDto operationIdDto);
+    OperationDto get(Long userId, OperationIdDto operationIdDto);
 
-    List<OperationDto> getAllByAccount(AccountIdDto accountIdDto);
+    List<OperationDto> getAllByAccount(Long userId, AccountIdDto accountIdDto);
 
-    List<OperationDto> getAll();
+    List<OperationDto> getAll(Long userId);
 
-    List<OperationDto> getByType(OperationTypeDto operationTypeDto);
+    List<OperationDto> getByType(Long userId, OperationTypeDto operationTypeDto);
 
-    List<OperationDto> find(OperationSearchDto operationSearchDto);
+    List<OperationDto> find(Long userId, OperationSearchDto operationSearchDto);
 
-    void update(OperationUpdateDto operationUpdateDto);
+    void update(Long userId, OperationUpdateDto operationUpdateDto);
 
-    OperationDto create(OperationDto operationDto);
+    OperationDto create(Long userId, OperationDto operationDto);
 
-    AccountDto closeAccount(OperationDto operationDto);
+    AccountDto closeAccount(Long userId, OperationDto operationDto);
 
-    void delete(OperationIdsDto operationIdsDto);
+    void delete(Long userId, OperationIdsDto operationIdsDto);
 
-    void deleteAllByAccount(AccountIdDto accountIdDto);
+    void deleteAllByAccount(Long userId, AccountIdDto accountIdDto);
 }

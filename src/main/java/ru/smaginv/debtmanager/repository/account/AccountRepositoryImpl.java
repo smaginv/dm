@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
-import static ru.smaginv.debtmanager.util.AppUtil.getAuthUserId;
 import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptional;
 
 @Repository
@@ -28,38 +27,38 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Optional<Account> get(Long accountId) {
-        return accountRepository.get(accountId, getAuthUserId());
+    public Optional<Account> get(Long userId, Long accountId) {
+        return accountRepository.get(userId, accountId);
     }
 
     @Override
-    public List<Account> getAll() {
-        return accountRepository.getAll(getAuthUserId());
+    public List<Account> getAll(Long userId) {
+        return accountRepository.getAll(userId);
     }
 
     @Override
-    public List<Account> getAllByPerson(Long personId) {
-        return accountRepository.getAllByPerson(personId, getAuthUserId());
+    public List<Account> getAllByPerson(Long userId, Long personId) {
+        return accountRepository.getAllByPerson(userId, personId);
     }
 
     @Override
-    public List<Account> getAllByStatus(AccountStatus accountStatus) {
-        return accountRepository.getAllByStatus(accountStatus, getAuthUserId());
+    public List<Account> getAllByStatus(Long userId, AccountStatus accountStatus) {
+        return accountRepository.getAllByStatus(userId, accountStatus);
     }
 
     @Override
-    public List<Account> getAllByType(AccountType accountType) {
-        return accountRepository.getAllByType(accountType, getAuthUserId());
+    public List<Account> getAllByType(Long userId, AccountType accountType) {
+        return accountRepository.getAllByType(userId, accountType);
     }
 
     @Override
-    public BigDecimal getActiveAccountsTotalAmountByType(AccountType accountType) {
-        return accountRepository.getActiveAccountsTotalAmountByType(accountType, getAuthUserId());
+    public BigDecimal getActiveAccountsTotalAmountByType(Long userId, AccountType accountType) {
+        return accountRepository.getActiveAccountsTotalAmountByType(userId, accountType);
     }
 
     @Override
-    public BigDecimal getInactiveAccountsTotalAmountByType(AccountType accountType) {
-        return accountRepository.getInactiveAccountsTotalAmountByType(accountType, getAuthUserId());
+    public BigDecimal getInactiveAccountsTotalAmountByType(Long userId, AccountType accountType) {
+        return accountRepository.getInactiveAccountsTotalAmountByType(userId, accountType);
     }
 
     @Override
@@ -68,8 +67,8 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Account create(Long personId, Account account) {
-        Person person = getEntityFromOptional(personRepository.get(personId, getAuthUserId()), personId);
+    public Account create(Long userId, Long personId, Account account) {
+        Person person = getEntityFromOptional(personRepository.get(userId, personId), personId);
         account.setPerson(person);
         return accountRepository.save(account);
     }
@@ -80,17 +79,17 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public int delete(Long accountId) {
-        return accountRepository.delete(accountId, getAuthUserId());
+    public int delete(Long userId, Long accountId) {
+        return accountRepository.delete(userId, accountId);
     }
 
     @Override
-    public int deleteAllInactiveByPerson(Long personId) {
-        return accountRepository.deleteAllInactiveByPerson(personId, getAuthUserId());
+    public int deleteAllInactiveByPerson(Long userId, Long personId) {
+        return accountRepository.deleteAllInactiveByPerson(userId, personId);
     }
 
     @Override
-    public int deleteAllInactive() {
-        return accountRepository.deleteAllInactive(getAuthUserId());
+    public int deleteAllInactive(Long userId) {
+        return accountRepository.deleteAllInactive(userId);
     }
 }

@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface UniqueContactService {
 
-    void save(UniqueContact uniqueContact);
+    void save(Long userId, UniqueContact uniqueContact);
 
-    void deleteByContactId(Long contactId);
+    void deleteByContactId(Long userId, Long contactId);
 
-    void deleteByContactIds(List<Long> contactIds);
+    void deleteByContactIds(Long userId, List<Long> contactIds);
 }

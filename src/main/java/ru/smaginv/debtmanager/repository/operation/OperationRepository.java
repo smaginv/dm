@@ -9,22 +9,22 @@ import java.util.Optional;
 
 public interface OperationRepository {
 
-    Optional<Operation> get(Long operationId);
+    Optional<Operation> get(Long userId, Long operationId);
 
-    List<Operation> getAllByAccount(Long accountId);
+    List<Operation> getAllByAccount(Long userId, Long accountId);
 
-    List<Operation> getAll();
+    List<Operation> getAll(Long userId);
 
-    List<Operation> getByType(Long accountId, OperationType operationType);
+    List<Operation> getByType(Long userId, Long accountId, OperationType operationType);
 
-    List<Operation> find(Long accountId, OperationType operationType,
+    List<Operation> find(Long userId, Long accountId, OperationType operationType,
                          LocalDateTime startDateTime, LocalDateTime endDateTime);
 
     void update(Operation operation);
 
     Operation create(Operation operation);
 
-    int delete(Long operationId);
+    int delete(Long userId, Long operationId);
 
-    int deleteAllByAccount(Long accountId);
+    int deleteAllByAccount(Long userId, Long accountId);
 }

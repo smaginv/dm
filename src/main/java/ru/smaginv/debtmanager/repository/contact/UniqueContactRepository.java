@@ -18,7 +18,8 @@ public interface UniqueContactRepository extends JpaRepository<UniqueContact, Lo
             WHERE uc.contactId = :contactId AND
             uc.userId = :userId
             """)
-    void deleteByContactId(@Param("contactId") Long contactId, @Param("userId") Long userId);
+    void deleteByContactId(@Param("userId") Long userId,
+                           @Param("contactId") Long contactId);
 
     @Modifying
     @Query("""
@@ -26,5 +27,6 @@ public interface UniqueContactRepository extends JpaRepository<UniqueContact, Lo
             WHERE uc.contactId IN :contactIds AND
             uc.userId = :userId
             """)
-    void deleteByContactIds(@Param("contactIds") List<Long> contactIds, @Param("userId") Long userId);
+    void deleteByContactIds(@Param("userId") Long userId,
+                            @Param("contactIds") List<Long> contactIds);
 }

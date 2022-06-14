@@ -7,19 +7,19 @@ import java.util.List;
 
 public interface PersonService {
 
-    PersonInfoDto get(PersonIdDto personIdDto);
+    PersonInfoDto get(Long userId, PersonIdDto personIdDto);
 
-    PersonInfoDto getByContact(ContactSearchDto contactSearchDto);
+    PersonInfoDto getByContact(Long userId, ContactSearchDto contactSearchDto);
 
-    List<PersonDto> getAll();
+    List<PersonDto> getAll(Long userId);
 
-    List<PersonDto> find(PersonSearchDto personSearchDto);
+    List<PersonDto> find(Long userId, PersonSearchDto personSearchDto);
 
-    void update(PersonUpdateDto personUpdateDto);
+    void update(Long userId, PersonUpdateDto personUpdateDto);
 
-    PersonDto create(PersonDto personDto);
+    PersonDto create(Long userId, PersonDto personDto);
 
-    void delete(PersonIdDto personIdDto);
+    void delete(Long userId, PersonIdDto personIdDto);
 
-    void deleteByContact(ContactSearchDto contactSearchDto);
+    void deleteByContact(Long userId, ContactSearchDto contactSearchDto);
 }

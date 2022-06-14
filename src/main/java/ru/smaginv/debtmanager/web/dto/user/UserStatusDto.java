@@ -6,14 +6,11 @@ import lombok.ToString;
 import ru.smaginv.debtmanager.entity.user.Status;
 import ru.smaginv.debtmanager.util.validation.EnumValidator;
 
-import javax.validation.constraints.NotBlank;
-
 @Getter
 @Setter
 @ToString
 public class UserStatusDto {
 
-    @NotBlank
     private String userId;
 
     @EnumValidator(enumClass = Status.class)

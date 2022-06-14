@@ -1,6 +1,8 @@
 package ru.smaginv.debtmanager.service.operation;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.account.Account;
@@ -53,32 +55,32 @@ public class OperationServiceImpl implements OperationService {
     }
 
     @Override
-    public OperationDto get(OperationIdDto operationIdDto) {
-        Operation operation = getOperation(mappingUtil.mapId(operationIdDto));
+    public OperationDto get(Long userId, OperationIdDto operationIdDto) {
+        Operation operation = getOperation(userId, mappingUtil.mapId(operationIdDto));
         return operationMapper.mapDto(operation);
     }
 
     @Override
-    public List<OperationDto> getAllByAccount(AccountIdDto accountIdDto) {
+    public List<OperationDto> getAllByAccount(Long userId, AccountIdDto accountIdDto) {
         Long accountId = mappingUtil.mapId(accountIdDto.getId());
-        List<Operation> operations = operationRepository.getAllByAccount(accountId);
+        List<Operation> operations = operationRepository.getAllByAccount(userId, accountId);
         return operationMapper.mapDtos(operations);
     }
 
     @Override
-    public List<OperationDto> getAll() {
-        return operationMapper.mapDtos(operationRepository.getAll());
+    public List<OperationDto> getAll(Long userId) {
+        return operationMapper.mapDtos(operationRepository.getAll(userId));
     }
 
     @Override
-    public List<OperationDto> getByType(OperationTypeDto operationTypeDto) {
+    public List<OperationDto> getByType(Long userId, OperationTypeDto operationTypeDto) {
         OperationType operationType = OperationType.getByValue(operationTypeDto.getType());
         Long accountId = operationTypeDto.getAccountId();
-        return operationMapper.mapDtos(operationRepository.getByType(accountId, operationType));
+        return operationMapper.mapDtos(operationRepository.getByType(userId, accountId, operationType));
     }
 
     @Override
-    public List<OperationDto> find(OperationSearchDto operationSearchDto) {
+    public List<OperationDto> find(Long userId, OperationSearchDto operationSearchDto) {
         Long accountId = operationSearchDto.getAccountId();
         OperationType operationType = OperationType.getByValue(operationSearchDto.getType());
         LocalDateTime startDateTime;
@@ -91,15 +93,23 @@ public class OperationServiceImpl implements OperationService {
             endDateTime = operationSearchDto.getEndDate().atTime(LocalTime.MAX);
         else
             endDateTime = LocalDateTime.now();
-        List<Operation> operations = operationRepository.find(accountId, operationType, startDateTime, endDateTime);
+        List<Operation> operations = operationRepository.find(
+                userId, accountId, operationType, startDateTime, endDateTime
+        );
         return operationMapper.mapDtos(operations);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "accounts", key = "#userId + '_all'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_ACTIVE'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_LEND'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_LOAN'")
+    })
     @Transactional
     @Override
-    public void update(OperationUpdateDto operationUpdateDto) {
-        Operation operation = getOperation(mappingUtil.mapId(operationUpdateDto));
-        Account account = getAccount(mappingUtil.mapId(operationUpdateDto.getAccountId()));
+    public void update(Long userId, OperationUpdateDto operationUpdateDto) {
+        Operation operation = getOperation(userId, mappingUtil.mapId(operationUpdateDto));
+        Account account = getAccount(userId, mappingUtil.mapId(operationUpdateDto.getAccountId()));
         LocalDateTime newOperDate = mappingUtil.parseStringToLocalDateTime(operationUpdateDto.getOperDate());
         if (Objects.nonNull(newOperDate) && account.getOpenDate().isAfter(newOperDate))
             throw new AccountOperationException("operation date must be: " + account.getOpenDate() + " or later");
@@ -110,10 +120,16 @@ public class OperationServiceImpl implements OperationService {
         accountRepository.save(account);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "accounts", key = "#userId + '_all'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_ACTIVE'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_LEND'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_LOAN'")
+    })
     @Transactional
     @Override
-    public OperationDto create(OperationDto operationDto) {
-        Account account = getAccount(mappingUtil.mapId(operationDto.getAccountId()));
+    public OperationDto create(Long userId, OperationDto operationDto) {
+        Account account = getAccount(userId, mappingUtil.mapId(operationDto.getAccountId()));
         Operation operation = operationMapper.map(operationDto);
         setAccountAmount(account, operation);
         accountRepository.save(account);
@@ -123,10 +139,17 @@ public class OperationServiceImpl implements OperationService {
         return operationMapper.mapDto(operation);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "accounts", key = "#userId + '_all'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_ACTIVE'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_INACTIVE'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_LEND'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_LOAN'")
+    })
     @Transactional
     @Override
-    public AccountDto closeAccount(OperationDto operationDto) {
-        Account account = getAccount(mappingUtil.mapId(operationDto.getAccountId()));
+    public AccountDto closeAccount(Long userId, OperationDto operationDto) {
+        Account account = getAccount(userId, mappingUtil.mapId(operationDto.getAccountId()));
         AccountType accountType = account.getAccountType();
         Operation operation = operationMapper.map(operationDto);
         OperationType operationType = operation.getOperationType();
@@ -138,32 +161,45 @@ public class OperationServiceImpl implements OperationService {
             throw new AccountOperationException("amount of operation must be: " + account.getAmount());
         setAccountAmount(account, operation);
         operation.setOperDate(LocalDateTime.now());
+        operation.setAccount(account);
         operationRepository.create(operation);
         accountRepository.save(account);
         return accountMapper.mapDto(account);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "accounts", key = "#userId + '_all'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_ACTIVE'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_LEND'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_LOAN'")
+    })
     @Transactional
     @Override
-    public void delete(OperationIdsDto operationIdsDto) {
-        Account account = getAccount(mappingUtil.mapId(operationIdsDto.getAccountId()));
+    public void delete(Long userId, OperationIdsDto operationIdsDto) {
+        Account account = getAccount(userId, mappingUtil.mapId(operationIdsDto.getAccountId()));
         Long operationId = mappingUtil.mapId(operationIdsDto);
-        Operation operation = getOperation(operationId);
+        Operation operation = getOperation(userId, operationId);
         rollBackOperation(account, operation);
         accountRepository.save(account);
-        int result = operationRepository.delete(operationId);
+        int result = operationRepository.delete(userId, operationId);
         validationUtil.checkNotFoundWithId(result != 0, operationId);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "accounts", key = "#userId + '_all'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_ACTIVE'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_LEND'"),
+            @CacheEvict(value = "accounts", key = "#userId + '_LOAN'")
+    })
     @Transactional
     @Override
-    public void deleteAllByAccount(AccountIdDto accountIdDto) {
+    public void deleteAllByAccount(Long userId, AccountIdDto accountIdDto) {
         Long accountId = mappingUtil.mapId(accountIdDto);
-        Account account = getAccount(accountId);
-        List<Operation> operations = operationRepository.getAllByAccount(accountId);
+        Account account = getAccount(userId, accountId);
+        List<Operation> operations = operationRepository.getAllByAccount(userId, accountId);
         operations.forEach(operation -> rollBackOperation(account, operation));
         accountRepository.save(account);
-        validationUtil.checkNotFound(operationRepository.deleteAllByAccount(accountId) != 0);
+        validationUtil.checkNotFound(operationRepository.deleteAllByAccount(userId, accountId) != 0);
     }
 
     private void setAccountAmount(Account account, Operation operation) {
@@ -206,14 +242,14 @@ public class OperationServiceImpl implements OperationService {
         account.setAmount(amount);
     }
 
-    private Account getAccount(Long accountId) {
-        Account account = getEntityFromOptional(accountRepository.get(accountId), accountId);
+    private Account getAccount(Long userId, Long accountId) {
+        Account account = getEntityFromOptional(accountRepository.get(userId, accountId), accountId);
         if (account.getAccountStatus().equals(AccountStatus.INACTIVE))
             throw new EntityStatusException("account status must be 'ACTIVE'");
         return account;
     }
 
-    private Operation getOperation(Long operationId) {
-        return getEntityFromOptional(operationRepository.get(operationId), operationId);
+    private Operation getOperation(Long userId, Long operationId) {
+        return getEntityFromOptional(operationRepository.get(userId, operationId), operationId);
     }
 }

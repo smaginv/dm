@@ -12,6 +12,7 @@ import ru.smaginv.debtmanager.web.dto.HasIdDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
@@ -24,7 +25,7 @@ import java.util.Objects;
         value = {"id", "openDate", "closedDate", "status"},
         allowGetters = true
 )
-public class AccountDto implements HasIdDto {
+public class AccountDto implements HasIdDto, Serializable {
 
     private String id;
 

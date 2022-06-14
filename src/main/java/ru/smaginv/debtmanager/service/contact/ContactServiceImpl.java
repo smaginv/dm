@@ -1,6 +1,8 @@
 package ru.smaginv.debtmanager.service.contact;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.contact.Contact;
@@ -45,66 +47,86 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public ContactDto get(ContactIdDto contactIdDto) {
-        Contact contact = getContact(mappingUtil.mapId(contactIdDto));
+    public ContactDto get(Long userId, ContactIdDto contactIdDto) {
+        Contact contact = getContact(userId, mappingUtil.mapId(contactIdDto));
         return contactMapper.mapDto(contact);
     }
 
     @Override
-    public List<ContactDto> getAllByPerson(PersonIdDto personIdDto) {
-        List<Contact> contacts = contactRepository.getAllByPerson(mappingUtil.mapId(personIdDto));
+    public List<ContactDto> getAllByPerson(Long userId, PersonIdDto personIdDto) {
+        List<Contact> contacts = contactRepository.getAllByPerson(userId, mappingUtil.mapId(personIdDto));
         return contactMapper.mapDtos(contacts);
     }
 
+    @Cacheable(
+            value = "contacts",
+            key = "#userId + '_all'"
+    )
     @Override
-    public List<ContactDto> getAll() {
-        return contactMapper.mapDtos(contactRepository.getAll());
+    public List<ContactDto> getAll(Long userId) {
+        return contactMapper.mapDtos(contactRepository.getAll(userId));
     }
 
+    @CacheEvict(
+            value = "contacts",
+            key = "#userId + '_all'"
+    )
     @Transactional
     @Override
-    public void update(ContactUpdateDto contactUpdateDto) {
+    public void update(Long userId, ContactUpdateDto contactUpdateDto) {
         validationUtil.validateContact(contactUpdateDto);
-        Contact contact = getContact(mappingUtil.mapId(contactUpdateDto));
+        Contact contact = getContact(userId, mappingUtil.mapId(contactUpdateDto));
         if (contactUpdateDto.getValue().equals(contact.getValue()))
             throw new IllegalArgumentException("contact value already exists: " + contactUpdateDto.getValue());
         contactMapper.update(contactUpdateDto, contact);
         contact = contactRepository.update(contact);
-        uniqueContactService.deleteByContactId(contact.getId());
+        uniqueContactService.deleteByContactId(userId, contact.getId());
         UniqueContact uniqueContact = contactMapper.mapUnique(contact);
-        uniqueContactService.save(uniqueContact);
+        uniqueContactService.save(userId, uniqueContact);
     }
 
+    @CacheEvict(
+            value = "contacts",
+            key = "#userId + '_all'"
+    )
     @Transactional
     @Override
-    public ContactDto create(ContactDto contactDto) {
+    public ContactDto create(Long userId, ContactDto contactDto) {
         validationUtil.validateContact(contactDto);
         Contact contact = contactMapper.map(contactDto);
-        contact = contactRepository.create(mappingUtil.mapId(contactDto.getPersonId()), contact);
+        contact = contactRepository.create(userId, mappingUtil.mapId(contactDto.getPersonId()), contact);
         UniqueContact uniqueContact = contactMapper.mapUnique(contact);
-        uniqueContactService.save(uniqueContact);
+        uniqueContactService.save(userId, uniqueContact);
         return contactMapper.mapDto(contact);
     }
 
+    @CacheEvict(
+            value = "contacts",
+            key = "#userId + '_all'"
+    )
     @Transactional
     @Override
-    public void delete(ContactIdDto contactIdDto) {
+    public void delete(Long userId, ContactIdDto contactIdDto) {
         Long contactId = mappingUtil.mapId(contactIdDto);
-        int result = contactRepository.delete(contactId);
+        int result = contactRepository.delete(userId, contactId);
         validationUtil.checkNotFoundWithId(result != 0, contactId);
-        uniqueContactService.deleteByContactId(contactId);
+        uniqueContactService.deleteByContactId(userId, contactId);
     }
 
+    @CacheEvict(
+            value = "contacts",
+            key = "#userId + '_all'"
+    )
     @Transactional
     @Override
-    public void deleteAllByPerson(PersonIdDto personIdDto) {
+    public void deleteAllByPerson(Long userId, PersonIdDto personIdDto) {
         Long personId = mappingUtil.mapId(personIdDto);
-        List<Long> contactIds = contactRepository.getAllByPerson(personId)
+        List<Long> contactIds = contactRepository.getAllByPerson(userId, personId)
                 .stream()
                 .map(Contact::getId)
                 .toList();
-        validationUtil.checkNotFound(contactRepository.deleteAllByPerson(personId) != 0);
-        uniqueContactService.deleteByContactIds(contactIds);
+        validationUtil.checkNotFound(contactRepository.deleteAllByPerson(userId, personId) != 0);
+        uniqueContactService.deleteByContactIds(userId, contactIds);
     }
 
     @Override
@@ -126,7 +148,7 @@ public class ContactServiceImpl implements ContactService {
         return contactDto;
     }
 
-    private Contact getContact(Long contactId) {
-        return getEntityFromOptional(contactRepository.get(contactId), contactId);
+    private Contact getContact(Long userId, Long contactId) {
+        return getEntityFromOptional(contactRepository.get(userId, contactId), contactId);
     }
 }

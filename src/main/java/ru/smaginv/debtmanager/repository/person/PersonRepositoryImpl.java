@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static ru.smaginv.debtmanager.util.AppUtil.getAuthUserId;
-
 @Repository
 public class PersonRepositoryImpl implements PersonRepository {
 
@@ -26,25 +24,25 @@ public class PersonRepositoryImpl implements PersonRepository {
     }
 
     @Override
-    public Optional<Person> get(Long personId) {
-        return personRepository.get(personId, getAuthUserId());
+    public Optional<Person> get(Long userId, Long personId) {
+        return personRepository.get(userId, personId);
     }
 
     @Override
-    public Optional<Person> getByContact(Contact contact) {
-        return personRepository.getByContact(contact, getAuthUserId());
+    public Optional<Person> getByContact(Long userId, Contact contact) {
+        return personRepository.getByContact(userId, contact);
     }
 
     @Override
-    public List<Person> getAll() {
-        return personRepository.getAll(getAuthUserId());
+    public List<Person> getAll(Long userId) {
+        return personRepository.getAll(userId);
     }
 
     @Override
-    public List<Person> find(Person person, Contact contact) {
+    public List<Person> find(Long userId, Person person, Contact contact) {
         if (Objects.isNull(contact) || Objects.isNull(contact.getValue()))
-            return personRepository.find(person, getAuthUserId());
-        return personRepository.find(person, contact, getAuthUserId());
+            return personRepository.find(userId, person);
+        return personRepository.find(userId, person, contact);
     }
 
     @Override
@@ -53,19 +51,19 @@ public class PersonRepositoryImpl implements PersonRepository {
     }
 
     @Override
-    public Person create(Person person) {
-        User user = userRepository.getReferenceById(Objects.requireNonNull(getAuthUserId()));
+    public Person create(Long userId, Person person) {
+        User user = userRepository.getReferenceById(userId);
         person.setUser(user);
         return personRepository.save(person);
     }
 
     @Override
-    public int delete(Long personId) {
-        return personRepository.delete(personId, getAuthUserId());
+    public int delete(Long userId, Long personId) {
+        return personRepository.delete(userId, personId);
     }
 
     @Override
-    public int deleteByContact(Contact contact) {
-        return personRepository.deleteByContact(contact, getAuthUserId());
+    public int deleteByContact(Long userId, Contact contact) {
+        return personRepository.deleteByContact(userId, contact);
     }
 }

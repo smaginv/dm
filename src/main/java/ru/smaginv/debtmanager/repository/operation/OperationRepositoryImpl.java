@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static ru.smaginv.debtmanager.util.AppUtil.getAuthUserId;
-
 @Repository
 public class OperationRepositoryImpl implements OperationRepository {
 
@@ -23,31 +21,31 @@ public class OperationRepositoryImpl implements OperationRepository {
     }
 
     @Override
-    public Optional<Operation> get(Long operationId) {
-        return operationRepository.get(operationId, getAuthUserId());
+    public Optional<Operation> get(Long userId, Long operationId) {
+        return operationRepository.get(userId, operationId);
     }
 
     @Override
-    public List<Operation> getAllByAccount(Long accountId) {
-        return operationRepository.getAllByAccount(accountId, getAuthUserId());
+    public List<Operation> getAllByAccount(Long userId, Long accountId) {
+        return operationRepository.getAllByAccount(userId, accountId);
     }
 
     @Override
-    public List<Operation> getAll() {
-        return operationRepository.getAll(getAuthUserId());
+    public List<Operation> getAll(Long userId) {
+        return operationRepository.getAll(userId);
     }
 
     @Override
-    public List<Operation> getByType(Long accountId, OperationType operationType) {
+    public List<Operation> getByType(Long userId, Long accountId, OperationType operationType) {
         if (Objects.isNull(accountId))
-            return operationRepository.getByType(operationType, getAuthUserId());
-        return operationRepository.getByAccountAndType(accountId, operationType, getAuthUserId());
+            return operationRepository.getByType(userId, operationType);
+        return operationRepository.getByAccountAndType(userId, accountId, operationType);
     }
 
     @Override
-    public List<Operation> find(Long accountId, OperationType operationType,
+    public List<Operation> find(Long userId, Long accountId, OperationType operationType,
                                 LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return operationRepository.find(accountId, operationType, startDateTime, endDateTime, getAuthUserId());
+        return operationRepository.find(userId, accountId, operationType, startDateTime, endDateTime);
     }
 
     @Override
@@ -61,12 +59,12 @@ public class OperationRepositoryImpl implements OperationRepository {
     }
 
     @Override
-    public int delete(Long operationId) {
-        return operationRepository.delete(operationId, getAuthUserId());
+    public int delete(Long userId, Long operationId) {
+        return operationRepository.delete(userId, operationId);
     }
 
     @Override
-    public int deleteAllByAccount(Long accountId) {
-        return operationRepository.deleteAllByAccount(accountId, getAuthUserId());
+    public int deleteAllByAccount(Long userId, Long accountId) {
+        return operationRepository.deleteAllByAccount(userId, accountId);
     }
 }

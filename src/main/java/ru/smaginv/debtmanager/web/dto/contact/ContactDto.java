@@ -8,6 +8,7 @@ import lombok.ToString;
 import ru.smaginv.debtmanager.web.dto.HasIdDto;
 
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
@@ -16,7 +17,7 @@ import java.util.Objects;
 @JsonPropertyOrder({
         "id", "type", "value"
 })
-public class ContactDto extends AbstractContactDto implements HasIdDto {
+public class ContactDto extends AbstractContactDto implements HasIdDto, Serializable {
 
     @JsonIgnoreProperties(allowGetters = true)
     private String id;

@@ -8,8 +8,6 @@ import ru.smaginv.debtmanager.repository.contact.UniqueContactRepository;
 
 import java.util.List;
 
-import static ru.smaginv.debtmanager.util.AppUtil.getAuthUserId;
-
 @Service
 public class UniqueContactServiceImpl implements UniqueContactService {
 
@@ -22,20 +20,20 @@ public class UniqueContactServiceImpl implements UniqueContactService {
 
     @Transactional
     @Override
-    public void save(UniqueContact uniqueContact) {
-        uniqueContact.setUserId(getAuthUserId());
+    public void save(Long userId, UniqueContact uniqueContact) {
+        uniqueContact.setUserId(userId);
         uniqueContactRepository.save(uniqueContact);
     }
 
     @Transactional
     @Override
-    public void deleteByContactId(Long contactId) {
-        uniqueContactRepository.deleteByContactId(contactId, getAuthUserId());
+    public void deleteByContactId(Long userId, Long contactId) {
+        uniqueContactRepository.deleteByContactId(userId, contactId);
     }
 
     @Transactional
     @Override
-    public void deleteByContactIds(List<Long> contactIds) {
-        uniqueContactRepository.deleteByContactIds(contactIds, getAuthUserId());
+    public void deleteByContactIds(Long userId, List<Long> contactIds) {
+        uniqueContactRepository.deleteByContactIds(userId, contactIds);
     }
 }

@@ -14,7 +14,9 @@ import ru.smaginv.debtmanager.util.validation.ValidationUtil;
 import ru.smaginv.debtmanager.web.dto.user.*;
 import ru.smaginv.debtmanager.web.mapping.UserMapper;
 
+import javax.validation.ValidationException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static ru.smaginv.debtmanager.util.entity.EntityUtil.getEntityFromOptional;
@@ -85,7 +87,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto setStatus(UserStatusDto userStatusDto) {
-        User user = getUser(mappingUtil.mapId(userStatusDto.getUserId()));
+        Long userId = mapUserId(userStatusDto.getUserId());
+        User user = getUser(userId);
         Status newValue = Status.getByValue(userStatusDto.getStatus());
         checkCompliance(user.getStatus(), newValue);
         user.setStatus(newValue);
@@ -95,7 +98,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto setRole(UserRoleDto userRoleDto) {
-        User user = getUser(mappingUtil.mapId(userRoleDto.getUserId()));
+        Long userId = mapUserId(userRoleDto.getUserId());
+        User user = getUser(userId);
         if (user.getStatus().equals(Status.INACTIVE))
             throw new EntityStatusException("status of user must be: " + Status.ACTIVE);
         Role newValue = Role.getByValue(userRoleDto.getRole());
@@ -125,6 +129,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteByEmail(UserEmailDto userEmailDto) {
         validationUtil.checkNotFound(userRepository.deleteByEmail(userEmailDto.getEmail()) != 0);
+    }
+
+    private Long mapUserId(String userId) {
+        if (Objects.isNull(userId))
+            throw new ValidationException("userId must be non null");
+        return mappingUtil.mapId(userId);
     }
 
     private User getUser(Long userId) {

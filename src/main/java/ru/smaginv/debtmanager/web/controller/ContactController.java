@@ -4,9 +4,11 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.service.contact.ContactService;
+import ru.smaginv.debtmanager.web.AuthUser;
 import ru.smaginv.debtmanager.web.dto.contact.ContactDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactIdDto;
 import ru.smaginv.debtmanager.web.dto.contact.ContactUpdateDto;
@@ -33,38 +35,42 @@ public class ContactController {
     }
 
     @GetMapping
-    public ResponseEntity<ContactDto> get(@Valid @RequestBody ContactIdDto contactIdDto) {
+    public ResponseEntity<ContactDto> get(@AuthenticationPrincipal AuthUser authUser,
+                                          @Valid @RequestBody ContactIdDto contactIdDto) {
         log.info("get contact: {}", contactIdDto);
-        return ResponseEntity.ok(contactService.get(contactIdDto));
+        return ResponseEntity.ok(contactService.get(authUser.getId(), contactIdDto));
     }
 
     @GetMapping(
             value = "/by-person"
     )
-    public ResponseEntity<List<ContactDto>> getAllByPerson(@Valid @RequestBody PersonIdDto personIdDto) {
+    public ResponseEntity<List<ContactDto>> getAllByPerson(@AuthenticationPrincipal AuthUser authUser,
+                                                           @Valid @RequestBody PersonIdDto personIdDto) {
         log.info("get all contacts for person: {}", personIdDto);
-        return ResponseEntity.ok(contactService.getAllByPerson(personIdDto));
+        return ResponseEntity.ok(contactService.getAllByPerson(authUser.getId(), personIdDto));
     }
 
     @GetMapping(
             consumes = MediaType.ALL_VALUE
     )
-    public ResponseEntity<List<ContactDto>> getAll() {
+    public ResponseEntity<List<ContactDto>> getAll(@AuthenticationPrincipal AuthUser authUser) {
         log.info("get all contacts");
-        return ResponseEntity.ok(contactService.getAll());
+        return ResponseEntity.ok(contactService.getAll(authUser.getId()));
     }
 
     @PutMapping
-    public ResponseEntity<?> update(@Valid @RequestBody ContactUpdateDto contactUpdateDto) {
+    public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser,
+                                    @Valid @RequestBody ContactUpdateDto contactUpdateDto) {
         log.info("update contact: {}", contactUpdateDto);
-        contactService.update(contactUpdateDto);
+        contactService.update(authUser.getId(), contactUpdateDto);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public ResponseEntity<ContactDto> create(@Valid @RequestBody ContactDto contactDto) {
+    public ResponseEntity<ContactDto> create(@AuthenticationPrincipal AuthUser authUser,
+                                             @Valid @RequestBody ContactDto contactDto) {
         log.info("create contact: {}", contactDto);
-        ContactDto created = contactService.create(contactDto);
+        ContactDto created = contactService.create(authUser.getId(), contactDto);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .build()
                 .toUri();
@@ -72,18 +78,20 @@ public class ContactController {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(@Valid @RequestBody ContactIdDto contactIdDto) {
+    public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser,
+                                    @Valid @RequestBody ContactIdDto contactIdDto) {
         log.info("delete contact with id: {}", contactIdDto);
-        contactService.delete(contactIdDto);
+        contactService.delete(authUser.getId(), contactIdDto);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping(
             value = "/by-person"
     )
-    public ResponseEntity<?> deleteAllByPerson(@Valid @RequestBody PersonIdDto personIdDto) {
+    public ResponseEntity<?> deleteAllByPerson(@AuthenticationPrincipal AuthUser authUser,
+                                               @Valid @RequestBody PersonIdDto personIdDto) {
         log.info("delete all contacts for person: {}", personIdDto);
-        contactService.deleteAllByPerson(personIdDto);
+        contactService.deleteAllByPerson(authUser.getId(), personIdDto);
         return ResponseEntity.noContent().build();
     }
 }

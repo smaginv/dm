@@ -19,7 +19,8 @@ public interface OperationRepositoryJpa extends JpaRepository<Operation, Long> {
             JOIN Person p ON a.person.id = p.id
             WHERE o.id = :operationId AND p.user.id = :userId
             """)
-    Optional<Operation> get(@Param("operationId") Long operationId, @Param("userId") Long userId);
+    Optional<Operation> get(@Param("userId") Long userId,
+                            @Param("operationId") Long operationId);
 
     @Query("""
             SELECT o FROM Operation o
@@ -28,7 +29,8 @@ public interface OperationRepositoryJpa extends JpaRepository<Operation, Long> {
             WHERE a.id = :accountId AND p.user.id = :userId
             ORDER BY o.operDate DESC
             """)
-    List<Operation> getAllByAccount(@Param("accountId") Long accountId, @Param("userId") Long userId);
+    List<Operation> getAllByAccount(@Param("userId") Long userId,
+                                    @Param("accountId") Long accountId);
 
     @Query("""
             SELECT o FROM Operation o
@@ -47,7 +49,8 @@ public interface OperationRepositoryJpa extends JpaRepository<Operation, Long> {
             p.user.id = :userId
             ORDER BY o.operDate DESC
             """)
-    List<Operation> getByType(@Param("operationType") OperationType operationType, @Param("userId") Long userId);
+    List<Operation> getByType(@Param("userId") Long userId,
+                              @Param("operationType") OperationType operationType);
 
     @Query("""
             SELECT o FROM Operation o
@@ -57,9 +60,9 @@ public interface OperationRepositoryJpa extends JpaRepository<Operation, Long> {
             p.user.id = :userId
             ORDER BY o.operDate DESC
             """)
-    List<Operation> getByAccountAndType(@Param("accountId") Long accountId,
-                                        @Param("operationType") OperationType operationType,
-                                        @Param("userId") Long userId);
+    List<Operation> getByAccountAndType(@Param("userId") Long userId,
+                                        @Param("accountId") Long accountId,
+                                        @Param("operationType") OperationType operationType);
 
     @Query("""
             SELECT DISTINCT o FROM Operation o
@@ -71,11 +74,11 @@ public interface OperationRepositoryJpa extends JpaRepository<Operation, Long> {
             p.user.id = :userId
             ORDER BY o.operDate DESC
             """)
-    List<Operation> find(@Param("accountId") Long accountId,
+    List<Operation> find(@Param("userId") Long userId,
+                         @Param("accountId") Long accountId,
                          @Param("operationType") OperationType operationType,
                          @Param("startDateTime") LocalDateTime startDateTime,
-                         @Param("endDateTime") LocalDateTime endDateTime,
-                         @Param("userId") Long userId);
+                         @Param("endDateTime") LocalDateTime endDateTime);
 
     @Modifying
     @Query("""
@@ -83,7 +86,8 @@ public interface OperationRepositoryJpa extends JpaRepository<Operation, Long> {
             WHERE o.id = :operationId AND
             :userId IN (SELECT u.id FROM User u)
             """)
-    int delete(@Param("operationId") Long operationId, @Param("userId") Long userId);
+    int delete(@Param("userId") Long userId,
+               @Param("operationId") Long operationId);
 
     @Modifying
     @Query("""
@@ -91,5 +95,6 @@ public interface OperationRepositoryJpa extends JpaRepository<Operation, Long> {
             WHERE o.account.id = :accountId AND
             :userId IN (SELECT u.id FROM User u)
             """)
-    int deleteAllByAccount(@Param("accountId") Long accountId, @Param("userId") Long userId);
+    int deleteAllByAccount(@Param("userId") Long userId,
+                           @Param("accountId") Long accountId);
 }

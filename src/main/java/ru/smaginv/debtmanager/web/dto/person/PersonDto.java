@@ -9,6 +9,7 @@ import ru.smaginv.debtmanager.web.dto.HasIdDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
@@ -17,7 +18,7 @@ import java.util.Objects;
 @JsonPropertyOrder({
         "id", "firstName", "lastName", "comment"
 })
-public class PersonDto implements HasIdDto {
+public class PersonDto implements HasIdDto, Serializable {
 
     @JsonIgnoreProperties(allowGetters = true)
     private String id;

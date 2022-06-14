@@ -1,6 +1,8 @@
 package ru.smaginv.debtmanager.service.person;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.smaginv.debtmanager.entity.contact.Contact;
@@ -44,75 +46,95 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public PersonInfoDto get(PersonIdDto personIdDto) {
+    public PersonInfoDto get(Long userId, PersonIdDto personIdDto) {
         Long personId = mappingUtil.mapId(personIdDto);
-        PersonInfoDto personInfoDto = personMapper.mapInfoDto(getPerson(personId));
-        List<AccountDto> accounts = accountService.getAllByPerson(personMapper.mapIdDto(personId));
-        List<ContactDto> contacts = contactService.getAllByPerson(personMapper.mapIdDto(personId));
+        PersonInfoDto personInfoDto = personMapper.mapInfoDto(getPerson(userId, personId));
+        List<AccountDto> accounts = accountService.getAllByPerson(userId, personMapper.mapIdDto(personId));
+        List<ContactDto> contacts = contactService.getAllByPerson(userId, personMapper.mapIdDto(personId));
         personInfoDto.setAccounts(accounts);
         personInfoDto.setContacts(contacts);
         return personInfoDto;
     }
 
     @Override
-    public PersonInfoDto getByContact(ContactSearchDto contactSearchDto) {
+    public PersonInfoDto getByContact(Long userId, ContactSearchDto contactSearchDto) {
         validationUtil.validateContact(contactSearchDto);
         Contact contact = contactService.map(contactSearchDto);
-        Person person = getEntityFromOptional(personRepository.getByContact(contact));
+        Person person = getEntityFromOptional(personRepository.getByContact(userId, contact));
         PersonInfoDto personInfoDto = personMapper.mapInfoDto(person);
-        List<AccountDto> accounts = accountService.getAllByPerson(personMapper.mapIdDto(person.getId()));
-        List<ContactDto> contacts = contactService.getAllByPerson(personMapper.mapIdDto(person.getId()));
+        List<AccountDto> accounts = accountService.getAllByPerson(userId, personMapper.mapIdDto(person.getId()));
+        List<ContactDto> contacts = contactService.getAllByPerson(userId, personMapper.mapIdDto(person.getId()));
         personInfoDto.setAccounts(accounts);
         personInfoDto.setContacts(contacts);
         return personInfoDto;
     }
 
+    @Cacheable(
+            value = "people",
+            key = "#userId + '_all'"
+    )
     @Override
-    public List<PersonDto> getAll() {
-        List<Person> people = personRepository.getAll();
+    public List<PersonDto> getAll(Long userId) {
+        List<Person> people = personRepository.getAll(userId);
         return personMapper.mapDtos(people);
     }
 
     @Override
-    public List<PersonDto> find(PersonSearchDto personSearchDto) {
+    public List<PersonDto> find(Long userId, PersonSearchDto personSearchDto) {
         Person person = personMapper.map(personSearchDto);
         ContactSearchDto contactSearchDto = contactService.validate(personSearchDto.getContact());
         Contact contact = contactService.map(contactSearchDto);
-        List<Person> people = personRepository.find(person, contact);
+        List<Person> people = personRepository.find(userId, person, contact);
         return personMapper.mapDtos(people);
     }
 
+    @CacheEvict(
+            value = "people",
+            key = "#userId + '_all'"
+    )
     @Transactional
     @Override
-    public void update(PersonUpdateDto personUpdateDto) {
-        Person person = getPerson(mappingUtil.mapId(personUpdateDto));
+    public void update(Long userId, PersonUpdateDto personUpdateDto) {
+        Person person = getPerson(userId, mappingUtil.mapId(personUpdateDto));
         personMapper.update(personUpdateDto, person);
         personRepository.update(person);
     }
 
+    @CacheEvict(
+            value = "people",
+            key = "#userId + '_all'"
+    )
     @Transactional
     @Override
-    public PersonDto create(PersonDto personDto) {
-        Person person = personRepository.create(personMapper.map(personDto));
+    public PersonDto create(Long userId, PersonDto personDto) {
+        Person person = personRepository.create(userId, personMapper.map(personDto));
         return personMapper.mapDto(person);
     }
 
+    @CacheEvict(
+            value = "people",
+            key = "#userId + '_all'"
+    )
     @Transactional
     @Override
-    public void delete(PersonIdDto personIdDto) {
+    public void delete(Long userId, PersonIdDto personIdDto) {
         Long personId = mappingUtil.mapId(personIdDto);
-        validationUtil.checkNotFoundWithId(personRepository.delete(personId) != 0, personId);
+        validationUtil.checkNotFoundWithId(personRepository.delete(userId, personId) != 0, personId);
     }
 
+    @CacheEvict(
+            value = "people",
+            key = "#userId + '_all'"
+    )
     @Transactional
     @Override
-    public void deleteByContact(ContactSearchDto contactSearchDto) {
+    public void deleteByContact(Long userId, ContactSearchDto contactSearchDto) {
         validationUtil.validateContact(contactSearchDto);
         Contact contact = contactService.map(contactSearchDto);
-        validationUtil.checkNotFound(personRepository.deleteByContact(contact) != 0);
+        validationUtil.checkNotFound(personRepository.deleteByContact(userId, contact) != 0);
     }
 
-    private Person getPerson(Long personId) {
-        return getEntityFromOptional(personRepository.get(personId), personId);
+    private Person getPerson(Long userId, Long personId) {
+        return getEntityFromOptional(personRepository.get(userId, personId), personId);
     }
 }

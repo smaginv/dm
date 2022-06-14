@@ -7,29 +7,29 @@ import java.util.List;
 
 public interface AccountService {
 
-    AccountDto get(AccountIdDto accountIdDto);
+    AccountDto get(Long userId, AccountIdDto accountIdDto);
 
-    AccountInfoDto getWithOperations(AccountIdDto accountIdDto);
+    AccountInfoDto getWithOperations(Long userId, AccountIdDto accountIdDto);
 
-    List<AccountDto> getAll();
+    List<AccountDto> getAll(Long userId);
 
-    List<AccountDto> getAllByPerson(PersonIdDto personIdDto);
+    List<AccountDto> getAllByPerson(Long userId, PersonIdDto personIdDto);
 
-    List<AccountDto> getAllByStatus(AccountStatusDto accountStatusDto);
+    List<AccountDto> getAllByStatus(Long userId, AccountStatusDto accountStatusDto);
 
-    List<AccountDto> getAllByType(AccountTypeDto accountTypeDto);
+    List<AccountDto> getAllByType(Long userId, AccountTypeDto accountTypeDto);
 
-    String getActiveAccountsTotalAmountByType(AccountTypeDto accountTypeDto);
+    String getActiveAccountsTotalAmountByType(Long userId, AccountTypeDto accountTypeDto);
 
-    String getInactiveAccountsTotalAmountByType(AccountTypeDto accountTypeDto);
+    String getInactiveAccountsTotalAmountByType(Long userId, AccountTypeDto accountTypeDto);
 
-    void update(AccountUpdateDto accountUpdateDto);
+    void update(Long userId, AccountUpdateDto accountUpdateDto);
 
-    AccountDto create(AccountDto accountDto);
+    AccountDto create(Long userId, AccountDto accountDto);
 
-    void delete(AccountIdDto accountIdDto);
+    void delete(Long userId, AccountIdDto accountIdDto);
 
-    void deleteAllInactiveByPerson(PersonIdDto personIdDto);
+    void deleteAllInactiveByPerson(Long userId, PersonIdDto personIdDto);
 
-    void deleteAllInactive();
+    void deleteAllInactive(Long userId);
 }

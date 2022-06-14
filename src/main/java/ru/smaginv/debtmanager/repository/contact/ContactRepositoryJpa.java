@@ -16,7 +16,8 @@ public interface ContactRepositoryJpa extends JpaRepository<Contact, Long> {
             JOIN Person p ON c.person.id = p.id
             WHERE c.id = :contactId AND p.user.id = :userId
             """)
-    Optional<Contact> get(@Param("contactId") Long contactId, @Param("userId") Long userId);
+    Optional<Contact> get(@Param("userId") Long userId,
+                          @Param("contactId") Long contactId);
 
     @Query("""
             SELECT c FROM Contact c
@@ -24,7 +25,8 @@ public interface ContactRepositoryJpa extends JpaRepository<Contact, Long> {
             WHERE p.id = :personId AND p.user.id = :userId
             ORDER BY c.id DESC
             """)
-    List<Contact> getAllByPerson(@Param("personId") Long personId, @Param("userId") Long userId);
+    List<Contact> getAllByPerson(@Param("userId") Long userId,
+                                 @Param("personId") Long personId);
 
     @Query("""
             SELECT c FROM Contact c
@@ -40,7 +42,8 @@ public interface ContactRepositoryJpa extends JpaRepository<Contact, Long> {
             WHERE c.id = :contactId AND
             c.person.id IN (SELECT p.id FROM Person p WHERE p.user.id = :userId)
             """)
-    int delete(@Param("contactId") Long contactId, @Param("userId") Long userId);
+    int delete(@Param("userId") Long userId,
+               @Param("contactId") Long contactId);
 
     @Modifying
     @Query("""
@@ -48,5 +51,6 @@ public interface ContactRepositoryJpa extends JpaRepository<Contact, Long> {
             WHERE c.person.id = :personId AND
             c.person.id IN (SELECT p.id FROM Person p WHERE p.user.id = :userId)
             """)
-    int deleteAllByPerson(@Param("personId") Long personId, @Param("userId") Long userId);
+    int deleteAllByPerson(@Param("userId") Long userId,
+                          @Param("personId") Long personId);
 }

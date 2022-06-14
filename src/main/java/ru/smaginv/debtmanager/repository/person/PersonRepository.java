@@ -8,19 +8,19 @@ import java.util.Optional;
 
 public interface PersonRepository {
 
-    Optional<Person> get(Long personId);
+    Optional<Person> get(Long userId, Long personId);
 
-    Optional<Person> getByContact(Contact contact);
+    Optional<Person> getByContact(Long userId, Contact contact);
 
-    List<Person> getAll();
+    List<Person> getAll(Long userId);
 
-    List<Person> find(Person person, Contact contact);
+    List<Person> find(Long userId, Person person, Contact contact);
 
     void update(Person person);
 
-    Person create(Person person);
+    Person create(Long userId, Person person);
 
-    int delete(Long personId);
+    int delete(Long userId, Long personId);
 
-    int deleteByContact(Contact contact);
+    int deleteByContact(Long userId, Contact contact);
 }
