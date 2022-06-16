@@ -1,0 +1,42 @@
+spring:
+  main:
+    banner-mode: off
+
+  jpa:
+    open-in-view: false
+    generate-ddl: false
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/lm"
+    username: "user"
+    password: "password"
+
+  sql:
+    init:
+      mode: never
+
+server:
+  port: 8082
+  servlet:
+    context-path: "/log"
+
+logging:
+  level:
+    ru.smaginv.debtmanager.lm: debug
+    org.springframework.cache: trace
+    org.springframework.web.servlet: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
+    org.springframework.orm.jpa.JpaTransactionManager: debug
+  charset:
+    console: UTF-8
+  pattern:
+    console: "%d{HH:mm:ss} %clr(%5p) %-65.65(%clr(%logger{50}){cyan}) : %msg%n"

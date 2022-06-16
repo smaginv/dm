@@ -16,7 +16,7 @@ spring:
         use_sql_comments: true
 
   datasource:
-    url: "jdbc:postgresql://localhost:5432/debtmanager"
+    url: "jdbc:postgresql://localhost:5432/dm"
     username: "user"
     password: "password"
 
@@ -57,12 +57,10 @@ kafka:
 
 logging:
   level:
-    ru.smaginv.debtmanager: debug
+    ru.smaginv.debtmanager.dm: debug
     org.springframework.cache: trace
     org.springframework.web.servlet: debug
-    #    org.hibernate.transaction: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
-    #    org.springframework.transaction: trace
     org.springframework.orm.jpa.JpaTransactionManager: debug
   charset:
     console: UTF-8
