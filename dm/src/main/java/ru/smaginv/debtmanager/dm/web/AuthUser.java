@@ -13,6 +13,7 @@ import static ru.smaginv.debtmanager.dm.util.AppUtil.ROLE_PREFIX;
 public class AuthUser extends User {
 
     private final Long id;
+    private final String username;
 
     public AuthUser(UserDto userDto) {
         super(userDto.getEmail(),
@@ -21,5 +22,6 @@ public class AuthUser extends User {
                         .map(role -> new SimpleGrantedAuthority(ROLE_PREFIX + role))
                         .collect(Collectors.toSet()));
         this.id = Long.parseLong(userDto.getId());
+        this.username = userDto.getUsername();
     }
 }

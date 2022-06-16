@@ -105,17 +105,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String getActiveAccountsTotalAmountByType(Long userId, AccountTypeDto accountTypeDto) {
+    public AmountDto getActiveAccountsTotalAmountByType(Long userId, AccountTypeDto accountTypeDto) {
         AccountType accountType = AccountType.getByValue(accountTypeDto.getType());
         BigDecimal amount = accountRepository.getActiveAccountsTotalAmountByType(userId, accountType);
-        return checkAmount(amount);
+        amount = setAmountScale(amount);
+        return accountMapper.mapAmountDto(amount);
     }
 
     @Override
-    public String getInactiveAccountsTotalAmountByType(Long userId, AccountTypeDto accountTypeDto) {
+    public AmountDto getInactiveAccountsTotalAmountByType(Long userId, AccountTypeDto accountTypeDto) {
         AccountType accountType = AccountType.getByValue(accountTypeDto.getType());
         BigDecimal amount = accountRepository.getInactiveAccountsTotalAmountByType(userId, accountType);
-        return checkAmount(amount);
+        amount = setAmountScale(amount);
+        return accountMapper.mapAmountDto(amount);
     }
 
     @Caching(evict = {
@@ -195,9 +197,9 @@ public class AccountServiceImpl implements AccountService {
         return getEntityFromOptional(accountRepository.get(userId, accountId), accountId);
     }
 
-    private String checkAmount(BigDecimal amount) {
+    private BigDecimal setAmountScale(BigDecimal amount) {
         if (Objects.isNull(amount))
             amount = BigDecimal.ZERO;
-        return String.valueOf(amount.setScale(2, RoundingMode.DOWN));
+        return amount.setScale(2, RoundingMode.DOWN);
     }
 }

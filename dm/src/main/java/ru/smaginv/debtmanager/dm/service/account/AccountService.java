@@ -19,9 +19,9 @@ public interface AccountService {
 
     List<AccountDto> getAllByType(Long userId, AccountTypeDto accountTypeDto);
 
-    String getActiveAccountsTotalAmountByType(Long userId, AccountTypeDto accountTypeDto);
+    AmountDto getActiveAccountsTotalAmountByType(Long userId, AccountTypeDto accountTypeDto);
 
-    String getInactiveAccountsTotalAmountByType(Long userId, AccountTypeDto accountTypeDto);
+    AmountDto getInactiveAccountsTotalAmountByType(Long userId, AccountTypeDto accountTypeDto);
 
     void update(Long userId, AccountUpdateDto accountUpdateDto);
 

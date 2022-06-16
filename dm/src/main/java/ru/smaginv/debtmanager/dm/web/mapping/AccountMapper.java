@@ -9,7 +9,9 @@ import ru.smaginv.debtmanager.dm.util.MappingUtil;
 import ru.smaginv.debtmanager.dm.web.dto.account.AccountDto;
 import ru.smaginv.debtmanager.dm.web.dto.account.AccountInfoDto;
 import ru.smaginv.debtmanager.dm.web.dto.account.AccountUpdateDto;
+import ru.smaginv.debtmanager.dm.web.dto.account.AmountDto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper(
@@ -42,6 +44,8 @@ public interface AccountMapper {
     @Mapping(target = "closedDate", source = "closedDate", qualifiedByName = "formatDateToString")
     @Mapping(target = "status", source = "accountStatus")
     AccountInfoDto mapInfoDto(Account account);
+
+    AmountDto mapAmountDto(BigDecimal amount);
 
     List<AccountDto> mapDtos(List<Account> accounts);
 
