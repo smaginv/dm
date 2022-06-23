@@ -26,6 +26,7 @@
 
         <mapstruct.version>1.5.1.Final</mapstruct.version>
         <lombok.binding.version>0.2.0</lombok.binding.version>
+        <hibernate.types.version>2.16.2</hibernate.types.version>
     </properties>
 
     <dependencies>

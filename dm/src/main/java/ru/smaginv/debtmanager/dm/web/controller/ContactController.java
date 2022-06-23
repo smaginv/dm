@@ -113,7 +113,7 @@ public class ContactController {
                                     HttpServletRequest request) {
         log.info("delete contact with id: {}", contactIdDto);
         contactService.delete(authUser.getId(), contactIdDto);
-        Message message = new Message(authUser.getUsername(), request.getRequestURI(),
+        Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
                 request.getMethod(), contactIdDto, NO_BODY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
