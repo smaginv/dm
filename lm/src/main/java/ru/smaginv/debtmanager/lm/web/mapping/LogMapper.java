@@ -2,9 +2,9 @@ package ru.smaginv.debtmanager.lm.web.mapping;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.smaginv.debtmanager.lm.entity.Log;
+import ru.smaginv.debtmanager.lm.entity.log.Log;
 import ru.smaginv.debtmanager.lm.util.MappingUtil;
-import ru.smaginv.debtmanager.lm.web.dto.LogSearchDto;
+import ru.smaginv.debtmanager.lm.web.dto.log.LogSearchDto;
 
 @Mapper(
         componentModel = "spring",

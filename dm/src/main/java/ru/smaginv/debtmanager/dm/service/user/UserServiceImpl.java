@@ -46,17 +46,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getByUsername(String username) {
-        User user = userRepository.getByUsername(username).orElseThrow();
+        User user = userRepository.getByUsername(username).orElseThrow(
+                () -> new NotFoundException("User '" + username + "' was not found")
+        );
         return userMapper.mapDto(user);
     }
 
     @Override
     public UserDto getByUsername(UsernameDto usernameDto) {
-        String username = usernameDto.getUsername();
-        User user = userRepository.getByUsername(username).orElseThrow(
-                () -> new NotFoundException("User '" + username + "' was not found")
-        );
-        return userMapper.mapDto(user);
+        return getByUsername(usernameDto.getUsername());
     }
 
     @Override
@@ -122,7 +120,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(UserIdDto userIdDto) {
         Long userId = mappingUtil.mapId(userIdDto);
-        validationUtil.checkNotFoundWithId(userRepository.deleteByEmail(userId) != 0, userId);
+        validationUtil.checkNotFoundWithId(userRepository.delete(userId) != 0, userId);
     }
 
     @Transactional

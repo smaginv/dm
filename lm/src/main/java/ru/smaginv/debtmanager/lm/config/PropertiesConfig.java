@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Configuration
 public class PropertiesConfig {
@@ -32,6 +34,8 @@ public class PropertiesConfig {
         private String date;
         @NotBlank
         private String dateTime;
+        @NotNull
+        private List<@NotBlank String> emails;
     }
 
     @Getter

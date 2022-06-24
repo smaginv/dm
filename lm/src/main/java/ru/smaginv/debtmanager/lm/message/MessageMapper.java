@@ -2,7 +2,7 @@ package ru.smaginv.debtmanager.lm.message;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.smaginv.debtmanager.lm.entity.Log;
+import ru.smaginv.debtmanager.lm.entity.log.Log;
 
 @Mapper(
         componentModel = "spring"

@@ -1,15 +1,15 @@
-package ru.smaginv.debtmanager.lm.service;
+package ru.smaginv.debtmanager.lm.service.log;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.smaginv.debtmanager.lm.entity.Log;
-import ru.smaginv.debtmanager.lm.repository.LogRepository;
-import ru.smaginv.debtmanager.lm.util.exception.NotFoundException;
-import ru.smaginv.debtmanager.lm.web.dto.BetweenDatesDto;
-import ru.smaginv.debtmanager.lm.web.dto.DateDto;
-import ru.smaginv.debtmanager.lm.web.dto.LogIdDto;
-import ru.smaginv.debtmanager.lm.web.dto.LogSearchDto;
+import ru.smaginv.debtmanager.lm.entity.log.Log;
+import ru.smaginv.debtmanager.lm.repository.log.LogRepository;
+import ru.smaginv.debtmanager.lm.util.ValidationUtil;
+import ru.smaginv.debtmanager.lm.web.dto.log.BetweenDatesDto;
+import ru.smaginv.debtmanager.lm.web.dto.log.DateDto;
+import ru.smaginv.debtmanager.lm.web.dto.log.LogIdDto;
+import ru.smaginv.debtmanager.lm.web.dto.log.LogSearchDto;
 import ru.smaginv.debtmanager.lm.web.mapping.LogMapper;
 
 import java.time.LocalDate;
@@ -21,11 +21,14 @@ public class LogServiceImpl implements LogService {
 
     private final LogRepository logRepository;
     private final LogMapper logMapper;
+    private final ValidationUtil validationUtil;
 
     @Autowired
-    public LogServiceImpl(LogRepository logRepository, LogMapper logMapper) {
+    public LogServiceImpl(LogRepository logRepository, LogMapper logMapper,
+                          ValidationUtil validationUtil) {
         this.logRepository = logRepository;
         this.logMapper = logMapper;
+        this.validationUtil = validationUtil;
     }
 
     @Override
@@ -51,36 +54,31 @@ public class LogServiceImpl implements LogService {
     @Transactional
     @Override
     public void delete(LogIdDto logIdDto) {
-        checkNotFound(logRepository.delete(logIdDto.getLogId()) != 0);
+        validationUtil.checkNotFound(logRepository.delete(logIdDto.getLogId()) != 0);
     }
 
     @Transactional
     @Override
     public void deleteOnDate(DateDto dateDto) {
-        checkNotFound(logRepository.deleteOnDate(dateDto.getDate()) != 0);
+        validationUtil.checkNotFound(logRepository.deleteOnDate(dateDto.getDate()) != 0);
     }
 
     @Transactional
     @Override
     public void deleteBetweenDates(BetweenDatesDto betweenDatesDto) {
-        checkNotFound(logRepository.deleteBetweenDates(betweenDatesDto.getStartDate(),
+        validationUtil.checkNotFound(logRepository.deleteBetweenDates(betweenDatesDto.getStartDate(),
                 betweenDatesDto.getEndDate()) != 0);
     }
 
     @Transactional
     @Override
     public void deleteByConditionOnDate(LogSearchDto logSearchDto) {
-        checkNotFound(logRepository.deleteByConditionOnDate(logMapper.map(logSearchDto)) != 0);
+        validationUtil.checkNotFound(logRepository.deleteByConditionOnDate(logMapper.map(logSearchDto)) != 0);
     }
 
     @Transactional
     @Override
     public void deleteAllByCondition(LogSearchDto logSearchDto) {
-        checkNotFound(logRepository.deleteAllByCondition(logMapper.map(logSearchDto)) != 0);
-    }
-
-    public void checkNotFound(boolean found) {
-        if (!found)
-            throw new NotFoundException();
+        validationUtil.checkNotFound(logRepository.deleteAllByCondition(logMapper.map(logSearchDto)) != 0);
     }
 }

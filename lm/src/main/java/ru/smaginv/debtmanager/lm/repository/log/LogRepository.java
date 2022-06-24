@@ -1,6 +1,6 @@
-package ru.smaginv.debtmanager.lm.repository;
+package ru.smaginv.debtmanager.lm.repository.log;
 
-import ru.smaginv.debtmanager.lm.entity.Log;
+import ru.smaginv.debtmanager.lm.entity.log.Log;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ru.smaginv.debtmanager.lm.entity;
+package ru.smaginv.debtmanager.lm.entity.log;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Getter;

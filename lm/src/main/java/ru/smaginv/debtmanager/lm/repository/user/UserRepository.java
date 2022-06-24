@@ -1,14 +1,11 @@
-package ru.smaginv.debtmanager.dm.repository.user;
+package ru.smaginv.debtmanager.lm.repository.user;
 
-import ru.smaginv.debtmanager.dm.entity.user.Status;
-import ru.smaginv.debtmanager.dm.entity.user.User;
+import ru.smaginv.debtmanager.lm.entity.user.User;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository {
-
-    Optional<User> get(Long userId);
 
     Optional<User> getByUsername(String username);
 
@@ -16,11 +13,9 @@ public interface UserRepository {
 
     List<User> getAll();
 
-    List<User> getAllByStatus(Status status);
-
     User save(User user);
 
-    int delete(Long userId);
+    int deleteByUsername(String username);
 
     int deleteByEmail(String email);
 }

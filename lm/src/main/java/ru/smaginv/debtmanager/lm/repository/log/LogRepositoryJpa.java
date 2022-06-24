@@ -1,10 +1,10 @@
-package ru.smaginv.debtmanager.lm.repository;
+package ru.smaginv.debtmanager.lm.repository.log;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ru.smaginv.debtmanager.lm.entity.Log;
+import ru.smaginv.debtmanager.lm.entity.log.Log;
 
 import java.util.Date;
 import java.util.List;

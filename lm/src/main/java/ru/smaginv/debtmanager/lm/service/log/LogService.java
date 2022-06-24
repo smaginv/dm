@@ -1,10 +1,10 @@
-package ru.smaginv.debtmanager.lm.service;
+package ru.smaginv.debtmanager.lm.service.log;
 
-import ru.smaginv.debtmanager.lm.entity.Log;
-import ru.smaginv.debtmanager.lm.web.dto.BetweenDatesDto;
-import ru.smaginv.debtmanager.lm.web.dto.DateDto;
-import ru.smaginv.debtmanager.lm.web.dto.LogIdDto;
-import ru.smaginv.debtmanager.lm.web.dto.LogSearchDto;
+import ru.smaginv.debtmanager.lm.entity.log.Log;
+import ru.smaginv.debtmanager.lm.web.dto.log.BetweenDatesDto;
+import ru.smaginv.debtmanager.lm.web.dto.log.DateDto;
+import ru.smaginv.debtmanager.lm.web.dto.log.LogIdDto;
+import ru.smaginv.debtmanager.lm.web.dto.log.LogSearchDto;
 
 import java.util.List;
 

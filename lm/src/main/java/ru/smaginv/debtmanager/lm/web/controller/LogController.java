@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.smaginv.debtmanager.lm.entity.Log;
-import ru.smaginv.debtmanager.lm.service.LogService;
-import ru.smaginv.debtmanager.lm.web.dto.BetweenDatesDto;
-import ru.smaginv.debtmanager.lm.web.dto.DateDto;
-import ru.smaginv.debtmanager.lm.web.dto.LogIdDto;
-import ru.smaginv.debtmanager.lm.web.dto.LogSearchDto;
+import ru.smaginv.debtmanager.lm.entity.log.Log;
+import ru.smaginv.debtmanager.lm.service.log.LogService;
+import ru.smaginv.debtmanager.lm.web.dto.log.BetweenDatesDto;
+import ru.smaginv.debtmanager.lm.web.dto.log.DateDto;
+import ru.smaginv.debtmanager.lm.web.dto.log.LogIdDto;
+import ru.smaginv.debtmanager.lm.web.dto.log.LogSearchDto;
 
 import javax.validation.Valid;
 import java.util.List;

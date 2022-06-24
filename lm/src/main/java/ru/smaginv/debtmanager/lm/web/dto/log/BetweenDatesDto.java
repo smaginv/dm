@@ -1,4 +1,4 @@
-package ru.smaginv.debtmanager.lm.web.dto;
+package ru.smaginv.debtmanager.lm.web.dto.log;
 
 import lombok.Getter;
 import lombok.Setter;

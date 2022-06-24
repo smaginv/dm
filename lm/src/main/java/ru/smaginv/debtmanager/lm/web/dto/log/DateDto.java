@@ -1,4 +1,4 @@
-package ru.smaginv.debtmanager.lm.web.dto;
+package ru.smaginv.debtmanager.lm.web.dto.log;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,15 +11,9 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
-public class LogSearchDto {
+public class DateDto {
 
     @NotNull
     @PastOrPresent
     private LocalDate date;
-
-    private String username;
-
-    private String requestURI;
-
-    private String method;
 }

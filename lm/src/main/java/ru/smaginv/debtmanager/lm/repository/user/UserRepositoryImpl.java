@@ -1,9 +1,8 @@
-package ru.smaginv.debtmanager.dm.repository.user;
+package ru.smaginv.debtmanager.lm.repository.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import ru.smaginv.debtmanager.dm.entity.user.Status;
-import ru.smaginv.debtmanager.dm.entity.user.User;
+import ru.smaginv.debtmanager.lm.entity.user.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,11 +15,6 @@ public class UserRepositoryImpl implements UserRepository {
     @Autowired
     public UserRepositoryImpl(UserRepositoryJpa userRepository) {
         this.userRepository = userRepository;
-    }
-
-    @Override
-    public Optional<User> get(Long userId) {
-        return userRepository.get(userId);
     }
 
     @Override
@@ -39,18 +33,13 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<User> getAllByStatus(Status status) {
-        return userRepository.getAllByStatus(status);
-    }
-
-    @Override
     public User save(User user) {
         return userRepository.save(user);
     }
 
     @Override
-    public int delete(Long userId) {
-        return userRepository.delete(userId);
+    public int deleteByUsername(String username) {
+        return userRepository.deleteByUsername(username);
     }
 
     @Override

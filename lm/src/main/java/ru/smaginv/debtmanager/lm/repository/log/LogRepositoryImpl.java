@@ -1,9 +1,9 @@
-package ru.smaginv.debtmanager.lm.repository;
+package ru.smaginv.debtmanager.lm.repository.log;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.smaginv.debtmanager.lm.entity.Log;
+import ru.smaginv.debtmanager.lm.entity.log.Log;
 
 import java.sql.Date;
 import java.time.LocalDate;
