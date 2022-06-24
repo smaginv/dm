@@ -9,4 +9,6 @@ public class AppUtil {
     public static final String ADMIN = Role.ADMIN.name();
 
     public static final String USER = Role.USER.name();
+
+    public static final String VALIDATION_FAILED = "VALIDATION FAILED";
 }
