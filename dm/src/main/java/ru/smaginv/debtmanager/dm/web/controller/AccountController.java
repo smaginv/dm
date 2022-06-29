@@ -3,6 +3,7 @@ package ru.smaginv.debtmanager.dm.web.controller;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-
-import static ru.smaginv.debtmanager.dm.util.AppUtil.NO_BODY;
 
 @Log4j2
 @RestController
@@ -73,7 +72,7 @@ public class AccountController {
         log.info("get all accounts");
         List<AccountDto> accounts = accountService.getAll(authUser.getId());
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), NO_BODY, accounts);
+                request.getMethod(), RequestEntity.EMPTY, accounts);
         messageService.sendMessage(message);
         return ResponseEntity.ok(accounts);
     }
@@ -157,7 +156,7 @@ public class AccountController {
         log.info("update account: {}", accountUpdateDto);
         accountService.update(authUser.getId(), accountUpdateDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), accountUpdateDto, NO_BODY);
+                request.getMethod(), accountUpdateDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -184,7 +183,7 @@ public class AccountController {
         log.info("delete account: {}", accountIdDto);
         accountService.delete(authUser.getId(), accountIdDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), accountIdDto, NO_BODY);
+                request.getMethod(), accountIdDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -198,7 +197,7 @@ public class AccountController {
         log.info("delete all inactive accounts by person: {}", personIdDto);
         accountService.deleteAllInactiveByPerson(authUser.getId(), personIdDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), personIdDto, NO_BODY);
+                request.getMethod(), personIdDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -212,7 +211,7 @@ public class AccountController {
         log.info("delete all inactive accounts");
         accountService.deleteAllInactive(authUser.getId());
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), NO_BODY, NO_BODY);
+                request.getMethod(), RequestEntity.EMPTY, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }

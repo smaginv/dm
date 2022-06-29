@@ -3,6 +3,7 @@ package ru.smaginv.debtmanager.dm.web.controller;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-
-import static ru.smaginv.debtmanager.dm.util.AppUtil.NO_BODY;
 
 @Log4j2
 @RestController
@@ -73,7 +72,7 @@ public class PersonController {
         log.info("get all people");
         List<PersonDto> people = personService.getAll(authUser.getId());
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), NO_BODY, people);
+                request.getMethod(), RequestEntity.EMPTY, people);
         messageService.sendMessage(message);
         return ResponseEntity.ok(people);
     }
@@ -99,7 +98,7 @@ public class PersonController {
         log.info("update person: {}", personUpdateDto);
         personService.update(authUser.getId(), personUpdateDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), personUpdateDto, NO_BODY);
+                request.getMethod(), personUpdateDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -126,7 +125,7 @@ public class PersonController {
         log.info("delete person: {}", personIdDto);
         personService.delete(authUser.getId(), personIdDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), personIdDto, NO_BODY);
+                request.getMethod(), personIdDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -140,7 +139,7 @@ public class PersonController {
         log.info("delete person by contact: {}", contactSearchDto);
         personService.deleteByContact(authUser.getId(), contactSearchDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), contactSearchDto, NO_BODY);
+                request.getMethod(), contactSearchDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }

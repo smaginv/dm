@@ -3,6 +3,7 @@ package ru.smaginv.debtmanager.dm.web.controller;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-
-import static ru.smaginv.debtmanager.dm.util.AppUtil.NO_BODY;
 
 @Log4j2
 @RestController
@@ -74,7 +73,7 @@ public class OperationController {
         log.info("get all operations");
         List<OperationDto> operations = operationService.getAll(authUser.getId());
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), NO_BODY, operations);
+                request.getMethod(), RequestEntity.EMPTY, operations);
         messageService.sendMessage(message);
         return ResponseEntity.ok(operations);
     }
@@ -114,7 +113,7 @@ public class OperationController {
         log.info("update operation: {}", operationUpdateDto);
         operationService.update(authUser.getId(), operationUpdateDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), operationUpdateDto, NO_BODY);
+                request.getMethod(), operationUpdateDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -156,7 +155,7 @@ public class OperationController {
                 operationIdsDto.getId(), operationIdsDto.getAccountId());
         operationService.delete(authUser.getId(), operationIdsDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), operationIdsDto, NO_BODY);
+                request.getMethod(), operationIdsDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -170,7 +169,7 @@ public class OperationController {
         log.info("delete all operations by account: {}", accountIdDto);
         operationService.deleteAllByAccount(authUser.getId(), accountIdDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), accountIdDto, NO_BODY);
+                request.getMethod(), accountIdDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }

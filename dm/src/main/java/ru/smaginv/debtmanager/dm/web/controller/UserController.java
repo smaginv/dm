@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 
-import static ru.smaginv.debtmanager.dm.util.AppUtil.NO_BODY;
-
 @Log4j2
 @RestController
 @RequestMapping(
@@ -69,7 +67,7 @@ public class UserController {
         userUpdateDto.setPassword(encodePassword);
         userService.update(userUpdateDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), userUpdateDto, NO_BODY);
+                request.getMethod(), userUpdateDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -101,7 +99,7 @@ public class UserController {
         log.info("delete user: {}", authUser);
         userService.delete(userIdDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), userIdDto, NO_BODY);
+                request.getMethod(), userIdDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }

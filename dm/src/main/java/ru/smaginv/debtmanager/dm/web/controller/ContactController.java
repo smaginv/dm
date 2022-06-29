@@ -3,6 +3,7 @@ package ru.smaginv.debtmanager.dm.web.controller;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-
-import static ru.smaginv.debtmanager.dm.util.AppUtil.NO_BODY;
 
 @Log4j2
 @RestController
@@ -75,7 +74,7 @@ public class ContactController {
         log.info("get all contacts");
         List<ContactDto> contacts = contactService.getAll(authUser.getId());
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), NO_BODY, contacts);
+                request.getMethod(), RequestEntity.EMPTY, contacts);
         messageService.sendMessage(message);
         return ResponseEntity.ok(contacts);
     }
@@ -87,7 +86,7 @@ public class ContactController {
         log.info("update contact: {}", contactUpdateDto);
         contactService.update(authUser.getId(), contactUpdateDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), contactUpdateDto, NO_BODY);
+                request.getMethod(), contactUpdateDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -114,7 +113,7 @@ public class ContactController {
         log.info("delete contact with id: {}", contactIdDto);
         contactService.delete(authUser.getId(), contactIdDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), contactIdDto, NO_BODY);
+                request.getMethod(), contactIdDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -128,7 +127,7 @@ public class ContactController {
         log.info("delete all contacts for person: {}", personIdDto);
         contactService.deleteAllByPerson(authUser.getId(), personIdDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), personIdDto, NO_BODY);
+                request.getMethod(), personIdDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }

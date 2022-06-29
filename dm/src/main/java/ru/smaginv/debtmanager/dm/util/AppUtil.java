@@ -15,6 +15,4 @@ public class AppUtil {
     public static final String VALIDATION_FAILED = "VALIDATION FAILED";
 
     public static final LocalDateTime MIN_DATE = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
-
-    public static final String NO_BODY = "NO_BODY";
 }

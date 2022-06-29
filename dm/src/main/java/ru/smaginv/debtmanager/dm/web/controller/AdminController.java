@@ -3,6 +3,7 @@ package ru.smaginv.debtmanager.dm.web.controller;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-
-import static ru.smaginv.debtmanager.dm.util.AppUtil.NO_BODY;
 
 @Log4j2
 @RestController
@@ -90,7 +89,7 @@ public class AdminController {
         log.info("get all users");
         List<UserDto> users = userService.getAll();
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), NO_BODY, users);
+                request.getMethod(), RequestEntity.EMPTY, users);
         messageService.sendMessage(message);
         return ResponseEntity.ok(users);
     }
@@ -118,7 +117,7 @@ public class AdminController {
         userUpdateDto.setPassword(encodePassword);
         userService.update(userUpdateDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), userUpdateDto, NO_BODY);
+                request.getMethod(), userUpdateDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -175,7 +174,7 @@ public class AdminController {
         log.info("delete user by id: {}", userIdDto);
         userService.delete(userIdDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), userIdDto, NO_BODY);
+                request.getMethod(), userIdDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
@@ -189,7 +188,7 @@ public class AdminController {
         log.info("delete user by email: {}", userEmailDto);
         userService.deleteByEmail(userEmailDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
-                request.getMethod(), userEmailDto, NO_BODY);
+                request.getMethod(), userEmailDto, ResponseEntity.EMPTY);
         messageService.sendMessage(message);
         return ResponseEntity.noContent().build();
     }
