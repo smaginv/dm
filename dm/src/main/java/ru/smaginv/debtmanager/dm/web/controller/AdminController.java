@@ -1,14 +1,16 @@
 package ru.smaginv.debtmanager.dm.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.dm.message.Message;
 import ru.smaginv.debtmanager.dm.message.MessageService;
 import ru.smaginv.debtmanager.dm.service.user.UserService;
@@ -17,7 +19,6 @@ import ru.smaginv.debtmanager.dm.web.dto.user.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @Log4j2
@@ -27,6 +28,7 @@ import java.util.List;
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
+@Tag(name = "Administrator controller")
 public class AdminController {
 
     private final UserService userService;
@@ -41,7 +43,10 @@ public class AdminController {
         this.messageService = messageService;
     }
 
-    @GetMapping
+    @PostMapping(
+            value = "/by-id/get"
+    )
+    @Operation(summary = "Get user by id")
     public ResponseEntity<UserDto> get(@AuthenticationPrincipal AuthUser authUser,
                                        @Valid @RequestBody UserIdDto userIdDto,
                                        HttpServletRequest request) {
@@ -53,9 +58,10 @@ public class AdminController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping(
-            value = "/by-username"
+    @PostMapping(
+            value = "/by-username/get"
     )
+    @Operation(summary = "Get user by username")
     public ResponseEntity<UserDto> getByUsername(@AuthenticationPrincipal AuthUser authUser,
                                                  @Valid @RequestBody UsernameDto usernameDto,
                                                  HttpServletRequest request) {
@@ -67,9 +73,10 @@ public class AdminController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping(
-            value = "/by-email"
+    @PostMapping(
+            value = "/by-email/get"
     )
+    @Operation(summary = "Get user by email")
     public ResponseEntity<UserDto> getByEmail(@AuthenticationPrincipal AuthUser authUser,
                                               @Valid @RequestBody UserEmailDto userEmailDto,
                                               HttpServletRequest request) {
@@ -84,6 +91,7 @@ public class AdminController {
     @GetMapping(
             consumes = MediaType.ALL_VALUE
     )
+    @Operation(summary = "Get all users")
     public ResponseEntity<List<UserDto>> getAll(@AuthenticationPrincipal AuthUser authUser,
                                                 HttpServletRequest request) {
         log.info("get all users");
@@ -94,9 +102,10 @@ public class AdminController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping(
-            value = "/by-status"
+    @PostMapping(
+            value = "/by-status/get"
     )
+    @Operation(summary = "Get all users by status")
     public ResponseEntity<List<UserDto>> getAllByStatus(@AuthenticationPrincipal AuthUser authUser,
                                                         @Valid @RequestBody UserStatusDto userStatusDto,
                                                         HttpServletRequest request) {
@@ -109,6 +118,7 @@ public class AdminController {
     }
 
     @PutMapping
+    @Operation(summary = "Update user")
     public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser,
                                     @Valid @RequestBody UserUpdateDto userUpdateDto,
                                     HttpServletRequest request) {
@@ -123,8 +133,9 @@ public class AdminController {
     }
 
     @PatchMapping(
-            value = "/set-status"
+            value = "/status/set"
     )
+    @Operation(summary = "Set the status to the user")
     public ResponseEntity<UserDto> setStatus(@AuthenticationPrincipal AuthUser authUser,
                                              @Valid @RequestBody UserStatusDto userStatusDto,
                                              HttpServletRequest request) {
@@ -137,8 +148,9 @@ public class AdminController {
     }
 
     @PatchMapping(
-            value = "/set-role"
+            value = "/role/set"
     )
+    @Operation(summary = "Set the role to the user")
     public ResponseEntity<UserDto> setRole(@AuthenticationPrincipal AuthUser authUser,
                                            @Valid @RequestBody UserRoleDto userRoleDto,
                                            HttpServletRequest request) {
@@ -151,6 +163,7 @@ public class AdminController {
     }
 
     @PostMapping
+    @Operation(summary = "Create user")
     public ResponseEntity<UserDto> create(@AuthenticationPrincipal AuthUser authUser,
                                           @Valid @RequestBody UserDto userDto,
                                           HttpServletRequest request) {
@@ -158,16 +171,16 @@ public class AdminController {
         String encodePassword = passwordEncoder.encode(userDto.getPassword());
         userDto.setPassword(encodePassword);
         UserDto created = userService.create(userDto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .build()
-                .toUri();
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
                 request.getMethod(), userDto, created);
         messageService.sendMessage(message);
-        return ResponseEntity.created(location).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @DeleteMapping
+    @PostMapping(
+            value = "/by-id/delete"
+    )
+    @Operation(summary = "Delete user by id")
     public ResponseEntity<?> deleteById(@AuthenticationPrincipal AuthUser authUser,
                                         @Valid @RequestBody UserIdDto userIdDto,
                                         HttpServletRequest request) {
@@ -179,9 +192,10 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(
-            value = "/by-email"
+    @PostMapping(
+            value = "/by-email/delete"
     )
+    @Operation(summary = "Delete user by email")
     public ResponseEntity<?> deleteByEmail(@AuthenticationPrincipal AuthUser authUser,
                                            @Valid @RequestBody UserEmailDto userEmailDto,
                                            HttpServletRequest request) {

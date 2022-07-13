@@ -54,7 +54,7 @@ public class LogServiceImpl implements LogService {
     @Transactional
     @Override
     public void delete(LogIdDto logIdDto) {
-        validationUtil.checkNotFound(logRepository.delete(logIdDto.getLogId()) != 0);
+        validationUtil.checkNotFound(logRepository.delete(logIdDto.getId()) != 0);
     }
 
     @Transactional

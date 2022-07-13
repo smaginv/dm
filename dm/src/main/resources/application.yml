@@ -55,6 +55,11 @@ kafka:
       partitions: 1
       replicas: 1
 
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
+
 logging:
   level:
     ru.smaginv.debtmanager.dm: debug

@@ -12,5 +12,5 @@ import javax.validation.constraints.NotNull;
 public class LogIdDto {
 
     @NotNull
-    private Long logId;
+    private Long id;
 }

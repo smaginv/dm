@@ -2,7 +2,6 @@ package ru.smaginv.debtmanager.lm.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -41,8 +40,10 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/logs/**").hasAnyRole(ADMIN, USER)
-                .antMatchers(HttpMethod.DELETE, "/logs/**").hasRole(ADMIN)
+                .antMatchers("/logs/today").hasAnyRole(ADMIN, USER)
+                .antMatchers("/logs/on-date").hasAnyRole(ADMIN, USER)
+                .antMatchers("/logs/between-dates").hasAnyRole(ADMIN, USER)
+                .antMatchers("/logs/find").hasAnyRole(ADMIN, USER)
                 .antMatchers("/**").hasRole(ADMIN)
                 .and().httpBasic()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

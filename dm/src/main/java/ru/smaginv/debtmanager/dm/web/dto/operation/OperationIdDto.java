@@ -3,7 +3,6 @@ package ru.smaginv.debtmanager.dm.web.dto.operation;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 import ru.smaginv.debtmanager.dm.web.dto.HasIdDto;
 
 import javax.validation.constraints.NotBlank;
@@ -15,11 +14,10 @@ import java.util.Objects;
 public class OperationIdDto implements HasIdDto {
 
     @NotBlank
-    @Accessors(prefix = "operation")
-    private String operationId;
+    private String id;
 
     @Override
     public boolean isNew() {
-        return Objects.isNull(operationId);
+        return Objects.isNull(id);
     }
 }

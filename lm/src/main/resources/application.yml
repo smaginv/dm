@@ -41,6 +41,11 @@ kafka:
   topic: "dm-log"
   group-id: "log"
 
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha
+
 logging:
   level:
     ru.smaginv.debtmanager.lm: debug

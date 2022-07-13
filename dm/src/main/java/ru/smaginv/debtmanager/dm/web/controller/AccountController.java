@@ -1,13 +1,15 @@
 package ru.smaginv.debtmanager.dm.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.dm.message.Message;
 import ru.smaginv.debtmanager.dm.message.MessageService;
 import ru.smaginv.debtmanager.dm.service.account.AccountService;
@@ -17,7 +19,6 @@ import ru.smaginv.debtmanager.dm.web.dto.person.PersonIdDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @Log4j2
@@ -27,6 +28,7 @@ import java.util.List;
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
+@Tag(name = "Account controller")
 public class AccountController {
 
     private final AccountService accountService;
@@ -38,7 +40,10 @@ public class AccountController {
         this.messageService = messageService;
     }
 
-    @GetMapping
+    @PostMapping(
+            value = "/by-id/get"
+    )
+    @Operation(summary = "Get account by id")
     public ResponseEntity<AccountDto> get(@AuthenticationPrincipal AuthUser authUser,
                                           @Valid @RequestBody AccountIdDto accountIdDto,
                                           HttpServletRequest request) {
@@ -50,9 +55,10 @@ public class AccountController {
         return ResponseEntity.ok(account);
     }
 
-    @GetMapping(
-            value = "/with-operations"
+    @PostMapping(
+            value = "/with-operations/get"
     )
+    @Operation(summary = "Get an account by id with operations")
     public ResponseEntity<AccountInfoDto> getWithOperations(@AuthenticationPrincipal AuthUser authUser,
                                                             @Valid @RequestBody AccountIdDto accountIdDto,
                                                             HttpServletRequest request) {
@@ -67,6 +73,7 @@ public class AccountController {
     @GetMapping(
             consumes = MediaType.ALL_VALUE
     )
+    @Operation(summary = "Get all accounts")
     public ResponseEntity<List<AccountDto>> getAll(@AuthenticationPrincipal AuthUser authUser,
                                                    HttpServletRequest request) {
         log.info("get all accounts");
@@ -77,9 +84,10 @@ public class AccountController {
         return ResponseEntity.ok(accounts);
     }
 
-    @GetMapping(
-            value = "/by-person"
+    @PostMapping(
+            value = "/by-person/get"
     )
+    @Operation(summary = "Get all accounts by person")
     public ResponseEntity<List<AccountDto>> getAllByPerson(@AuthenticationPrincipal AuthUser authUser,
                                                            @Valid @RequestBody PersonIdDto personIdDto,
                                                            HttpServletRequest request) {
@@ -91,9 +99,10 @@ public class AccountController {
         return ResponseEntity.ok(accounts);
     }
 
-    @GetMapping(
-            value = "/by-status"
+    @PostMapping(
+            value = "/by-status/get"
     )
+    @Operation(summary = "Get all accounts by status")
     public ResponseEntity<List<AccountDto>> getAllByStatus(@AuthenticationPrincipal AuthUser authUser,
                                                            @Valid @RequestBody AccountStatusDto accountStatusDto,
                                                            HttpServletRequest request) {
@@ -105,9 +114,10 @@ public class AccountController {
         return ResponseEntity.ok(accounts);
     }
 
-    @GetMapping(
-            value = "/by-type"
+    @PostMapping(
+            value = "/by-type/get"
     )
+    @Operation(summary = "Get all accounts by type")
     public ResponseEntity<List<AccountDto>> getAllByType(@AuthenticationPrincipal AuthUser authUser,
                                                          @Valid @RequestBody AccountTypeDto accountTypeDto,
                                                          HttpServletRequest request) {
@@ -119,9 +129,10 @@ public class AccountController {
         return ResponseEntity.ok(accounts);
     }
 
-    @GetMapping(
-            value = "/active/by-type/total-amount"
+    @PostMapping(
+            value = "/active/by-type/total-amount/get"
     )
+    @Operation(summary = "Get active accounts total amount by type")
     public ResponseEntity<AmountDto> getActiveAccountsTotalAmountByType(
             @AuthenticationPrincipal AuthUser authUser,
             @Valid @RequestBody AccountTypeDto accountTypeDto,
@@ -134,9 +145,10 @@ public class AccountController {
         return ResponseEntity.ok(amount);
     }
 
-    @GetMapping(
-            value = "/inactive/by-type/total-amount"
+    @PostMapping(
+            value = "/inactive/by-type/total-amount/get"
     )
+    @Operation(summary = "Get inactive accounts total amount by type")
     public ResponseEntity<AmountDto> getInactiveAccountsTotalAmountByType(
             @AuthenticationPrincipal AuthUser authUser,
             @Valid @RequestBody AccountTypeDto accountTypeDto,
@@ -150,6 +162,7 @@ public class AccountController {
     }
 
     @PatchMapping
+    @Operation(summary = "Update account")
     public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser,
                                     @Valid @RequestBody AccountUpdateDto accountUpdateDto,
                                     HttpServletRequest request) {
@@ -162,24 +175,25 @@ public class AccountController {
     }
 
     @PostMapping
+    @Operation(summary = "Create account")
     public ResponseEntity<AccountDto> create(@AuthenticationPrincipal AuthUser authUser,
                                              @Valid @RequestBody AccountDto accountDto,
                                              HttpServletRequest request) {
         log.info("create account: {}", accountDto);
         AccountDto created = accountService.create(authUser.getId(), accountDto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .build()
-                .toUri();
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
                 request.getMethod(), accountDto, created);
         messageService.sendMessage(message);
-        return ResponseEntity.created(location).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @DeleteMapping
-    public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser,
-                                    @Valid @RequestBody AccountIdDto accountIdDto,
-                                    HttpServletRequest request) {
+    @PostMapping(
+            value = "/by-id/delete"
+    )
+    @Operation(summary = "Delete account by id")
+    public ResponseEntity<AccountDto> delete(@AuthenticationPrincipal AuthUser authUser,
+                                             @Valid @RequestBody AccountIdDto accountIdDto,
+                                             HttpServletRequest request) {
         log.info("delete account: {}", accountIdDto);
         accountService.delete(authUser.getId(), accountIdDto);
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
@@ -188,9 +202,10 @@ public class AccountController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(
-            value = "/inactive/by-person"
+    @PostMapping(
+            value = "/inactive/by-person/delete"
     )
+    @Operation(summary = "Delete all inactive accounts by person")
     private ResponseEntity<?> deleteAllInactiveByPerson(@AuthenticationPrincipal AuthUser authUser,
                                                         @Valid @RequestBody PersonIdDto personIdDto,
                                                         HttpServletRequest request) {
@@ -202,10 +217,11 @@ public class AccountController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(
-            value = "/inactive",
+    @PostMapping(
+            value = "/inactive/delete",
             consumes = MediaType.ALL_VALUE
     )
+    @Operation(summary = "Delete all inactive accounts")
     private ResponseEntity<?> deleteAllInactive(@AuthenticationPrincipal AuthUser authUser,
                                                 HttpServletRequest request) {
         log.info("delete all inactive accounts");

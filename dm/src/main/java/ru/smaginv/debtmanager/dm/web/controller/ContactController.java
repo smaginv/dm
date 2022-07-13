@@ -1,13 +1,15 @@
 package ru.smaginv.debtmanager.dm.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.dm.message.Message;
 import ru.smaginv.debtmanager.dm.message.MessageService;
 import ru.smaginv.debtmanager.dm.service.contact.ContactService;
@@ -19,7 +21,6 @@ import ru.smaginv.debtmanager.dm.web.dto.person.PersonIdDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @Log4j2
@@ -29,6 +30,7 @@ import java.util.List;
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
+@Tag(name = "Contact controller")
 public class ContactController {
 
     private final ContactService contactService;
@@ -40,7 +42,10 @@ public class ContactController {
         this.messageService = messageService;
     }
 
-    @GetMapping
+    @PostMapping(
+            value = "/by-id/get"
+    )
+    @Operation(summary = "Get contact by id")
     public ResponseEntity<ContactDto> get(@AuthenticationPrincipal AuthUser authUser,
                                           @Valid @RequestBody ContactIdDto contactIdDto,
                                           HttpServletRequest request) {
@@ -52,9 +57,10 @@ public class ContactController {
         return ResponseEntity.ok(contact);
     }
 
-    @GetMapping(
-            value = "/by-person"
+    @PostMapping(
+            value = "/by-person/get"
     )
+    @Operation(summary = "Get all contacts by person")
     public ResponseEntity<List<ContactDto>> getAllByPerson(@AuthenticationPrincipal AuthUser authUser,
                                                            @Valid @RequestBody PersonIdDto personIdDto,
                                                            HttpServletRequest request) {
@@ -69,6 +75,7 @@ public class ContactController {
     @GetMapping(
             consumes = MediaType.ALL_VALUE
     )
+    @Operation(summary = "Get all contacts")
     public ResponseEntity<List<ContactDto>> getAll(@AuthenticationPrincipal AuthUser authUser,
                                                    HttpServletRequest request) {
         log.info("get all contacts");
@@ -80,6 +87,7 @@ public class ContactController {
     }
 
     @PutMapping
+    @Operation(summary = "Update contact")
     public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser,
                                     @Valid @RequestBody ContactUpdateDto contactUpdateDto,
                                     HttpServletRequest request) {
@@ -92,21 +100,22 @@ public class ContactController {
     }
 
     @PostMapping
+    @Operation(summary = "Create account")
     public ResponseEntity<ContactDto> create(@AuthenticationPrincipal AuthUser authUser,
                                              @Valid @RequestBody ContactDto contactDto,
                                              HttpServletRequest request) {
         log.info("create contact: {}", contactDto);
         ContactDto created = contactService.create(authUser.getId(), contactDto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .build()
-                .toUri();
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
                 request.getMethod(), contactDto, created);
         messageService.sendMessage(message);
-        return ResponseEntity.created(location).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @DeleteMapping
+    @PostMapping(
+            value = "/by-id/delete"
+    )
+    @Operation(summary = "Delete contact by id")
     public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser,
                                     @Valid @RequestBody ContactIdDto contactIdDto,
                                     HttpServletRequest request) {
@@ -118,9 +127,10 @@ public class ContactController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(
-            value = "/by-person"
+    @PostMapping(
+            value = "/by-person/delete"
     )
+    @Operation(summary = "Delete all contacts by person")
     public ResponseEntity<?> deleteAllByPerson(@AuthenticationPrincipal AuthUser authUser,
                                                @Valid @RequestBody PersonIdDto personIdDto,
                                                HttpServletRequest request) {

@@ -12,5 +12,5 @@ import javax.validation.constraints.NotNull;
 public class UserIdDto {
 
     @NotNull
-    private Long userId;
+    private Long id;
 }

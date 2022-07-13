@@ -1,13 +1,15 @@
 package ru.smaginv.debtmanager.dm.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.dm.message.Message;
 import ru.smaginv.debtmanager.dm.message.MessageService;
 import ru.smaginv.debtmanager.dm.service.person.PersonService;
@@ -17,7 +19,6 @@ import ru.smaginv.debtmanager.dm.web.dto.person.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @Log4j2
@@ -27,6 +28,7 @@ import java.util.List;
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
+@Tag(name = "Person controller")
 public class PersonController {
 
     private final PersonService personService;
@@ -38,7 +40,10 @@ public class PersonController {
         this.messageService = messageService;
     }
 
-    @GetMapping
+    @PostMapping(
+            value = "/by-id/get"
+    )
+    @Operation(summary = "Get person by id")
     public ResponseEntity<PersonInfoDto> get(@AuthenticationPrincipal AuthUser authUser,
                                              @Valid @RequestBody PersonIdDto personIdDto,
                                              HttpServletRequest request) {
@@ -50,9 +55,10 @@ public class PersonController {
         return ResponseEntity.ok(personInfo);
     }
 
-    @GetMapping(
-            value = "/by-contact"
+    @PostMapping(
+            value = "/by-contact/get"
     )
+    @Operation(summary = "Get person by contact")
     public ResponseEntity<PersonInfoDto> getByContact(@AuthenticationPrincipal AuthUser authUser,
                                                       @Valid @RequestBody ContactSearchDto contactSearchDto,
                                                       HttpServletRequest request) {
@@ -67,6 +73,7 @@ public class PersonController {
     @GetMapping(
             consumes = MediaType.ALL_VALUE
     )
+    @Operation(summary = "Get all people")
     public ResponseEntity<List<PersonDto>> getAll(@AuthenticationPrincipal AuthUser authUser,
                                                   HttpServletRequest request) {
         log.info("get all people");
@@ -77,9 +84,10 @@ public class PersonController {
         return ResponseEntity.ok(people);
     }
 
-    @GetMapping(
+    @PostMapping(
             value = "/find"
     )
+    @Operation(summary = "Find people")
     public ResponseEntity<List<PersonDto>> find(@AuthenticationPrincipal AuthUser authUser,
                                                 @RequestBody PersonSearchDto personSearchDto,
                                                 HttpServletRequest request) {
@@ -92,6 +100,7 @@ public class PersonController {
     }
 
     @PutMapping
+    @Operation(summary = "Update person")
     public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser,
                                     @Valid @RequestBody PersonUpdateDto personUpdateDto,
                                     HttpServletRequest request) {
@@ -104,21 +113,22 @@ public class PersonController {
     }
 
     @PostMapping
+    @Operation(summary = "Create person")
     public ResponseEntity<PersonDto> create(@AuthenticationPrincipal AuthUser authUser,
                                             @Valid @RequestBody PersonDto personDto,
                                             HttpServletRequest request) {
         log.info("create person: {}", personDto);
         PersonDto created = personService.create(authUser.getId(), personDto);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .build()
-                .toUri();
         Message message = messageService.createMessage(authUser.getUsername(), request.getRequestURI(),
                 request.getMethod(), personDto, created);
         messageService.sendMessage(message);
-        return ResponseEntity.created(location).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @DeleteMapping
+    @PostMapping(
+            value = "/by-id/delete"
+    )
+    @Operation(summary = "Delete person by id")
     public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser,
                                     @Valid @RequestBody PersonIdDto personIdDto,
                                     HttpServletRequest request) {
@@ -130,9 +140,10 @@ public class PersonController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping(
-            value = "/by-contact"
+    @PostMapping(
+            value = "/by-contact/delete"
     )
+    @Operation(summary = "Delete person by contact")
     public ResponseEntity<?> deleteByContact(@AuthenticationPrincipal AuthUser authUser,
                                              @Valid @RequestBody ContactSearchDto contactSearchDto,
                                              HttpServletRequest request) {

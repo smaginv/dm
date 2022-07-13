@@ -1,13 +1,15 @@
 package ru.smaginv.debtmanager.dm.web.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.smaginv.debtmanager.dm.message.Message;
 import ru.smaginv.debtmanager.dm.message.MessageService;
 import ru.smaginv.debtmanager.dm.service.user.UserService;
@@ -19,7 +21,6 @@ import ru.smaginv.debtmanager.dm.web.dto.user.UserUpdateDto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.net.URI;
 
 @Log4j2
 @RestController
@@ -28,6 +29,7 @@ import java.net.URI;
         consumes = MediaType.APPLICATION_JSON_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
 )
+@Tag(name = "User controller")
 public class UserController {
 
     private final UserService userService;
@@ -44,7 +46,10 @@ public class UserController {
         this.messageService = messageService;
     }
 
-    @GetMapping
+    @PostMapping(
+            value = "/by-id/get"
+    )
+    @Operation(summary = "Get user by id")
     public ResponseEntity<UserDto> get(@AuthenticationPrincipal AuthUser authUser,
                                        @Valid @RequestBody UserIdDto userIdDto,
                                        HttpServletRequest request) {
@@ -58,6 +63,7 @@ public class UserController {
     }
 
     @PutMapping
+    @Operation(summary = "Update user")
     public ResponseEntity<?> update(@AuthenticationPrincipal AuthUser authUser,
                                     @Valid @RequestBody UserUpdateDto userUpdateDto,
                                     HttpServletRequest request) {
@@ -75,23 +81,23 @@ public class UserController {
     @PostMapping(
             value = "/register"
     )
+    @Operation(summary = "Register user")
     public ResponseEntity<UserDto> register(@Valid @RequestBody UserDto userDto,
                                             HttpServletRequest request) {
         log.info("register user: {}", userDto);
         String encodePassword = passwordEncoder.encode(userDto.getPassword());
         userDto.setPassword(encodePassword);
         UserDto created = userService.create(userDto);
-        URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/user/{userId}")
-                .buildAndExpand(created.getId())
-                .toUri();
         Message message = messageService.createMessage(userDto.getUsername(), request.getRequestURI(),
                 request.getMethod(), userDto, created);
         messageService.sendMessage(message);
-        return ResponseEntity.created(location).body(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
-    @DeleteMapping
+    @PostMapping(
+            value = "/by-id/delete"
+    )
+    @Operation(summary = "Delete user by id")
     public ResponseEntity<?> delete(@AuthenticationPrincipal AuthUser authUser,
                                     @Valid @RequestBody UserIdDto userIdDto,
                                     HttpServletRequest request) {
