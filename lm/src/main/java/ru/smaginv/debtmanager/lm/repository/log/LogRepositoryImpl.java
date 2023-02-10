@@ -22,7 +22,6 @@ public class LogRepositoryImpl implements LogRepository {
 
     @Override
     public List<Log> getOnDate(LocalDate date) {
-
         return logRepository.getOnDate(Date.valueOf(date));
     }
 

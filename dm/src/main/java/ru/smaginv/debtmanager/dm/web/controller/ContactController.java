@@ -100,7 +100,7 @@ public class ContactController {
     }
 
     @PostMapping
-    @Operation(summary = "Create account")
+    @Operation(summary = "Create contact")
     public ResponseEntity<ContactDto> create(@AuthenticationPrincipal AuthUser authUser,
                                              @Valid @RequestBody ContactDto contactDto,
                                              HttpServletRequest request) {
